@@ -1,0 +1,21 @@
+{
+  "fonts": [
+    {
+      "file": "AlibabaHealth-Bold.ttf",
+      "sha256": "96178b55ee17b1d0f498866c86d4231cd740b2a9752af8e6aaf4bc626ff97bcb"
+    },
+    {
+      "file": "JiangChengLvDongSong.ttf",
+      "sha256": "1a5ebfbd5908b94558c1067e1656b6509f4c04c06bf4a4615d3ad3b5c68eadcb"
+    },
+    {
+      "file": "AlibabaHealth-Regular.ttf",
+      "sha256": "f912d45485197d2e276acef24c88d9923e0edfbda78bfcbe8e4198cf65702f11"
+    }
+  ],
+  "sources": {
+    "headline": "https://fonts.zeoseven.com/items/147/",
+    "support": "https://alijk-cdn-assets.oss-cn-beijing.aliyuncs.com/Alibaba%20Health%20Font%202.0.zip",
+    "OFL": "https://github.com/adobe-fonts/source-han-serif/blob/release/LICENSE.txt"
+  }
+}

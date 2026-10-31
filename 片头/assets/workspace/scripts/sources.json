@@ -1,0 +1,11 @@
+{
+  "background": {
+    "url": "https://raw.githubusercontent.com/DavidHDev/react-bits/14330e6963f6c5ddd773ee2af844d0630c22b958/src/content/Backgrounds/GradientASCII/GradientASCII.jsx",
+    "cssUrl": "https://raw.githubusercontent.com/DavidHDev/react-bits/14330e6963f6c5ddd773ee2af844d0630c22b958/src/content/Backgrounds/GradientASCII/GradientASCII.css",
+    "licenseUrl": "https://raw.githubusercontent.com/DavidHDev/react-bits/14330e6963f6c5ddd773ee2af844d0630c22b958/LICENSE.md",
+    "commit": "14330e6963f6c5ddd773ee2af844d0630c22b958",
+    "sha256": "b065d3fbe09905616ce66ca07382e9c72daa59ad57d4cd60059c517b9cbcac91",
+    "cssSha256": "5f30a34fd613c0392a9cc0902fc333960bea4fcfce00f6a6f87e3e27692d2b80",
+    "licenseSha256": "f4c33af6739191537738662d223b68d77bc226f4b57ea883e16481d8cc5c73c9"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "xiaoteng-opening-student-runtime",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "setup": "node scripts/setup.cjs",
+    "doctor": "node scripts/doctor.cjs",
+    "check": "node scripts/run.cjs check",
+    "studio": "node scripts/run.cjs studio",
+    "render": "node scripts/run.cjs render",
+    "still": "node scripts/run.cjs still",
+    "verify": "node scripts/verify.cjs",
+    "test": "node --test scripts/runtime.test.cjs"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.484",
+    "@remotion/renderer": "4.0.484",
+    "remotion": "4.0.484",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "typescript": "6.0.3"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3"
+  }
+}

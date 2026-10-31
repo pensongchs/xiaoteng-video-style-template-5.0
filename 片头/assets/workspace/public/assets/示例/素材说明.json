@@ -1,0 +1,20 @@
+{
+  "generator": "内置ImageGen（或当期可用的图像模型）",
+  "policy": "每期按主题重新生成对应抠像，不固定复用随包示意楼；颜色自然不过艳，与大厂深空质感背景（冷青蓝/靛紫 soft glow）协调。",
+  "prompts": [
+    "Use case photorealistic-natural. Photographic transparent PNG cutout for a Chinese real-estate video opening. Two or three completed modern Chinese residential towers, compact vertical cluster, full roofs and bases. Neutral-natural colours: soft cool-grey glass, muted cream cladding, restrained bronze mullions—avoid high-saturation orange/gold. Daylight architectural photography. Small landscaped footing only. Portrait silhouette with transparent margins. No sky, no background, no text, no people. Genuine transparent alpha. Generic illustrative housing.",
+    "Use case photorealistic-natural. Photographic transparent PNG cutout for a Chinese real-estate video opening. A completed resale apartment community, 7-to-9-story coherent complex, broad horizontal silhouette. Muted terracotta/brick (desaturated), cream frames, ordinary balconies, deep but not neon green trees at base. Natural daylight. Whole roofs and bases visible. Must still read as different category from a glass tower, but without punchy high-sat reds. True transparent alpha. No sky, no text, no people. Generic illustrative housing."
+  ],
+  "postprocess": "保持正常自然色，Opening 内滤镜约 saturate(0.85–0.9)，只避免过艳；随包两张为原始示意图。",
+  "nature": "两张图均为示意学习素材，不代表真实楼盘、住户、品质或交易事实；正式期次必须按当期主题另生成。",
+  "files": [
+    {
+      "file": "成熟社区住宅_透明.png",
+      "sha256": "9d75e751a6f9c9d40d4e4918fa56c1d437481d20c4f633b28c6150246d9f74e7"
+    },
+    {
+      "file": "现代住宅_透明.png",
+      "sha256": "d3384f8ed0fde323dbb8cd1860019eec03da282ec95919693ba088fa844e99aa"
+    }
+  ]
+}

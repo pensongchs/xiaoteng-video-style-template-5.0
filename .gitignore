@@ -1,0 +1,5 @@
+node_modules/
+out/
+episodes_work/
+outputs/
+*.log
