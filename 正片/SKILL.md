@@ -1,13 +1,12 @@
 ---
-name: 小滕分镜风格4.5版本
-description: 用 Remotion 做 1920×1080 横屏的「深色电影感 + 暖金点缀 + 轻量 MG」知识科普分镜视频（房产、财经、城市科普等）。适用场景：用户给一段口播文案、一期选题，或者口播音频加带时间码的字幕（SRT / Caption JSON），想要小滕风格（4.5 / 5.0 样板）的分镜画面、定格图或成片；或者要在不同城市、不同期号之间复用这套风格。包含音画同步（镜头按字幕时间码切换、MG 在说到关键词时到位）、精致的烧录字幕、版式选择思路、12 栏网格、自动排版检查、防顿帧转场，可在 Windows 和 Mac 上直接运行。
+name: 小滕分镜风格5.0正片
+description: 用 Remotion 做 1920×1080 横屏的「深色电影感 + 暖金点缀 + 轻量 MG」知识科普分镜视频（房产、财经、城市科普等）。适用场景：用户给一段口播文案、一期选题，或者口播音频加带时间码的字幕（SRT / Caption JSON），想要小滕风格（5.0 新定版：玻璃v6 + 房产MG）的分镜画面、定格图或成片；或者要在不同城市、不同期号之间复用这套风格。包含音画同步（镜头按字幕时间码切换、MG 在说到关键词时到位）、精致的烧录字幕、版式选择思路、12 栏网格、自动排版检查、防顿帧转场，可在 Windows 和 Mac 上直接运行。
 ---
 
-# 小滕分镜风格 4.5 版本
+# 5.0 新定版（玻璃v6 + 房产MG）· 正片 SKILL
 
-> **5.0 定版 (2026-10-31)**：本目录是 5.0 正片模板（在 4.5 基础上）。默认：浅玻璃（无 backdrop-filter，防闪）、液态玻璃 spring + 邻居让位 + sheen、运镜转场、`anchors` 关键词逐项揭示（mediaRows/quoteStack/timeline；图卡用 `anchors.media`，在左侧文字之后入场；splitVs/waitVs 左文字→左图→箭头→右图）、字幕无下划线自然断句、outroHost 小滕无 CTA。参考期 `template/episodes/选楼层口诀/`；规范见 `references/风格设计规范.md` §11（template 内副本已同步）。
->
-> **工作流**：配音 → `/workspace/时间码字幕2.0/run-box.sh` 出逐字时间码 → 校对对齐（`校对后_动效时间轴_绝对.json` + SRT/Caption JSON，放进 `正片/template/episodes/<期名>/`）→ `node scripts/build-episode.mjs <期名> --audio=<配音.mp4>`（片头 + 正片 + 拼接 + setpts 混流，产物复制到 `outputs/成片/<期名>/`）。
+> 已定：2026-11-06（Asia/Shanghai）。默认GLASS/FROST/glassMat统一v6经典薄玻璃；16/20/12帧单调入场，到位停稳，无颗粒/白底/厚斜面/二次弹/扫光。房产9套已定；默认26种，旧6套和unitCompare仅存档。项目内规范优先，独立4.5、片头与旧成片不动。
+> 工作流和音画同步沿用；玻璃/动效/版式不得照历史成片还原旧液态风。先 `npm run check:freeze`，再按本期数据做check/stills/render。
 
 **这套风格的样子**：背景是深色、提亮过的城市实拍视频，前景是暖白文字加一处金色强调，用不加卡片的大数字、时间轴、圆环、编号条目等轻量 MG 讲清楚一个点。镜头在口播说到对应句子时切换，数字在说到它时到位，底部是一行磨砂浅底的精致字幕。镜头之间用 8–15 帧的克制转场，背景视频全程不停。
 
@@ -63,12 +62,14 @@ npm run studio         # 打开 Remotion Studio 预览
 | 年限进度（第几年还完…） | yearRing（年份进度环） | ringFeature |
 | 计算过程（月供、总价） | formulaCalc（月供算式） | bareNumber |
 
+**房产9套优先映射**：楼层→floorLadder；首付构成→paymentSplit；配套→amenityOrbit；避坑→pitfallBoard；单价面积总价→priceStep；选择→decisionFork；片区→districtTags；房贷→loanDial；条件逐项→layerReveal。字段见版式目录；不以unitCompare替代现实户型分析。
+
 **5.0 数据版式规则**：①协调合理、不过小也不过大——内容约占版式矩形 55–75%，字号守下限（标签 ≥26、正文 ≥34），大数字 76–150px 即可，不用空荡大卡片；②每镜只一处金色主强调；③每期数据版式合计最多 3 次、同一种最多 1 次，别连着两镜都用；④所有数字必须核算（月供按等额本息 M=P·r(1+r)ⁿ/((1+r)ⁿ−1) 自己算一遍，总利息、累计利息过半年份同样逐月算），示例数据必须挂「* 数据为示例」。字段见 `references/版式目录.md`。
 
 ### 2. MG 要有变化
 - 相邻两个镜头**不能**用同一种版式，主动画也不能一样（数字滚动、画线、圆环、条目焦点移动、左右对比，轮换着用）。
-- 一期视频至少用到 6 种版式。同一种版式要重复用时，中间至少隔 2 个镜头，而且数据形态要不同（比如一个是金额、一个是面积单价）。
-- 能不用卡片就不用：数字、时间轴、条目都直接放在背景上，只靠细描边和柔和阴影区分层次。全片最多 2 个镜头用玻璃卡。
+- 标准8–12镜一期至少7种版式，其中至少2种不同的已定房产MG；短片适配见下方轮换条款。同一种版式要重复用时，中间至少隔 2 个镜头，而且数据形态要不同（比如一个是金额、一个是面积单价）。
+- 能不用卡片就不用：数字、时间轴、条目都直接放在背景上，只靠细描边和柔和阴影区分层次。不限制房产MG出现次数为2；同版式次数与轮换遵从下方已定条款，禁止满屏同构堆卡。
 
 ### 3. 密度和留白
 - 全部用 12 栏网格，元素贴栏线。独立的 MG 组之间 ≥48px，左右相邻的组之间空出一整栏。
@@ -78,19 +79,19 @@ npm run studio         # 打开 Remotion Studio 预览
 
 ### 4. 亮度
 - **（5.0 调整，比 4.5 更亮，不要特别暗）** 背景提亮 `brightness(1.2) saturate(1.06)`，压暗层 = max(0.13, dark−0.26)（4.5 为 brightness 1.1、max(0.22, dark−0.16)）。渐变只留左上标题区（径向）和底部字幕区，中部通透。可读性靠标题/栏目/数据组件上的 `.txs` 柔和投影，不靠整屏压黑。
-- 按素材时段调 `bg.dark`：白天航拍 0.38–0.45（5.0 实际压暗 0.13–0.19），黄昏或阴天 0.45–0.52，夜景 0.52–0.60，静图背景 0.45–0.55 并加 blur 6–8。白天天空过曝时加 `blur: 2–4`，或者换一个天空少一点的 trim。
-- 只用暖色：金色表示强调，珊瑚色表示风险，绿色表示利好。一个镜头里最多出现两种强调色。
+- 按素材时段调 `bg.dark`：白天航拍 0.38–0.45（5.0 实际压暗 0.13–0.19），黄昏或阴天 0.45–0.52，夜景 0.52–0.60，静图按可读性压暗；所有背景 blur=0，过曝换天空少一点的trim或换素材。
+- 保持冷灰玻璃基调，轻语义tint允许金/暖珊瑚/青绿/蓝：金强调、珊瑚风险、绿利好、蓝信息。一个镜头里最多出现两种强调色。
 
 ### 5. 节奏和转场
 - **画面跟着声音走**：镜头在它那句口播开始时切入，数字和要点在说到时到位（锚点）。镜头里没有固定的「最后 1 秒定格」，前景只在退场转场那几帧冻结，背景视频一直播放。
-- 入场 20 帧，元素之间错开 6 帧，数字滚动 30 帧。
-- 转场时长 8–15 帧，按 pushBlur → crossfade → maskWipe → lightSweep 轮换，不用花哨的转场。
+- 单调入场：主卡16/柔和20/小标签12帧；错开5帧；数字滚动32帧；到位后卡片停稳。
+- 正片转场 softPush18 → softZoom16 → driftDissolve16 → liftReveal18，有限单调缓动，无扫光/回弹；房产子gallery为10帧柔叠化。
 - 防顿帧有三条硬规则：① 视频一律用 `LiveVideo`（受 `LiveFrameCtx` 驱动）；② 每个 Sequence 设 `premountFor={30}`；③ 素材长度要够。详见规范 §9.9。
 
 ### 6. 字幕要精致，不要大
 - 阿里健康体 42px（38–46），暖白字 + 柔和投影，底部一枚磨砂浅底胶囊，不用黑色长条。
 - 一行最多 18 字，优先单行，长句按词的时间拆成先后两条；去掉行尾标点。
-- 5 帧淡入上浮；有逐词时间时，正在说的词变沙金色并带一条细下划线。只在底部 180px 字幕区里，不挡画面信息。
+- 5 帧淡入上浮；有逐词时间时，正在说的词变沙金色，不画下划线。只在底部 180px 字幕区里，不挡画面信息。
 
 ### 7. 城市中性
 - 模板默认不写城市名，检查脚本会拦截。需要标城市时，只在镜头里加 `city: '某市'`，它只会显示为栏目行的前缀。
@@ -120,3 +121,35 @@ npm run studio         # 打开 Remotion Studio 预览
 - `template/episodes/demo/`：示例期（TTS 口播 + 校对过的字幕）
 - `references/版式目录.md`、`references/组件API.md`
 - `references/preview/`：预览图
+
+## 5.0 新定版（玻璃v6 + 房产MG）· 默认版式与轮换
+状态：**已定**，2026-11-06（Asia/Shanghai）。本节替代此前“待审/旧6套强制/到位后持续呼吸”等条款。
+
+默认 **26种逻辑版式**（`outroAir` 仅为 `outroHost` 别名，不重复计数）：
+- 原核心10：`titleFloat / bareNumber / splitVs / timeline / mediaRows / quoteStack / ringFeature / waitVs / triadSoft / outroHost`。
+- 数据7：`lineReveal / barGlow / rankBars / waffle / balance / yearRing / formulaCalc`。
+- 房产已定9：`floorLadder / paymentSplit / amenityOrbit / pitfallBoard / priceStep / decisionFork / districtTags / loanDial / layerReveal`。
+- 旧6套只存档：`keywordCascade / checklistFill / vsScore / tipStack / numberedReveal / kpiGrid`。材质已同步v6，但不自动推荐、不进入默认gallery。
+- `unitCompare` 仅保留实现存档；不在 LayoutName、默认推荐、预览或轮换计数中。
+
+执行条款：
+1. 标准8–12镜一期至少7种版式，其中至少2种不同的已定房产MG；短片少于7镜时不硬凑7种，逐镜不重复，优先安排1种语义匹配的房产MG。禁止为凑数量造数据。
+2. 同一版式每期最多2次（片尾仅1次）；相邻镜不得同版式，重复时中间至少隔2镜；别名合并计数。切换数字、流程、清单、图文、对比等信息结构，不只换标题。
+3. 真实数字/比例/金额至少1镜用数据图表、bareNumber/ringFeature，或匹配的 paymentSplit/priceStep/loanDial。7种数据图表合计每期≤3镜，同一种≤1镜，不相邻连用；数字先核算，示例显式标注，不能把示例用于实际楼盘判断。
+4. 清单/避坑优先 pitfallBoard、layerReveal，配合 quoteStack/mediaRows；楼层用 floorLadder，预算用 paymentSplit/priceStep，配套/区域用 amenityOrbit/districtTags；评分、热度必须有来源和口径，没数据就不造分。
+5. 对比/决策轮换 decisionFork、splitVs、waitVs，真实总账可用 balance；禁止默认使用 unitCompare 或旧 vsScore。
+6. 背景优先清晰视频，静图背景占比≤1/3；不整屏模糊，bg.blur=0，靠冷灰玻璃和字影保证可读。
+7. 卡片按口播锚点单调入场，16/20/12帧后精确停稳；禁止过冲、落地二次弹、邻居让位、整体呼吸/焦点缩放、僵硬扫光条。高亮只改变轻色光/文字亮度；数据绘制、进度填充、背景自然运镜与小滕人物摆手可保留，不让卡片整体晃动。
+
+唯一登记：`src/style/layouts.ts` 的 DEFAULT_LAYOUTS（10+7+9）；默认活目录 `src/gallery/shots-mg-gallery.ts` / `MgGallery`，每个默认版式一镜。房产子集 `shots-mg-re10.ts` / `MgGalleryRe10` 固定9镜、40.5秒；“re10”仅兼容旧文件名，不代表10套。
+检查：`npm run check:freeze` 验证材质、动效范围、默认/存档边界和gallery覆盖；正式出片还须 `npm run check`、stills/音画核验。新增版式必须先登记样镜并审核，不能直接加进默认清单。
+
+## 共享玻璃 v6（已定参数）
+- 唯一来源：`tokens.ts: GLASS_V6`；`FROST = GLASS_V6`，`GLASS.dark/light` 是同源兼容视图。所有正片玻璃入口用 `glassMat(mode,tint?,edge?,soft?)`；mgEstate.frost 与旧 mgCards.LG 均委托它。旧 light/pearl 名称保留接口，但不再渲白卡；旧 edge 参数不覆盖细白边。
+- 主底：165°，rgba(62,64,72,**.68**) → rgba(38,40,48,**.74**)；基础透射约32%→26%。soft/ghost：.62→.68（基础透射38%→32%）。这是**底层不透明alpha**，不是“透明度68%”；叠加层后的有效透射会略低。
+- 细白边1px，alpha .22；轻顶缘1px .26；轻底线1px黑 .12；阴影 `0 8px 20px rgba(0,0,0,.20), 0 1px 3px rgba(0,0,0,.12)`。
+- 固定宽柔面光：160°，白 .12→.035（38%）→0（60%）。无移动扫光、颗粒纹理、厚斜面、双层厚框、夸张弧面或重影。
+- 轻语义tint：金/暖珊瑚 .10，青绿/蓝 .08；旧接口传入更浓rgba会钳至≤.10。保持冷灰基调、暖白主字/浅副字；不改成白底或彩色实心板。
+- `backdropFilter/WebkitBackdropFilter='none'`：保留经典参考的环境透射细节，用确定性半透明和面光做玻璃层次，避免祖先opacity/filter改变backdrop root而闪烁。不是28px雾化玻璃，也不是v5厚斜面版本。
+- `useSpringP/useLiquid` 旧API适配有限时长ease-out cubic `1-(1-t)^3`；p严格[0,1]、到期精确1，sx/sy=1；主卡16、柔和20、小标签12帧@30fps。SPRING旧令牌改成 damping26 + overshootClamping，保留给外部兼容；本模板卡片不再用物理弹簧驱动。
+- `Sheen` 兼容API返回null，`bump`返回0；关闭卡片整体前景视差、焦点推近和WordSheen。保留背景视频和有意义的数据变化；人物摆手不是卡片动画。

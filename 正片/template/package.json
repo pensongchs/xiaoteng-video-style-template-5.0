@@ -1,8 +1,8 @@
 {
-  "name": "xiaoteng-storyboard-style-4-5",
+  "name": "xiaoteng-storyboard-style-5-0",
   "private": true,
   "type": "module",
-  "description": "小滕分镜风格4.5版本 · Remotion 模板",
+  "description": "5.0 新定版（玻璃v6 + 房产MG）· 本地 Remotion 模板",
   "engines": {
     "node": ">=22.18.0"
   },
@@ -14,7 +14,9 @@
     "check": "node --no-warnings scripts/check-layout.mjs",
     "stills": "node --no-warnings scripts/stills.mjs",
     "render": "node scripts/render.mjs",
-    "studio": "node scripts/render.mjs --studio"
+    "studio": "node scripts/render.mjs --studio",
+    "check:freeze": "node scripts/check-freeze.cjs",
+    "gallery:stills": "node scripts/freeze-stills.mjs"
   },
   "dependencies": {
     "remotion": "4.0.484",
@@ -28,5 +30,6 @@
     "typescript": "6.0.3",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3"
-  }
+  },
+  "version": "5.0.0"
 }

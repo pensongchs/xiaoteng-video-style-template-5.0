@@ -1,0 +1,432 @@
+{
+  "baseBackup": "/workspace/_bak_re10/freeze50_v6_20261106_pre",
+  "scope": "Local project; no Git commit/push. This record excludes itself and later snapshot manifest.",
+  "files": [
+    {
+      "path": "README.md",
+      "change": "modified",
+      "sha256": "20266d5ce9e3b95aa7c706c5b8affdd235ec7dd26e4c085b45091e564ea2669f",
+      "bytes": 707
+    },
+    {
+      "path": "SKILL.md",
+      "change": "modified",
+      "sha256": "2cc5e54e15784c5819ff1433f62a0171c6e46d9ada2aaa3a02145a6b3f0c30ed",
+      "bytes": 8929
+    },
+    {
+      "path": "outputs/freeze-v6/approved_re10_pixel_check.json",
+      "change": "added",
+      "sha256": "d2a65a6b4e6213173d275255c381b9144374316fe228fb254fbe78abc3c71614",
+      "bytes": 287
+    },
+    {
+      "path": "outputs/freeze-v6/archive/01_keywordCascade.png",
+      "change": "added",
+      "sha256": "185fa23728a02ed84bd30dbc6367302de082534efb22df41c7db929f4abd10ce",
+      "bytes": 3315747
+    },
+    {
+      "path": "outputs/freeze-v6/archive/02_checklistFill.png",
+      "change": "added",
+      "sha256": "f7daf760471d671c107468d0d6f3231848969a34f1b7d6074336ab2b14977643",
+      "bytes": 3219599
+    },
+    {
+      "path": "outputs/freeze-v6/archive/03_vsScore.png",
+      "change": "added",
+      "sha256": "cf9b5e3af2054274ec4a396116e52dfeda2fc99b0195363495a3e79b50316576",
+      "bytes": 3092877
+    },
+    {
+      "path": "outputs/freeze-v6/archive/04_tipStack.png",
+      "change": "added",
+      "sha256": "bd37d7f75bb421f66db1530c318f6e46e253334363c97130ee63033315509134",
+      "bytes": 3166046
+    },
+    {
+      "path": "outputs/freeze-v6/archive/05_numberedReveal.png",
+      "change": "added",
+      "sha256": "f288fb492f9a179c3781db0e68e41024697d936fa265069ae03a0ba4e3f0a1a8",
+      "bytes": 3012936
+    },
+    {
+      "path": "outputs/freeze-v6/archive/06_kpiGrid.png",
+      "change": "added",
+      "sha256": "02904e4de0214e357babb680c12e8e994d136f1d5365b0ca60aed589e933d3ce",
+      "bytes": 3117354
+    },
+    {
+      "path": "outputs/freeze-v6/archive_6_material_contact.jpg",
+      "change": "added",
+      "sha256": "8fd1d97b44b4ac69af51d6dc067cc8b37e31e7e781f8370817d6d196eb9b81f9",
+      "bytes": 506927
+    },
+    {
+      "path": "outputs/freeze-v6/default/01_quoteStack.png",
+      "change": "added",
+      "sha256": "29709772f9684c60beb46d4c17d4b1f09ab1ae635ad0219eb03ddd1e67ca8a92",
+      "bytes": 2978040
+    },
+    {
+      "path": "outputs/freeze-v6/default/02_mediaRows.png",
+      "change": "added",
+      "sha256": "aab60da1533ff936989a08c0e99cf76bc61ae14d3944eb077530e9637d08ca8a",
+      "bytes": 3500538
+    },
+    {
+      "path": "outputs/freeze-v6/default/03_timeline.png",
+      "change": "added",
+      "sha256": "dbdf69556976ad78160a47cac3d4c61319bf354d4a2c12ea974b96dec11d95b9",
+      "bytes": 3261495
+    },
+    {
+      "path": "outputs/freeze-v6/default/04_titleFloat.png",
+      "change": "added",
+      "sha256": "b6bcc71595766acbad1d2a48cd7fd934bd409a1a913a3e646dce2330ee04f22f",
+      "bytes": 2382167
+    },
+    {
+      "path": "outputs/freeze-v6/default/05_splitVs.png",
+      "change": "added",
+      "sha256": "6efae75cafc08a6c0af223d0018994729f9d62015089eefd7e2a870f3c28520c",
+      "bytes": 3523443
+    },
+    {
+      "path": "outputs/freeze-v6/default/06_bareNumber.png",
+      "change": "added",
+      "sha256": "6e48995beff3daf19d523e5e93386a6dc477f33c48374d2c453851bf8a277e5a",
+      "bytes": 3310966
+    },
+    {
+      "path": "outputs/freeze-v6/default/07_ringFeature.png",
+      "change": "added",
+      "sha256": "8c95383006ae6de0554d1a573cc53d719680f32c332784d881f9c62ad2117ed0",
+      "bytes": 3092966
+    },
+    {
+      "path": "outputs/freeze-v6/default/08_waitVs.png",
+      "change": "added",
+      "sha256": "87b309b783bb4aad541867b554b813ab879e711253e4a227670f1647f96e4f0e",
+      "bytes": 3183691
+    },
+    {
+      "path": "outputs/freeze-v6/default/09_triadSoft.png",
+      "change": "added",
+      "sha256": "ce8ff619a49fe2621e47b6b943b20abe2012a08f5a84c039026b4d95bc56817c",
+      "bytes": 2843720
+    },
+    {
+      "path": "outputs/freeze-v6/default/10_lineReveal.png",
+      "change": "added",
+      "sha256": "51cd8a363e51958bd3815d33dc7c32e168ec2275fb36bb2f04d7af186027db87",
+      "bytes": 2255016
+    },
+    {
+      "path": "outputs/freeze-v6/default/11_barGlow.png",
+      "change": "added",
+      "sha256": "1918380d167118d4cad897256884eaaacaa8010e30f3f36e0a3c2d92d534bae8",
+      "bytes": 3217138
+    },
+    {
+      "path": "outputs/freeze-v6/default/12_rankBars.png",
+      "change": "added",
+      "sha256": "e1cf3bed7822d8c8966fbd3bd4b5cb8e8dceb17a82adbc61cc261c76a412c243",
+      "bytes": 3372579
+    },
+    {
+      "path": "outputs/freeze-v6/default/13_waffle.png",
+      "change": "added",
+      "sha256": "5c0a16fc25255f829d0a6b4c0cf28af34768982bbdc717724bd8dc3a0795ed82",
+      "bytes": 2920511
+    },
+    {
+      "path": "outputs/freeze-v6/default/14_balance.png",
+      "change": "added",
+      "sha256": "2c83199847adbfbff81004a83f82adf23d587e3f36f7301dbeefe7082b3e597b",
+      "bytes": 3280521
+    },
+    {
+      "path": "outputs/freeze-v6/default/15_yearRing.png",
+      "change": "added",
+      "sha256": "5c12371b444a3a86b9c953abb4176aa4a495b3db016cd0ea12f316ba9b69075b",
+      "bytes": 3091914
+    },
+    {
+      "path": "outputs/freeze-v6/default/16_formulaCalc.png",
+      "change": "added",
+      "sha256": "7c3e0f3ac7f01e002f6b4171801eae2626de2f401423cdfc270d3029401dde2e",
+      "bytes": 2585659
+    },
+    {
+      "path": "outputs/freeze-v6/default/17_floorLadder.png",
+      "change": "added",
+      "sha256": "ade733476fa0e35f3b675a53bd2a6ec909233e703b4984197b48be997833592d",
+      "bytes": 3221394
+    },
+    {
+      "path": "outputs/freeze-v6/default/18_paymentSplit.png",
+      "change": "added",
+      "sha256": "6185fdd30c25f0667730bd4e4b1e1463b11bd51d9f9b4ea8968324c0083a84e8",
+      "bytes": 3117317
+    },
+    {
+      "path": "outputs/freeze-v6/default/19_amenityOrbit.png",
+      "change": "added",
+      "sha256": "37832bcfd8a0b1f164dae4e9b1b8be93f36f0eb880e16ed2845c33d14f618fb6",
+      "bytes": 3349942
+    },
+    {
+      "path": "outputs/freeze-v6/default/20_pitfallBoard.png",
+      "change": "added",
+      "sha256": "af1e85371f4204676c8438f84fb25c04cdddeffbb599a5e7ffa103f7aef2b7a5",
+      "bytes": 3106547
+    },
+    {
+      "path": "outputs/freeze-v6/default/21_priceStep.png",
+      "change": "added",
+      "sha256": "4ed6742edb4c3a8774a42c464db7d4a449b91a34e185bc2611283d8c1a03caf4",
+      "bytes": 2554976
+    },
+    {
+      "path": "outputs/freeze-v6/default/22_decisionFork.png",
+      "change": "added",
+      "sha256": "3712c5f14ce36cf0dfbd5c01e9949237ba09bfedee078192ed0ef03c2e4468a1",
+      "bytes": 3024645
+    },
+    {
+      "path": "outputs/freeze-v6/default/23_districtTags.png",
+      "change": "added",
+      "sha256": "019a33be16df2fbec9499c1e54f56b359a4db4c8bc76d979761e17617d4d451d",
+      "bytes": 3107027
+    },
+    {
+      "path": "outputs/freeze-v6/default/24_loanDial.png",
+      "change": "added",
+      "sha256": "366c27264a94be191f721b9f3f2dc9b8e9d67624012608a91f733b502fa7fb28",
+      "bytes": 3123578
+    },
+    {
+      "path": "outputs/freeze-v6/default/25_layerReveal.png",
+      "change": "added",
+      "sha256": "52490ed02ee9782e5621a5edc9ed8a106c22866f39de192ccd3a64aaeeebd8a8",
+      "bytes": 3105348
+    },
+    {
+      "path": "outputs/freeze-v6/default/26_outroHost.png",
+      "change": "added",
+      "sha256": "50bf6bdfd1f1c13ecd4d2135b9acf954bb5ca69216c325a4da570de20b1661da",
+      "bytes": 2549300
+    },
+    {
+      "path": "outputs/freeze-v6/default_26_contact.jpg",
+      "change": "added",
+      "sha256": "09834b545907edd5015beb9a9ef1db8f8cca1698a31029ed1088988fdf84d6e1",
+      "bytes": 2127135
+    },
+    {
+      "path": "outputs/freeze-v6/estate_9_contact.jpg",
+      "change": "added",
+      "sha256": "2ec240fae9c8b072564703570eda37a51bd72799676da4a55fbc4aa319c64953",
+      "bytes": 744780
+    },
+    {
+      "path": "outputs/freeze-v6/shared_core_contact.jpg",
+      "change": "added",
+      "sha256": "2ad9a68ccd6574494e434492ce3170debe365a36384f153092f2b27284814eae",
+      "bytes": 652680
+    },
+    {
+      "path": "outputs/freeze-v6/shared_core_motion_frames.jpg",
+      "change": "added",
+      "sha256": "c419e24b28baf0cb21c51432b0e63970abdf772c61da5f806860ba39598d7cd5",
+      "bytes": 848809
+    },
+    {
+      "path": "outputs/freeze-v6/shared_core_preview.mp4",
+      "change": "added",
+      "sha256": "990197faad6845ef09c8bb1c85aa95a8623b47610dcfc9b00a0609f924ac31a5",
+      "bytes": 9626603
+    },
+    {
+      "path": "outputs/freeze-v6/shared_core_preview_probe.json",
+      "change": "added",
+      "sha256": "1c22c7a492cde28942a8f3407269804f0b59ef105aef2ae5eb956cbb158c5433",
+      "bytes": 2450
+    },
+    {
+      "path": "outputs/freeze-v6/stills-manifest.json",
+      "change": "added",
+      "sha256": "bd94d24f6023b98531526fcc74baa14160b8403f0eca63398e797b5c546d4076",
+      "bytes": 3807
+    },
+    {
+      "path": "定版交接_5.0_玻璃v6.md",
+      "change": "added",
+      "sha256": "18909a50f57152a8b0fa5767ab7edc2c83ce6ad93f3b38c092c54b563310a0b1",
+      "bytes": 5203
+    },
+    {
+      "path": "定版记录/freeze-regression.json",
+      "change": "added",
+      "sha256": "245a05478db537e74b0fed6f21c7ed658705dd709eef1a27df392b4585f63364",
+      "bytes": 5449
+    },
+    {
+      "path": "定版记录/保护文件校验.json",
+      "change": "added",
+      "sha256": "16ba7985cdf47807a369711400f5d9f5e26fe74f5a97c011ea9f4bd1309adc40",
+      "bytes": 370
+    },
+    {
+      "path": "定版记录/抽帧与检查结论.md",
+      "change": "added",
+      "sha256": "a1ad77ed6c9b98a9c578cc5e0ee5a5c4aa91d55e9b998fc5efa9266804a55afb",
+      "bytes": 1162
+    },
+    {
+      "path": "定版记录/既有示例检查说明.md",
+      "change": "added",
+      "sha256": "3e317c057120337339a7012dacbbcac7f7c1ccb175de8e4c4a2dd217059f6b20",
+      "bytes": 919
+    },
+    {
+      "path": "正片/README.md",
+      "change": "modified",
+      "sha256": "ed9e8b4999e214858979dee559b9542a0a9f3c8a8a71593651b5bbadb4ca9211",
+      "bytes": 4058
+    },
+    {
+      "path": "正片/SKILL.md",
+      "change": "modified",
+      "sha256": "b1ffb762eb995df824604a4a500357596dff83409301ff0391b3eddafd689fad",
+      "bytes": 20439
+    },
+    {
+      "path": "正片/references/版式目录.md",
+      "change": "modified",
+      "sha256": "c8748f4f91823eb1bbc9ef0d686601bb54802f24383583e43442a38e69582b98",
+      "bytes": 11314
+    },
+    {
+      "path": "正片/references/玻璃v6参考/classic_glass_ref.jpg",
+      "change": "added",
+      "sha256": "7c206cb103cdc61772f360da79a54d99e6c669ad5bda799ba8c672a577eac10e",
+      "bytes": 649611
+    },
+    {
+      "path": "正片/references/组件API.md",
+      "change": "modified",
+      "sha256": "4fb57358a2f0a6e24d430ea83a097956337452eef025c5215d695161ac904276",
+      "bytes": 5612
+    },
+    {
+      "path": "正片/references/风格设计规范.md",
+      "change": "modified",
+      "sha256": "fd49a3d16d5d9bd65d9b3e1ef45abec4cfce97436c9a8fe815d032cf329014c0",
+      "bytes": 9439
+    },
+    {
+      "path": "正片/template/package-lock.json",
+      "change": "modified",
+      "sha256": "6d23e6c6335d373945a92dcf303097ee9c43d7029ff4c5070aaadba6daead130",
+      "bytes": 110308
+    },
+    {
+      "path": "正片/template/package.json",
+      "change": "modified",
+      "sha256": "664b56be57dffa942378cb231a91ba99423267caa04ce5bd011112e6bb307b9d",
+      "bytes": 1093
+    },
+    {
+      "path": "正片/template/scripts/check-freeze.cjs",
+      "change": "added",
+      "sha256": "aab762ec6d077aa0351cc18b942b1e2ef5c509aff50343d94bd78787da564660",
+      "bytes": 7258
+    },
+    {
+      "path": "正片/template/scripts/freeze-stills.mjs",
+      "change": "added",
+      "sha256": "2a965b014814248c7234a00aab6e21b243d9ae2d160a8454b43fb465a27e795a",
+      "bytes": 1209
+    },
+    {
+      "path": "正片/template/scripts/re10-stills.mjs",
+      "change": "modified",
+      "sha256": "8497b13671ccdb291b3965c068177576faadbab98c051e3e2fd7e1c27a47dfce",
+      "bytes": 1119
+    },
+    {
+      "path": "正片/template/src/gallery/MgGallery.tsx",
+      "change": "modified",
+      "sha256": "b54a1d074a94a6600d15b70850f6a31e2d51b2a12909f3a353a5471874d0b781",
+      "bytes": 1207
+    },
+    {
+      "path": "正片/template/src/gallery/MgGalleryRe10.tsx",
+      "change": "modified",
+      "sha256": "cfd0a077c0b856932f692235008f0a439324ad784eb138a43e83ce9264b6f71b",
+      "bytes": 1122
+    },
+    {
+      "path": "正片/template/src/gallery/shots-mg-gallery.ts",
+      "change": "modified",
+      "sha256": "16729fcf33157dcd0eb50b9c91164dac384ca3fafc652fcd9a41ad7c9c646f20",
+      "bytes": 7163
+    },
+    {
+      "path": "正片/template/src/gallery/shots-mg-re10.ts",
+      "change": "modified",
+      "sha256": "2ad3ad141a2824303e381f42ead0faa50278c30c107ae6ce5ddbdb4d67f16450",
+      "bytes": 4401
+    },
+    {
+      "path": "正片/template/src/style/archetypes.tsx",
+      "change": "modified",
+      "sha256": "f11721f1545b6e5bd0ebd7c70dc59bd34915e2cdd64df1f7a1541bb34bd5ddf7",
+      "bytes": 24397
+    },
+    {
+      "path": "正片/template/src/style/components.tsx",
+      "change": "modified",
+      "sha256": "c72c7d405a4f7a3c504c7a3271a4c6884e2fea40f5ef43785825d5cb77b8b887",
+      "bytes": 31750
+    },
+    {
+      "path": "正片/template/src/style/layouts.ts",
+      "change": "modified",
+      "sha256": "30b54043b75bd151294634d73a6c89cc8fb022cc6a1d5aa2ff78f5ebe67c2d0b",
+      "bytes": 6674
+    },
+    {
+      "path": "正片/template/src/style/mgCards.tsx",
+      "change": "modified",
+      "sha256": "c55e7eecb9a43dbd9eb553a57d025d06644df02ee80a3f630f68f05b33397f32",
+      "bytes": 12720
+    },
+    {
+      "path": "正片/template/src/style/mgEstate.tsx",
+      "change": "modified",
+      "sha256": "facaf5681aebf32aba515b2c645cbb499b2580f01f5fb33badf80ee502c88fc1",
+      "bytes": 32528
+    },
+    {
+      "path": "正片/template/src/style/tokens.ts",
+      "change": "modified",
+      "sha256": "c4df751c458d9d6f1df872efe5ff4284fc4ce96bdfd6f419ef0cef92479e0af3",
+      "bytes": 4413
+    },
+    {
+      "path": "正片/template/src/style/transitions.tsx",
+      "change": "modified",
+      "sha256": "f14b65118ce4fe28e939f443194f8c50dd994c8183490236d726b4f292efe134",
+      "bytes": 4013
+    },
+    {
+      "path": "正片/template/风格设计规范.md",
+      "change": "modified",
+      "sha256": "fd49a3d16d5d9bd65d9b3e1ef45abec4cfce97436c9a8fe815d032cf329014c0",
+      "bytes": 9439
+    }
+  ]
+}

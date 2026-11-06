@@ -1,38 +1,27 @@
 import React from 'react';
-import {AbsoluteFill, Easing, Freeze, interpolateColors, Img, OffthreadVideo, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Easing, Freeze, interpolateColors, Img, OffthreadVideo, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import type {Rect} from './grid.ts';
-import {COLOR, FONT, GLASS, MIN_FONT, MOTION, RADIUS, SPRING, TYPE} from './tokens';
+import {COLOR, FONT, FROST, GLASS, glassEnter, steadySpring as spring, MIN_FONT, MOTION, RADIUS, SPRING, TYPE} from './tokens';
 
-/** 苹果磨砂玻璃：返回可直接展开的 style。mode 自适应：dark（默认，暗背景）/light（亮背景）；tint 可选着色 rgba 叠在底色上 */
-export const glassMat = (mode: 'dark' | 'light' = 'dark', tint?: string, edge?: string): React.CSSProperties => {
-  const m = GLASS[mode];
-  return {background: tint ? `${GLASS.sheen}, linear-gradient(165deg, ${tint}, rgba(0,0,0,0) 140%), ${m.fill}` : `${GLASS.sheen}, ${m.fill}`,
-    border: `1px solid ${edge ?? m.hair}`,
-    boxShadow: `inset 0 1px 0 ${m.top}, inset 0 0 0 0.5px rgba(255,255,255,0.06), ${GLASS.shadow}`};
-};
-
-
-/** 液态玻璃（5.0 默认）：弹簧速度→拉伸，过冲→落地压扁；配合 Sheen 镜面高光扫过 */
+/** 5.0 新定版：唯一玻璃入口。旧 light/edge 接口兼容，不恢复白底或彩色厚边。 */
+const softTint = (tint?: string) => tint?.replace(/rgba\(([^,]+),([^,]+),([^,]+),\s*([\d.]+)\)/g,
+  (_, r, g, b, a) => `rgba(${r},${g},${b},${Math.min(0.10, Number(a))})`);
+export const glassMat = (_mode: 'dark' | 'light' = 'dark', tint?: string, _edge?: string, soft = false): React.CSSProperties => ({
+  color: FROST.ink, textShadow: FROST.textShadow,
+  background: `${FROST.surfaceHighlight}, linear-gradient(165deg, ${softTint(tint) ?? FROST.tint.none}, rgba(0,0,0,0) 120%), ${soft ? FROST.fillSoft : FROST.fill}`,
+  backdropFilter: FROST.blur, WebkitBackdropFilter: FROST.blur,
+  border: `1px solid ${FROST.hair}`,
+  boxShadow: `inset 0 1px 0 ${FROST.top}, inset 0 -1px 0 ${FROST.bottom}, ${FROST.shadow}`,
+});
+/** 兼容旧 useLiquid，现为单调入场；不拉伸、不压扁。 */
 export const useLiquid = (start: number, config: typeof SPRING.enter = SPRING.enter) => {
   const f = useCurrentFrame(); const {fps} = useVideoConfig();
-  const p = spring({frame: Math.max(0, f - start), fps, config});
-  const p0 = spring({frame: Math.max(0, f - 1 - start), fps, config});
-  const v = Math.max(-0.06, Math.min(0.06, (p - p0) * 0.45));   // 运动中沿方向拉伸
-  const over = Math.max(-0.035, Math.min(0.035, (p - 1) * 0.7)); // 过冲时压扁
-  return {p, sx: 1 + v + over, sy: 1 - v * 0.8 - over};
+  return {p: spring({frame: f - start, fps, config}), sx: 1, sy: 1};
 };
-/** 邻居让位：t 帧前有新卡落地 → 0→1→0 的小脉冲（峰值在落地后 ~6 帧） */
-export const bump = (t: number) => (t <= 0 ? 0 : (t / 6) * Math.exp(1 - t / 6));
-/** 镜面高光扫过（入场 / 焦点切换时） */
-export const Sheen: React.FC<{at: number; dur?: number; strength?: number}> = ({at, dur = 22, strength = 0.22}) => {
-  const f = useCurrentFrame(); const t = (f - at) / dur;
-  if (t < 0 || t > 1) return null;
-  const x = -60 + 220 * Easing.inOut(Easing.cubic)(t); const a = strength * Math.sin(Math.PI * t);
-  return <div data-deco style={{position: 'absolute', inset: 0, pointerEvents: 'none', borderRadius: 'inherit', overflow: 'hidden'}}>
-    <div style={{position: 'absolute', top: '-20%', bottom: '-20%', left: `${x}%`, width: '38%', transform: 'skewX(-18deg)',
-      background: `linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,${a}) 50%, rgba(255,255,255,0) 100%)`}} />
-  </div>;
-};
+/** 兼容 API：新定版关闭邻居让位与到位后反弹。 */
+export const bump = (_t: number) => 0;
+/** 兼容 API：新定版没有移动扫光条；面光已固定在 glassMat 内。 */
+export const Sheen: React.FC<{at: number; dur?: number; strength?: number}> = () => null;
 
 export const Fonts: React.FC = () => (
   <style>{`
@@ -51,10 +40,7 @@ export const prog = (f: number, start: number, dur: number = MOTION.enter) =>
 
 const ease = (p: number) => 1 - Math.pow(1 - p, 3);
 
-/**
- * Q 弹进度：Remotion spring，可 >1（过冲）再回落到 1。
- * 在组件里调用（依赖 useCurrentFrame / useVideoConfig）。
- */
+/** 旧 hook 名兼容；现在使用16/20/12帧有限时长单调入场。 */
 export const useSpringP = (start: number, config: typeof SPRING.enter = SPRING.enter) => {
   const f = useCurrentFrame(); const {fps} = useVideoConfig();
   return spring({frame: Math.max(0, f - start), fps, config});
@@ -63,19 +49,16 @@ export const useSpringP = (start: number, config: typeof SPRING.enter = SPRING.e
 export type Tone = 'dark' | 'pearl' | 'gold' | 'coral' | 'ghost';
 export type Enter = 'up' | 'left' | 'right' | 'scale' | 'fade' | 'blur' | 'none';
 
-/**
- * 入场样式：p 允许 >1（弹簧过冲）。透明度钳在 0–1；位移/缩放跟着过冲再回弹 → Q 弹感。
- * 逻辑：从焦点方向弹入（up=上浮落地、left/right=侧滑回弹、scale=放大回弹）。
- */
+/** 单调入场，进度钳制0–1，到位后固定。 */
 const enterStyle = (from: Enter, p: number): React.CSSProperties => {
   const o = Math.min(1, Math.max(0, p));
-  const t = p; // 允许过冲
+  const t = o; // 禁止过冲
   const sh = MOTION.maxShift;
   switch (from) {
     case 'up': return {opacity: o, transform: `translateY(${(1 - t) * sh}px) scale(${0.96 + 0.04 * Math.min(t, 1.15)})`};
     case 'left': return {opacity: o, transform: `translateX(${(1 - t) * -sh}px) scale(${0.97 + 0.03 * Math.min(t, 1.12)})`};
     case 'right': return {opacity: o, transform: `translateX(${(1 - t) * sh}px) scale(${0.97 + 0.03 * Math.min(t, 1.12)})`};
-    case 'scale': return {opacity: o, transform: `scale(${0.88 + 0.12 * t})`};
+    case 'scale': return {opacity: o, transform: `scale(${0.97 + 0.03 * t})`};
     case 'blur': return {opacity: o, filter: `blur(${Math.max(0, (1 - Math.min(t, 1)) * 8)}px)`, transform: `translateY(${(1 - t) * 16}px) scale(${0.97 + 0.03 * Math.min(t, 1.1)})`};
     case 'fade': return {opacity: o, transform: `scale(${0.985 + 0.015 * Math.min(t, 1.08)})`};
     default: return {opacity: 1};
@@ -83,14 +66,9 @@ const enterStyle = (from: Enter, p: number): React.CSSProperties => {
 };
 
 const toneBg: Record<Tone, React.CSSProperties> = {
-  dark: {...glassMat('dark'), color: COLOR.warm},
-  pearl: {background: 'linear-gradient(160deg, rgba(250,246,238,0.94), rgba(232,224,210,0.9))', color: COLOR.pearlInk, border: '1px solid rgba(255,255,255,0.7)',
-    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.9), 0 18px 40px rgba(0,0,0,0.35)'},
-  gold: {background: 'linear-gradient(160deg, rgba(80,60,28,0.88), rgba(36,28,14,0.86))', color: COLOR.warm, border: '1px solid rgba(243,215,158,0.55)',
-    boxShadow: 'inset 0 1px 0 rgba(255,240,210,0.35), 0 0 36px rgba(217,178,111,0.28), 0 18px 40px rgba(0,0,0,0.45)'},
-  coral: {background: 'linear-gradient(160deg, rgba(120,42,32,0.9), rgba(56,22,18,0.88))', color: '#FFE3DB', border: '1px solid rgba(224,113,92,0.7)',
-    boxShadow: 'inset 0 1px 0 rgba(255,200,180,0.25), 0 0 28px rgba(224,113,92,0.35), 0 18px 40px rgba(0,0,0,0.45)'},
-  ghost: {...glassMat('dark'), background: `${GLASS.sheen}, linear-gradient(165deg, rgba(50,52,60,0.40), rgba(30,32,40,0.48))`, color: COLOR.warm},
+  dark: glassMat(), pearl: glassMat('light'),
+  gold: glassMat('dark', FROST.tint.gold), coral: glassMat('dark', FROST.tint.coral),
+  ghost: glassMat('dark', undefined, undefined, true),
 };
 
 /** 玻璃卡（少用；全屏不要堆满） */
@@ -124,7 +102,7 @@ export const MediaFrame: React.FC<{r: Rect; start: number; src: string; video?: 
         : <Img src={staticFile(src)} style={{width: '100%', height: '100%', objectFit: fit}} />}
     </div>
     {tag && <div data-fit="tag" style={{position: 'absolute', top: 20, right: 20, padding: '8px 30px', borderRadius: 999, fontFamily: FONT.body, fontWeight: 700, fontSize: TYPE.chip,
-      background: 'linear-gradient(135deg,#F3D79E,#C99A52)', color: '#2a2012'}}>{tag}</div>}
+      ...glassMat('dark', FROST.tint.gold), color: FROST.gold}}>{tag}</div>}
     {label && <div style={{position: 'absolute', left: 24, bottom: 22, display: 'flex', alignItems: 'center', gap: 12}}>
       <div style={{width: 4, height: 28, background: COLOR.goldHi, borderRadius: 2}} />
       <span style={{fontFamily: FONT.body, fontWeight: 700, fontSize: TYPE.label, color: COLOR.warm, textShadow: '0 2px 8px rgba(0,0,0,0.6)'}}>{label}</span>
@@ -137,16 +115,16 @@ export const Chip: React.FC<{children: React.ReactNode; start: number; tone?: Ch
   const p = useSpringP(start, SPRING.snappy);
   const o = Math.min(1, Math.max(0, p));
   const st: Record<ChipTone, React.CSSProperties> = {
-    gold: {background: 'linear-gradient(135deg,#F3D79E,#C99A52)', color: '#2a2012', border: '1px solid rgba(255,240,210,0.9)'},
+    gold: {...glassMat('dark', FROST.tint.gold), color: FROST.gold},
     glass: {...glassMat('dark'), color: COLOR.warm, textShadow: GLASS.textShadow},
     coral: {...glassMat('dark', 'rgba(224,113,92,0.42)', 'rgba(240,150,130,0.6)'), color: '#FFE6DF', textShadow: GLASS.textShadow},
     green: {...glassMat('dark', 'rgba(141,184,154,0.40)', 'rgba(170,210,182,0.6)'), color: '#E4F5EA', textShadow: GLASS.textShadow},
   };
   return <div data-fit="chip" style={{display: 'inline-flex', alignItems: 'center', alignSelf: 'flex-start', flexShrink: 0, whiteSpace: 'nowrap', padding: `${Math.round(size * 0.42)}px ${Math.round(size * 1.3)}px`, borderRadius: 999,
-    fontFamily: FONT.body, fontWeight: 700, fontSize: size, opacity: o, transform: `translateY(${(1 - p) * 10}px) scale(${0.92 + 0.08 * Math.min(p, 1.12)})`,
+    fontFamily: FONT.body, fontWeight: 700, fontSize: size, opacity: o, transform: `translateY(${(1 - p) * 10}px) scale(${0.97 + 0.03 * Math.min(p, 1)})`,
     boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 8px 18px rgba(0,0,0,0.3)', ...st[tone],
-    ...(hi != null ? {position: 'relative', overflow: 'hidden', color: interpolateColors(hi, [0, 1], [COLOR.warm, '#2a2012']), textShadow: hi > 0.5 ? 'none' : GLASS.textShadow} : {})}}>
-    {hi != null && hi > 0.001 && <div style={{position: 'absolute', inset: 0, borderRadius: 999, opacity: hi, background: 'linear-gradient(135deg,#F3D79E,#C99A52)'}} />}
+    ...(hi != null ? {position: 'relative', overflow: 'hidden', color: interpolateColors(hi, [0, 1], [COLOR.warm, FROST.gold]), textShadow: GLASS.textShadow} : {})}}>
+    {hi != null && hi > 0.001 && <div style={{position: 'absolute', inset: 0, borderRadius: 999, opacity: hi, background: FROST.tint.gold}} />}
     {hi != null ? <span style={{position: 'relative'}}>{children}</span> : children}</div>;
 };
 
@@ -197,7 +175,7 @@ export const ExampleMark: React.FC = () => (
 /** 背景：整体提亮（亮度 ×1.1、压暗降约 0.15），文字可读性靠左上/底部的渐变压暗而非整屏压黑 */
 /** 背景保持清晰。blur 只为兼容旧数据，不再作用到画面；5.0 仍比 4.5 提亮一档。 */
 /** 镜头内运镜方向：由 ShotView 注入，背景视差慢于前景 */
-export const CamCtx = React.createContext<{dirX: number; dirY: number; zoom: number}>({dirX: 1, dirY: 0, zoom: 1});
+export const CamCtx = React.createContext<{dirX: number; dirY: number; zoom: number; move?: number}>({dirX: 1, dirY: 0, zoom: 1});
 
 export const Backdrop: React.FC<{src: string; video?: boolean; blur?: number; dark?: number; trimStart?: number}> = ({src, video, blur: _blur = 0, dark = 0.45, trimStart = 0}) => {
   // 5.0：比 4.5 提亮一档（4.5 为 brightness 1.1 / max(0.22, dark−0.16) / 上下渐变）
@@ -206,9 +184,10 @@ export const Backdrop: React.FC<{src: string; video?: boolean; blur?: number; da
   const cur = useCurrentFrame(); const live = React.useContext(LiveFrameCtx) ?? cur;
   const cam = React.useContext(CamCtx);
   const t = live / 30; // 秒
-  const scale = 1.04 + t * 0.008 * cam.zoom; // ~0.8%/s 推近
-  const tx = cam.dirX * t * 6;  // 约 6px/s
-  const ty = cam.dirY * t * 4;
+  const mv = cam.move ?? 1; // 可选：本期加强运镜（默认 1 = 定版行为）
+  const scale = 1.04 + t * 0.008 * cam.zoom * mv; // ~0.8%/s 推近
+  const tx = cam.dirX * t * 6 * mv + (mv > 1 ? Math.sin(t * 0.55) * 10 : 0);  // 约 6px/s
+  const ty = cam.dirY * t * 4 * mv + (mv > 1 ? Math.cos(t * 0.42) * 6 : 0);
   const filter = 'brightness(1.2) saturate(1.06)';
   const mediaStyle: React.CSSProperties = {width: '100%', height: '100%', objectFit: 'cover', filter, transform: `scale(${scale}) translate(${tx}px, ${ty}px)`, transformOrigin: '50% 45%'};
   return <AbsoluteFill>
@@ -250,7 +229,7 @@ export const BareNumber: React.FC<{r: Rect; start: number; value: number; unit: 
 /** 浮动标签（轻量，无大卡） */
 export const FloatLabel: React.FC<{r: Rect; start: number; text: string; tone?: ChipTone | 'plain'; from?: Enter}> = ({r, start, text, tone = 'glass', from = 'fade'}) => {
   const f = useCurrentFrame(); const p = prog(f, start, MOTION.chip);
-  const bob = Math.sin((f - start) / 18) * 3;
+  const bob = 0; // v6：标签到位即停
   if (tone === 'plain') return <div style={{position: 'absolute', left: r.x, top: r.y + bob, width: r.w, height: r.h, display: 'flex', alignItems: 'center',
     fontFamily: FONT.body, fontWeight: 700, fontSize: TYPE.body, color: COLOR.warm, ...enterStyle(from, p)}}>{text}</div>;
   return <div style={{position: 'absolute', left: r.x, top: r.y + bob * 0.4, ...enterStyle(from, p)}}><Chip start={start} tone={tone as ChipTone}>{text}</Chip></div>;
@@ -267,22 +246,20 @@ export const Timeline: React.FC<{r: Rect; start: number; steps: {t: string; s: s
     </div>
     {steps.map((st, i) => {
       const st0 = starts?.[i] ?? start + i * MOTION.stagger;
-      const sp = spring({frame: Math.max(0, f - st0), fps, config: SPRING.enter}); const sp0 = spring({frame: Math.max(0, f - 1 - st0), fps, config: SPRING.enter});
-      const v = Math.max(-0.06, Math.min(0.06, (sp - sp0) * 0.45)); const ov = Math.max(-0.035, Math.min(0.035, (sp - 1) * 0.7));
+      const sp = glassEnter(f, st0);
       const o = Math.min(1, Math.max(0, sp)); const on = i === active; const done = i < active;
       const hs = (x?: number) => (x == null ? 0 : spring({frame: Math.max(0, f - x), fps, config: SPRING.snappy}));
       const hi = starts ? Math.max(0, Math.min(1, hs(starts[i]) - hs(starts[i + 1]))) : (on ? 1 : 0);
       const dn = starts ? Math.min(1, hs(starts[i + 1])) : (done ? 1 : 0);
-      const nud = (starts ?? []).reduce((a, s2, j) => (j === i ? a : a + (i < j ? -1 : 1) * (10 / Math.abs(i - j)) * bump(f - s2 - 6)), 0);
       const x = i * (cw + gap);
       return <div key={i} style={{position: 'absolute', left: x, top: 0, width: cw, height: r.h, display: 'flex', flexDirection: 'column', alignItems: 'center', opacity: o * (1 - 0.28 * dn),
-        transform: `translate(${nud}px, ${(1 - sp) * 28}px) scale(${(0.94 + 0.06 * Math.min(sp, 1.1)) * (1 - v * 0.8 - ov) * (1 + 0.02 * hi)}, ${(0.94 + 0.06 * Math.min(sp, 1.1)) * (1 + v + ov) * (1 + 0.02 * hi)})`, transformOrigin: '50% 100%'}}>
+        transform: `translateY(${(1 - sp) * 28}px) scale(${0.97 + 0.03 * sp})`, transformOrigin: '50% 100%'}}>
         <div style={{width: 28, height: 28, borderRadius: 14, marginTop: 22, background: hi + dn > 0.5 ? 'radial-gradient(circle at 30% 25%,#FBE6BC,#D9B26F)' : 'rgba(255,255,255,0.2)',
           boxShadow: `0 0 22px rgba(217,178,111,${0.7 * hi})`, border: `2px solid rgba(255,255,255,${hi})`}} />
         <div style={{position: 'relative', marginTop: 24, padding: '20px 26px 24px', borderRadius: 24, display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', boxSizing: 'border-box',
           ...glassMat('dark')}}>
-        <div data-deco style={{position: 'absolute', inset: 0, borderRadius: 24, pointerEvents: 'none', opacity: hi, background: 'linear-gradient(165deg, rgba(217,178,111,0.20), rgba(0,0,0,0) 140%)', boxShadow: 'inset 0 0 0 1px rgba(243,215,158,0.5)'}} />
-        <div style={{fontFamily: FONT.title, position: 'relative', fontSize: 40 + 6 * hi, lineHeight: 1.3, color: interpolateColors(hi, [0, 1], [COLOR.warm, COLOR.goldHi]), textAlign: 'center'}}>{st.t}</div>
+        <div data-deco style={{position: 'absolute', inset: 0, borderRadius: 24, pointerEvents: 'none', opacity: hi, background: 'linear-gradient(165deg, rgba(159,123,61,0.10), rgba(0,0,0,0) 140%)', boxShadow: 'none'}} />
+        <div style={{fontFamily: FONT.title, position: 'relative', fontSize: 40, lineHeight: 1.3, color: interpolateColors(hi, [0, 1], [COLOR.warm, COLOR.goldHi]), textAlign: 'center'}}>{st.t}</div>
         <div data-role="body" style={{position: 'relative', marginTop: 14, fontFamily: FONT.body, fontSize: TYPE.body, color: COLOR.sub, textAlign: 'center', lineHeight: 1.4}}>{st.s}</div>
         {st.chip && <div style={{position: 'relative', marginTop: 22}}><Chip start={(starts?.[i] ?? start + i * 6) + 10} tone="glass" hi={hi}>{st.chip}</Chip></div>}
         <div style={{position: 'absolute', inset: 0, borderRadius: 24, overflow: 'hidden', pointerEvents: 'none'}}><Sheen at={st0 + 6} />{on && starts && <Sheen at={st0 + 8} strength={0.26} />}</div>
@@ -297,17 +274,17 @@ export const IconRow: React.FC<{r: Rect; start: number; idx: string; title: stri
   activeAt?: number; offAt?: number; dim?: number; nudge?: number}> =
 ({r, start, idx, title, sub, tip, active, from = 'right', glass = true, activeAt, offAt, dim = 0, nudge = 0}) => {
   const f = useCurrentFrame(); const L = useLiquid(start, SPRING.enter); const p = L.p; const g = glass ? 7 : 0;
-  // 高亮是连续量（不再一帧内切换金色/暗色，避免“闪”）：激活时弹起，被下一项接管时平滑退回
+  // 焦点只改变色光/文字亮度，不再放大或移动卡片
   const aAt = activeAt ?? start;
   const hi = activeAt == null ? (active ? 1 : 0) : Math.max(0, Math.min(1, useSpringPOnce(f, aAt) - (offAt != null ? useSpringPOnce(f, offAt) : 0)));
-  const hiO = Math.min(1.06, hi);
-  const es = enterStyle(from, p); const lift = 1 + 0.02 * hiO;
+  
+  const es = enterStyle(from, p);
   return <div style={{position: 'absolute', left: r.x, top: r.y + g, width: r.w, height: r.h - g * 2, display: 'flex', alignItems: 'center', gap: 32, padding: glass ? '0 28px' : '0 24px', boxSizing: 'border-box',
     ...(glass ? {...glassMat('dark'), borderRadius: 22, overflow: 'hidden'} : {borderBottom: '1px solid rgba(255,255,255,0.12)'}),
     opacity: ((es.opacity as number) ?? 1) * (1 - 0.30 * dim),
-    transform: `${es.transform ?? ''} translateY(${nudge}px) scale(${L.sx * lift * (1 - 0.015 * dim)}, ${L.sy * lift * (1 - 0.015 * dim)})`, transformOrigin: '50% 50%'}}>
+    transform: es.transform, transformOrigin: '50% 50%'}}>
     {glass && <div data-deco style={{position: 'absolute', inset: 0, borderRadius: 22, pointerEvents: 'none', opacity: hi,
-      background: 'linear-gradient(165deg, rgba(217,178,111,0.24), rgba(0,0,0,0) 140%)', boxShadow: 'inset 0 0 0 1px rgba(243,215,158,0.55)'}} />}
+      background: 'linear-gradient(165deg, rgba(159,123,61,0.10), rgba(0,0,0,0) 140%)', boxShadow: 'none'}} />}
     <div style={{position: 'relative', fontFamily: FONT.num, fontSize: 40, color: interpolateColors(hi, [0, 1], ['rgba(244,238,228,0.62)', COLOR.goldHi]), width: 64, flexShrink: 0}}>{idx}</div>
     <div style={{position: 'relative', flex: 1, minWidth: 0}}>
       <div style={{fontFamily: FONT.title, fontSize: TYPE.rowTitle, lineHeight: 1.3, color: interpolateColors(hi, [0, 1], [COLOR.warm, COLOR.goldHi])}}>{title}</div>
@@ -332,7 +309,7 @@ export const QuoteBlock: React.FC<{r: Rect; start: number; text: string; sub?: s
       transform: `translateY(${(1 - L) * 22}px) scale(${0.97 + 0.03 * Math.min(L, 1.1)})`, transformOrigin: '0 60%'}}>{node}</span>;
   };
   return <div style={{position: 'absolute', left: r.x, top: r.y, width: r.w, height: r.h, opacity: Math.min(1, p * 1.5) * (1 - 0.4 * focus),
-    transform: `scale(${1 - 0.03 * focus}) translateX(${-10 * focus}px)`, transformOrigin: '0 40%'}}>
+    transform: 'none', transformOrigin: '0 40%'}}>
     <div data-deco style={{fontFamily: FONT.title, fontSize: 120, lineHeight: 0.8, color: 'rgba(217,178,111,0.35)'}}>“</div>
     <div style={{fontFamily: FONT.title, fontSize: TYPE.quote, color: COLOR.warm, lineHeight: 1.35, marginTop: 0}}>{lines.map((l, i) => piece(ln(i), i, <GoldText text={l} />))}</div>
     {sub && <div data-role="body" style={{fontFamily: FONT.body, fontSize: TYPE.body, lineHeight: 1.4, color: COLOR.sub, marginTop: 40}}>{subs.map((t, i) => piece(sb(i), i, t, true))}</div>}
@@ -344,7 +321,7 @@ export const SoftCallout: React.FC<{r: Rect; start: number; text: string; tone?:
   const p = useSpringP(start, SPRING.snappy); const H = Math.min(h, r.h);
   // 宽度随文字收缩（左边贴栏线），内边距 56；文字宽 ≤ 容器 75%
   return <div data-fit="callout" style={{position: 'absolute', left: r.x, top: r.y + (r.h - H) / 2, maxWidth: r.w, height: H, display: 'inline-flex', alignItems: 'center', gap: 24, padding: '0 56px', boxSizing: 'border-box', whiteSpace: 'nowrap',
-    borderRadius: 18, ...glassMat('dark', tone === 'coral' ? 'rgba(224,113,92,0.30)' : 'rgba(217,178,111,0.24)', tone === 'coral' ? 'rgba(240,150,130,0.55)' : 'rgba(243,215,158,0.5)'), ...enterStyle('scale', p)}}>
+    borderRadius: 18, ...glassMat('dark', tone === 'coral' ? 'rgba(224,113,92,0.30)' : 'rgba(159,123,61,0.10)', tone === 'coral' ? 'rgba(240,150,130,0.55)' : 'rgba(243,215,158,0.5)'), ...enterStyle('scale', p)}}>
     <div style={{width: 52, height: 52, borderRadius: 26, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: FONT.num, fontSize: 28,
       color: tone === 'coral' ? '#fff' : '#2a2012', background: tone === 'coral' ? COLOR.coral : 'radial-gradient(circle at 30% 25%,#FBE6BC,#D9B26F)'}}>{icon ?? (tone === 'coral' ? '!' : '✓')}</div>
     <span data-fit-text style={{fontFamily: FONT.title, fontSize: 38, color: tone === 'coral' ? '#FFE3DB' : COLOR.warm}}><GoldText text={text} /></span>

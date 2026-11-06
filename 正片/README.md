@@ -1,10 +1,12 @@
-# 小滕分镜风格 4.5 版本
+# 5.0 新定版（玻璃v6 + 房产MG）· 正片
 
 用 Remotion 做 1920×1080 知识科普分镜视频的模板和 Skill。整体是深色电影感背景、暖金点缀、轻量 MG，自带排版检查和防顿帧处理，可在 Windows 和 macOS 上使用。
 
 **音画同步**：给它口播音频和带时间码的字幕（SRT / Remotion Caption JSON），镜头会在对应的句子开始时切换，数字和要点在说到时到位，成片自带声音和精致的烧录字幕（磨砂浅底、42px、当前词沙金高亮）。
 
-![联系表](references/preview/联系表.jpg)
+> 已定：2026-11-06（Asia/Shanghai），共享薄玻璃v6、房产9套。当前规范见风格设计规范/版式目录；默认26种，旧6套/户型对比非默认。以下references/preview图为历史核心版式资料，不是新材质验收。新预览见 `../outputs/mg-gallery-re10/` 和 `../outputs/freeze-v6/`。
+
+![历史联系表](references/preview/联系表.jpg)
 
 | | |
 |---|---|
@@ -17,8 +19,7 @@
 ## 安装
 需要 Node ≥ 22.18。
 ```bash
-git clone https://github.com/pensongchs/storyboard-visual-style-template-4.5.git
-cd storyboard-visual-style-template-4.5/template
+cd 正片/template  # 从本地5.0定版目录或快照解压根目录进入
 npm run setup      # 优先复用已有依赖（环境变量 XT_SHARED_NODE_MODULES / 父目录 / 同级模板），没有才 npm install；同时下载视频素材
 npm run stock:verify  # 校验视频素材（≥1080p、时长、不重复、已登记）
 npm run episode -- demo  # 读取 episodes/demo/ 的音频和字幕
@@ -26,7 +27,7 @@ npm run check      # 排版检查
 npm run stills     # 输出定格图和联系表
 npm run render     # 输出带声音和字幕的 out/成片.mp4（--no-subs 不烧字幕，--no-highlight 不高亮）
 ```
-作为 Skill 使用时，把整个仓库放进你的 skills 目录（例如 `~/.codex/skills/小滕分镜风格4.5版本`），然后对 Codex 说「用小滕分镜风格4.5版本做这期视频」。
+作为 Skill 使用时，把整个仓库放进你的 skills 目录（例如 `~/.codex/skills/小滕分镜风格5.0版本`），然后对 Codex 说「用小滕分镜风格5.0新定版做这期视频」。
 
 ## 每期怎么做
 1. 把口播音频和时间码字幕放进 `template/episodes/<期名>/`，跑 `npm run episode -- <期名>`。语音识别的字幕要先校对文字（不改时间码）。

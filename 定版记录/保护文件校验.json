@@ -1,0 +1,14 @@
+{
+  "status": "pass",
+  "timezone": "Asia/Shanghai",
+  "protectedFiles": 262,
+  "groups": {
+    "片头源码": 39,
+    "既有outputs/成片/预览": 133,
+    "独立4.5": 90
+  },
+  "changed": [],
+  "approvedRe10AndAsciiPairs": 11,
+  "pairHashesMatch": true,
+  "note": "Compared with pre-freeze SHA256; newly added freeze-v6 outputs excluded from protected baseline"
+}

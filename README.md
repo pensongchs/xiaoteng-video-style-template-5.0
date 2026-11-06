@@ -1,20 +1,16 @@
-# 小滕视频风格模板5.0版
+# 5.0 新定版（玻璃v6 + 房产MG）
 
-一个模板里同时装着**片头**（小滕片头风格）和**正片**（小滕分镜风格 4.5 升级版）：每期先做片头、再做正片，最后用 `scripts/concat.mjs` 拼成一条成片。详细用法见 `SKILL.md`。
+已定：2026-11-06（Asia/Shanghai）。本地一体模板：片头保持原样，正片统一v6经典薄玻璃，默认26种（原核心10+数据7+房产9）。旧6套/户型对比仅存档，不默认预览。
 
-## 5.0 主要升级
-- 背景整体提亮，不再偏暗；片头为冷色「大厂深空玻璃风」，不用纯黑
-- 背景不模糊，同一期内素材不重复
-- 文字卡片元素大小协调，可读性更好
-- 新增 7 种数据图表样式（折线、排名条、方块格、天平、进度环、月供计算等）
-- 配合 [时间码字幕生成工具2.0](https://github.com/pensongchs/shijianma-zimu-shengcheng-gongju-2.0) 做字幕和画面对齐
+- 流程：SKILL.md、正片/SKILL.md。
+- 规范与默认轮换：正片/references/风格设计规范.md、版式目录.md。
+- 认可房产预览：outputs/mg-gallery-re10/；新版共享复核：outputs/freeze-v6/。
+- 本地交接与关键文件：定版交接_5.0_玻璃v6.md；校验与变更清单：定版记录/。
+- 模板目录：正片/template/。不推送GitHub、不Copy Mac、不自动外发；独立4.5及既有成片保持不变。
 
-## 预览图（取自 5.0 成片《选楼层口诀》）
-| | |
-|---|---|
-| ![](previews/5.0成片/frame_1.png) | ![](previews/5.0成片/frame_2.5.png) |
-| ![](previews/5.0成片/frame_8.png) | ![](previews/5.0成片/frame_20.png) |
-| ![](previews/5.0成片/frame_35.png) | ![](previews/5.0成片/frame_50.png) |
-| ![](previews/5.0成片/frame_65.png) | ![](previews/5.0成片/frame_85.png) |
+## 5.0 新定版预览（玻璃 v6 + 房产 MG，2026-11-06）
+![默认26种版式](previews/v6/default_26_contact.jpg)
+![房产9套MG](previews/v6/estate_9_contact.jpg)
+![共享核心](previews/v6/shared_core_contact.jpg)
 
-制作过程中的样式小样（含早期片头方案）见 `previews/` 目录。
+早期成片截图见 `previews/5.0成片/`。

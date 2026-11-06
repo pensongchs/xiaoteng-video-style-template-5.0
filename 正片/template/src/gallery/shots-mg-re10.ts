@@ -1,0 +1,31 @@
+// 5.0 房产科普 MG「已定 9 种」预览（2026-11-06）。全部示例数据（画面右上「* 数据为示例」），正式片换真数。
+import type {Shot} from '../style/types.ts';
+const V = (f: string, dark = 0.55) => ({src: `media/stock/${f}.mp4`, video: true, dark});
+export const RE10: Shot[] = ([
+  {layout: 'floorLadder', kicker: '楼层阶梯', title: '楼层怎么挑 {一层层看}', bg: V('mixkit_residential_above_day'),
+    data: {floors: [{f: '1–3F', k: '低层', s: '出行快 · 防潮防暗'}, {f: '4–8F', k: '中低', s: '性价比高 · 防扬尘'}, {f: '9–15F', k: '中层', s: '采光视野都均衡'},
+      {f: '16–25F', k: '中高', s: '视野好 · 等梯久'}, {f: '26F+', k: '高层', s: '查消防和防水'}]}},
+  {layout: 'paymentSplit', kicker: '首付 / 月供 / 税费', title: '300万的房 {钱怎么分}', bg: V('mixkit_42333_day'),
+    data: {total: {k: '总价', v: 300, unit: '万'}, parts: [{k: '首付', v: 90, unit: '万', pct: 30, s: '自己掏 · 首套参考', tone: 'gold'},
+      {k: '贷款', v: 210, unit: '万', pct: 70, s: '月供约 8,967 元'}, {k: '税费', v: 9, unit: '万', pct: 3, s: '契税等 · 另外算', tone: 'coral'}]}},
+  {layout: 'amenityOrbit', kicker: '配套环绕', title: '好小区 {配套}围着转', bg: V('mixkit_42332_day'),
+    data: {core: {t: '小区', s: '15分钟生活圈'}, tags: [{t: '地铁', s: '步行8分钟'}, {t: '学校', s: '对口小学', tone: 'green'}, {t: '商超', s: '1公里内'},
+      {t: '医院', s: '车程10分', tone: 'blue'}, {t: '公园', s: '下楼可达', tone: 'green'}, {t: '菜场', s: '早市方便'}]}},
+  {layout: 'pitfallBoard', kicker: '避坑警示', title: '签字前 {别踩这5个坑}', bg: V('mixkit_42330_day'),
+    data: {head: {t: '买房避坑', s: '签字前逐条过一遍'}, items: [{t: '只看样板间', s: '交付标准写进合同'}, {t: '轻信口头承诺', s: '一律落到纸面'},
+      {t: '不查产权状态', s: '查抵押和查封'}, {t: '忽略物业费', s: '算进每月开支'}, {t: '月供压太满', s: '留出应急资金'}]}},
+  {layout: 'priceStep', kicker: '单价 → 总价', title: '总价是 {这样算出来的}', bg: V('mixkit_2005_day'),
+    data: {steps: [{k: '单价', v: 3.2, dec: 1, unit: '万/m²', s: '看板块均价'}, {k: '面积', v: 95, unit: 'm²', s: '看建筑还是套内'}, {k: '总价', v: 304, unit: '万', s: '首付按它算'}]}},
+  {layout: 'decisionFork', kicker: '能不能买', title: '先问自己 {三个问题}', bg: V('mixkit_admin_district_day'),
+    data: {q: '这套房，能不能买？', yes: {k: '可以考虑', tone: 'green', mark: '✓', tag: '三条都满足', items: ['月供 ≤ 家庭收入 40%', '首付后还留应急金', '通勤在 1 小时内']},
+      no: {k: '先缓一缓', tone: 'coral', mark: '!', tag: '任一不满足', items: ['要掏空几家积蓄', '收入还不稳定', '只是跟风上车']}}},
+  {layout: 'districtTags', kicker: '片区热度', title: '各个板块 {冷热不一样}', bg: V('mixkit_residential_above_day', 0.6),
+    data: {tags: [{t: '新城核心', heat: 0.92, s: '配套成熟'}, {t: '地铁沿线', heat: 0.84}, {t: '学区板块', heat: 0.78}, {t: '滨江片区', heat: 0.62, s: '景观好'},
+      {t: '科技园', heat: 0.56}, {t: '老城区', heat: 0.46, s: '房龄偏老'}, {t: '高铁新区', heat: 0.32}, {t: '远郊新盘', heat: 0.16, s: '供应多'}]}},
+  {layout: 'loanDial', kicker: '贷款指标', title: '房贷 {几个关键数}', bg: V('mixkit_42332_day', 0.6),
+    data: {dial: {k: '贷款利率', v: 3.1, dec: 1, unit: '%', min: 2, max: 6, s: '以合同利率为准'},
+      stats: [{k: '贷款金额', v: 210, unit: '万', ratio: 0.7, rl: '占70%'}, {k: '贷款年限', v: 30, unit: '年', ratio: 1, rl: '30年'}, {k: '每月还款', v: 8967, sep: true, unit: '元', ratio: 0.45, rl: '45%', hi: true}]}},
+  {layout: 'layerReveal', kicker: '条件层叠', title: '看房条件 {一层层揭开}', bg: V('mixkit_42330_day'),
+    data: {verdict: '可以重点看', layers: [{k: '采光', s: '冬至日照够不够', score: 4}, {k: '景观', s: '窗外有没有遮挡', score: 3, tone: 'green'},
+      {k: '噪音', s: '离主干道多远', score: 2, tone: 'coral'}, {k: '通风', s: '是否南北通透', score: 5, tone: 'blue'}]}},
+] as any[]).map((s, i) => ({...s, id: `R${String(i + 1).padStart(2, '0')}`})) as Shot[];

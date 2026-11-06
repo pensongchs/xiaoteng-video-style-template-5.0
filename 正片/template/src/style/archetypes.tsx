@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, Freeze, Img, staticFile, useCurrentFrame, useVideoConfig, spring, getInputProps} from 'remotion';
+import {AbsoluteFill, Freeze, Img, staticFile, useCurrentFrame, useVideoConfig, getInputProps} from 'remotion';
 import {bump, 
   ArrowConnector, Backdrop, BareNumber, CamCtx, Chip, ExampleMark, FloatLabel, GoldText, Headline, HighlightBar,
   IconRow, Kicker, MediaFrame, ProgressRing, QuoteBlock, SoftCallout, SplitType, StatPill, Timeline, UnderlineDraw, prog, glassMat,
@@ -7,11 +7,13 @@ import {bump,
 } from './components';
 import {layoutRects, titleRect, usesTitle} from './layouts.ts';
 import {splitRows, type Rect} from './grid.ts';
-import {COLOR, FONT, MOTION, SPRING, TYPE} from './tokens';
+import {COLOR, FONT, MOTION, SPRING, TYPE, FROST, steadySpring as spring} from './tokens';
 import type {Shot} from './types';
 import {DomCheck} from './domcheck';
 import {LineChartReveal, BarGlow} from './DataCharts';
 import {RankBars, Waffle, Balance, YearRing, FormulaCalc} from './DataCharts2';
+import {KeywordCascade, ChecklistFill, VsScore, TipStack, NumberedReveal, KpiGrid} from './mgCards';
+import {FloorLadder, PaymentSplit, AmenityOrbit, PitfallBoard, PriceStep, DecisionFork, DistrictTags, LoanDial, LayerReveal} from './mgEstate';
 
 /** 口播锚点：shots.ts 里 anchors:{count:'30.6万'} → 该词说出时的帧（相对本镜）。元素提前 6 帧开始入场，正好在说到时到位 */
 export const AnchorCtx = React.createContext<Record<string, number>>({});
@@ -86,17 +88,15 @@ const TimelineView: React.FC<{s: Shot; dur: number}> = ({s, dur}) => {
 
 const rowRects = (r: Rect, n: number) => splitRows(r.y, r.h, Array(n).fill(1), 24).map((y) => ({x: r.x, w: r.w, ...y}));
 
-/** 逐项节拍（5.0 默认）：每行在其锚点词说出时入场；当前项高亮、前项变暗；新卡落地时邻居让位；镜头随焦点微移 */
+/** 逐项节拍（5.0 默认）：每行在其锚点词说出时入场；当前项高亮、前项变暗；卡片到位停稳；焦点仅改变颜色/亮度 */
 const useRowBeats = (n: number, fb: (i: number) => number) => {
   const f = useCurrentFrame(); const at = useAt(); const a = React.useContext(AnchorCtx);
   const starts = Array.from({length: n}, (_, i) => at(`r${i}`, fb(i)));
   const act = anchoredIdx(f, n, 'r', a) ?? starts.reduce((k, st, i) => (f >= st ? i : k), 0);
   const sp = (st: number) => Math.min(1, spring({frame: Math.max(0, f - st), fps: 30, config: SPRING.soft}));
   const dim = (i: number) => (i < act ? sp(starts[i + 1] + 4) : 0);
-  const nudge = (i: number) => starts.reduce((acc, st, j) => (j === i ? acc : acc + (i < j ? -1 : 1) * (9 / Math.abs(i - j)) * bump(f - st - 6)), 0);
-  // 镜头微移：每到新一拍向焦点行轻推 ~6px + 0.6% 推近
-  const camK = starts.reduce((acc, st) => acc + sp(st), 0);
-  const cam = {transform: `translateY(${-3 * camK + (act - (n - 1) / 2) * -4 * sp(starts[act])}px) scale(${1 + 0.003 * camK})`, transformOrigin: '60% 50%'};
+  const nudge = (_i: number) => 0;
+  const cam: React.CSSProperties = {}; // v6：关闭前景整体漂移与焦点推近
   return {starts, act, dim, nudge, cam};
 };
 
@@ -225,7 +225,44 @@ const DATA_VIEWS = {
   lineReveal: dv('lineReveal', LineChartReveal, 20), barGlow: dv('barGlow', BarGlow, 18), rankBars: dv('rankBars', RankBars),
   waffle: dv('waffle', Waffle, 14), balance: dv('balance', Balance, 14), yearRing: dv('yearRing', YearRing, 12), formulaCalc: dv('formulaCalc', FormulaCalc, 14),
 };
+/* ===== 5.0 MG 卡片扩展 View：每项锚点 r0/r1…（说到该词入场），无锚点按 fb+i*gap 兜底；有 media 时右侧配图/视频 ===== */
+const mv = (name: any, C: any, key: string, listKey: string, gap = 26) => (({s, dur}: {s: Shot; dur: number}) => {
+  const at = useAt(); const R = layoutRects(name); const d = s.data; const n = (d[listKey] ?? []).length;
+  const g = Math.min(gap, Math.max(12, (dur - 60) / Math.max(1, n)));
+  const st = (i: number) => at(`r${i}`, 14 + i * g);
+  return <>
+    <C r={R[key]} st={st} {...d} />
+    {R.media && d.media && <MediaFrame r={R.media} start={mediaAt(at, 20)} {...d.media} from="right" soft />}
+  </>;
+}) as React.FC<{s: Shot; dur: number}>;
+const MG_VIEWS = {
+  keywordCascade: mv('keywordCascade', KeywordCascade, 'cards', 'words'),
+  checklistFill: mv('checklistFill', ChecklistFill, 'list', 'items'),
+  vsScore: mv('vsScore', VsScore, 'board', 'rows', 30),
+  tipStack: mv('tipStack', TipStack, 'stack', 'tips', 34),
+  numberedReveal: mv('numberedReveal', NumberedReveal, 'cards', 'cards', 30),
+  kpiGrid: mv('kpiGrid', KpiGrid, 'grid', 'kpis', 14),
+};
+/* ===== 5.0 房产科普 MG（已定 9 种，mgEstate.tsx）：锚点 r0/r1…；n = 节拍数；R 传整组矩形 ===== */
+const ev = (name: any, C: any, beats: (d: any) => number, gap = 24, one?: string) => (({s, dur}: {s: Shot; dur: number}) => {
+  const at = useAt(); const R = layoutRects(name); const d = s.data; const n = Math.max(1, beats(d));
+  const g = Math.min(gap, Math.max(10, (dur - 70) / n)); const st = (i: number) => at(`r${i}`, 16 + i * g);
+  return <C {...(one ? {r: R[one]} : {R})} st={st} {...d} />;
+}) as React.FC<{s: Shot; dur: number}>;
+const ESTATE_VIEWS = {
+  floorLadder: ev('floorLadder', FloorLadder, (d) => d.floors.length, 18, 'ladder'),
+  paymentSplit: ev('paymentSplit', PaymentSplit, (d) => d.parts.length, 18),
+  amenityOrbit: ev('amenityOrbit', AmenityOrbit, (d) => d.tags.length, 10, 'orbit'),
+  pitfallBoard: ev('pitfallBoard', PitfallBoard, (d) => d.items.length, 16),
+  priceStep: ev('priceStep', PriceStep, (d) => d.steps.length, 20, 'steps'),
+  decisionFork: ev('decisionFork', DecisionFork, () => 3, 20),
+  districtTags: ev('districtTags', DistrictTags, (d) => d.tags.length, 7),
+  loanDial: ev('loanDial', LoanDial, (d) => d.stats.length + 1, 14),
+  layerReveal: ev('layerReveal', LayerReveal, (d) => d.layers.length, 18),
+};
 const VIEWS: Record<string, React.FC<{s: Shot; dur: number}>> = {
+  ...ESTATE_VIEWS,
+  ...MG_VIEWS,
   ...DATA_VIEWS,
   titleFloat: ({s}) => <TitleFloat s={s} />,
   bareNumber: ({s}) => <BareNumView s={s} />,
@@ -258,12 +295,10 @@ export const ShotView: React.FC<{s: Shot; dur: number; exampleData?: boolean; an
   const f = useCurrentFrame();
   const View = VIEWS[s.layout];
   const kt = kickerText(s);
-  const cam = camFor(s.layout);
-  // 前景相对背景更快一点的同向漂移（视差），只在镜头前段建立空间感
-  const fgT = Math.min(1, f / Math.max(1, dur * 0.85));
-  const fgTX = cam.dirX * fgT * 10;
-  const fgTY = cam.dirY * fgT * 6;
-  const fgScale = 1 + fgT * 0.012 * cam.zoom;
+  const fx = (s as any).fx as number | undefined; // 可选：本期加强运镜 + 口播节拍动效
+  const cam = {...camFor(s.layout), move: fx ?? 1};
+  // v6：所有 MG 前景到位即停，背景自然运镜保留（含旧版式与 fx 路径）。
+  const fgTX = 0, fgTY = 0, fgScale = 1;
   const body = <AbsoluteFill>
     <CamCtx.Provider value={cam}>
       <Backdrop src={s.bg.src} video={s.bg.video} blur={s.bg.blur} dark={s.bg.dark} trimStart={s.bg.trim} />
@@ -273,6 +308,7 @@ export const ShotView: React.FC<{s: Shot; dur: number; exampleData?: boolean; an
       {exampleData && <ExampleMark />}
       {usesTitle(s.layout) && s.title && <Headline text={s.title} />}
       {View ? <View s={s} dur={dur} /> : null}
+      {fx ? <Beats s={s} /> : null}
     </AbsoluteFill>
   </AbsoluteFill>;
   // 音画同步：不再提前 1 秒定格（会和口播错位），只在退场转场期间冻结前景
@@ -285,4 +321,27 @@ export const ShotView: React.FC<{s: Shot; dur: number; exampleData?: boolean; an
     <AnchorCtx.Provider value={anchors}><LiveFrameCtx.Provider value={f}>{f >= freezeAt ? <Freeze frame={freezeAt}>{body}</Freeze> : body}</LiveFrameCtx.Provider></AnchorCtx.Provider>
     {check && <DomCheck id={s.id} zones={zones} />}
   </>;
+};
+
+/* ===== 可选（shot.fx）：口播节拍动效。beats = 说到某词时弹出的小标签/图标；无扫光/整体浮动 ===== */
+type Beat = {k: string; t: string; x: number; y: number; tone?: 'gold' | 'green' | 'coral' | 'glass'; icon?: string};
+const TONE: Record<string, [string, string]> = {gold: ['rgba(243,215,158,.34)', '#F3D79E'], green: ['rgba(141,184,154,.36)', '#BFE8CB'], coral: ['rgba(224,113,92,.36)', '#FFC2B4'], glass: ['rgba(255,255,255,.16)', '#FFFFFF']};
+const Beats: React.FC<{s: Shot}> = ({s}) => {
+  const f = useCurrentFrame(); const {fps} = useVideoConfig(); const a = React.useContext(AnchorCtx);
+  const beats = ((s as any).beats ?? []) as Beat[];
+  return <>{beats.map((b, i) => {
+    const st = a[b.k]; if (st == null || f < st - 4) return null;
+    const p = spring({frame: f - (st - 4), fps, config: SPRING.snappy});
+    const ring = Math.min(1, (f - st + 4) / 22);
+    const [bg, fg] = TONE[b.tone ?? 'glass'];
+    const bob = 0;
+    return <div key={i} style={{position: 'absolute', left: b.x, top: b.y + bob, transform: `translate(-50%,-50%) scale(${0.3 + 0.7 * p})`, opacity: Math.min(1, p * 1.8)}}>
+      <div style={{position: 'absolute', left: '50%', top: '50%', width: 140, height: 140, marginLeft: -70, marginTop: -70, borderRadius: '50%', border: `3px solid ${fg}`, opacity: (1 - ring) * 0.8, transform: `scale(${0.4 + ring * 1.6})`}} />
+      <div style={{display: 'flex', alignItems: 'center', gap: 12, whiteSpace: 'nowrap', padding: '12px 28px', borderRadius: 999, ...glassMat('dark', bg),
+        fontFamily: FONT.body, fontWeight: 700, fontSize: 32, color: '#fff', textShadow: '0 2px 6px rgba(0,0,0,.4)'}}>
+        {b.icon && <span style={{display: 'inline-flex', width: 40, height: 40, borderRadius: '50%', alignItems: 'center', justifyContent: 'center', background: fg, color: '#1d1b19', fontSize: 26}}>{b.icon}</span>}
+        {b.t}
+      </div>
+    </div>;
+  })}</>;
 };

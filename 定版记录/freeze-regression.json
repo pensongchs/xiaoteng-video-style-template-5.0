@@ -1,0 +1,328 @@
+{
+  "version": "5.0.0-glass-v6-estate",
+  "status": "approved",
+  "timezone": "Asia/Shanghai",
+  "testedAt": "2026-11-06 16:24:14",
+  "defaultCount": 26,
+  "defaultLayouts": [
+    "titleFloat",
+    "bareNumber",
+    "splitVs",
+    "timeline",
+    "mediaRows",
+    "quoteStack",
+    "ringFeature",
+    "waitVs",
+    "triadSoft",
+    "outroHost",
+    "lineReveal",
+    "barGlow",
+    "rankBars",
+    "waffle",
+    "balance",
+    "yearRing",
+    "formulaCalc",
+    "floorLadder",
+    "paymentSplit",
+    "amenityOrbit",
+    "pitfallBoard",
+    "priceStep",
+    "decisionFork",
+    "districtTags",
+    "loanDial",
+    "layerReveal"
+  ],
+  "estateLayouts": [
+    "floorLadder",
+    "paymentSplit",
+    "amenityOrbit",
+    "pitfallBoard",
+    "priceStep",
+    "decisionFork",
+    "districtTags",
+    "loanDial",
+    "layerReveal"
+  ],
+  "archiveLayouts": [
+    "keywordCascade",
+    "checklistFill",
+    "vsScore",
+    "tipStack",
+    "numberedReveal",
+    "kpiGrid"
+  ],
+  "estateCount": 9,
+  "archiveCount": 6,
+  "unitCompareDefault": false,
+  "material": "GLASS_V6 = FROST; GLASS.dark/light and glassMat/frost/LG same source",
+  "baseAlpha": [
+    0.68,
+    0.74
+  ],
+  "entryFrames": {
+    "enter": 16,
+    "soft": 20,
+    "chip": 12
+  },
+  "overshoot": false,
+  "scanbar": false,
+  "settledGeometry": [
+    {
+      "layout": "quoteStack",
+      "glassElements": 7,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "mediaRows",
+      "glassElements": 7,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "timeline",
+      "glassElements": 7,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "titleFloat",
+      "glassElements": 4,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "splitVs",
+      "glassElements": 4,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "bareNumber",
+      "glassElements": 4,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "ringFeature",
+      "glassElements": 2,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "waitVs",
+      "glassElements": 2,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "triadSoft",
+      "glassElements": 4,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "lineReveal",
+      "glassElements": 0,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "barGlow",
+      "glassElements": 0,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "rankBars",
+      "glassElements": 0,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "waffle",
+      "glassElements": 0,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "balance",
+      "glassElements": 0,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "yearRing",
+      "glassElements": 0,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "formulaCalc",
+      "glassElements": 0,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "floorLadder",
+      "glassElements": 5,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "paymentSplit",
+      "glassElements": 4,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "amenityOrbit",
+      "glassElements": 7,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "pitfallBoard",
+      "glassElements": 6,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "priceStep",
+      "glassElements": 5,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "decisionFork",
+      "glassElements": 3,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "districtTags",
+      "glassElements": 9,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "loanDial",
+      "glassElements": 4,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "layerReveal",
+      "glassElements": 5,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "outroHost",
+      "glassElements": 1,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "keywordCascade",
+      "glassElements": 4,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "checklistFill",
+      "glassElements": 9,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "vsScore",
+      "glassElements": 17,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "tipStack",
+      "glassElements": 5,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "numberedReveal",
+      "glassElements": 3,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "kpiGrid",
+      "glassElements": 5,
+      "stableFrames": [
+        185,
+        208
+      ]
+    }
+  ],
+  "scope": "TS/React-tree parameter regression; actual rendered stills checked separately, not a DOM pixel measurement"
+}

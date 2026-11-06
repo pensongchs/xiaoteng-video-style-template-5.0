@@ -1,7 +1,6 @@
-// 5.0 运镜转场：镜头之间用「推/拉/漂/起」连续空间感，弹簧落地；旧 kind 名仍可用（映射到新实现）
+// 5.0 运镜转场：镜头之间用「推/拉/漂/起」连续空间感，有限缓动停稳；旧 kind 名仍可用（映射到新实现）
 import React from 'react';
-import {AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig, Easing} from 'remotion';
-import {SPRING} from './tokens';
+import {AbsoluteFill, interpolate, useCurrentFrame, Easing} from 'remotion';
 
 export type TKind =
   | 'crossfade' | 'pushBlur' | 'lightSweep' | 'maskWipe'   // 旧名（兼容）
@@ -31,32 +30,28 @@ const resolve = (k: TKind): 'softPush' | 'softZoom' | 'driftDissolve' | 'liftRev
 /** 包住一镜：入场按 inT（第 0..dur 帧），退场按 outT（d..d+dur 帧，此时画面已定格） */
 export const Transition: React.FC<{d: number; inT: TSpec | null; outT: TSpec | null; z: number; children: React.ReactNode}> = ({d, inT, outT, z, children}) => {
   const f = useCurrentFrame();
-  const {fps} = useVideoConfig();
   let style: React.CSSProperties = {zIndex: z, willChange: 'transform, opacity, filter'};
   let overlay: React.ReactNode = null;
 
   if (inT && f < inT.dur + 6) {
     const kind = resolve(inT.kind);
     const dir = inT.dir ?? 1;
-    const sp = spring({frame: f, fps, config: SPRING.cam});
     const lin = interpolate(f, [0, inT.dur], [0, 1], {...clamp, easing: easeCam});
-    const o = Math.min(1, Math.max(0, sp));
+    const sp = lin; const o = lin; // 精确在转场末帧停稳，无过冲
     if (kind === 'softPush') {
-      // 相机从侧向推入：带轻微模糊与缩放，弹簧落地
+      // 相机从侧向推入：带轻微模糊与缩放，缓动停稳
       style = {...style, opacity: o,
         transform: `translateX(${(1 - sp) * 110 * dir}px) scale(${0.96 + 0.04 * Math.min(sp, 1.06)})`,
         filter: `blur(${Math.max(0, (1 - Math.min(sp, 1)) * 8)}px)`};
     } else if (kind === 'softZoom') {
-      // 推近落地：从 1.10 收到 1.0，带柔光扫
+      // 推近落地：从 1.10 收到 1.0，无移动扫光
       style = {...style, opacity: o, transform: `scale(${1.10 - 0.10 * Math.min(sp, 1.05)})`};
-      overlay = <AbsoluteFill style={{zIndex: z + 0.5, pointerEvents: 'none', opacity: 0.18 * Math.sin(Math.PI * lin),
-        background: `linear-gradient(105deg, transparent ${lin * 120 - 40}%, rgba(255,240,215,0.85) ${lin * 120 - 18}%, transparent ${lin * 120}%)`}} />;
     } else if (kind === 'driftDissolve') {
       // 同向漂入叠化：空间连续
       style = {...style, opacity: o,
         transform: `translateX(${(1 - sp) * 48 * dir}px) translateY(${(1 - sp) * 10}px) scale(${0.985 + 0.015 * Math.min(sp, 1.04)})`};
     } else if (kind === 'liftReveal') {
-      // 上浮揭示：从下方带模糊弹入
+      // 上浮揭示：从下方带模糊进入
       style = {...style, opacity: o,
         transform: `translateY(${(1 - sp) * 56}px) scale(${0.97 + 0.03 * Math.min(sp, 1.06)})`,
         filter: `blur(${Math.max(0, (1 - Math.min(sp, 1)) * 6)}px)`};

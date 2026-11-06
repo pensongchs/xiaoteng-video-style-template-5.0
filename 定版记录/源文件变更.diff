@@ -1,0 +1,1880 @@
+--- a/README.md
++++ b/README.md
+@@ -1,2 +1,9 @@
+-# 小滕分镜风格 5.0（本地自用）
+-一个模板里同时装着片头（小滕片头风格模板）和正片（小滕分镜风格 4.5），每期先做片头、再做正片，最后 `scripts/concat.mjs` 拼成一条成片。详见 `SKILL.md`。本地专用，不上传 GitHub。
++# 5.0 新定版（玻璃v6 + 房产MG）
++
++已定：2026-11-06（Asia/Shanghai）。本地一体模板：片头保持原样，正片统一v6经典薄玻璃，默认26种（原核心10+数据7+房产9）。旧6套/户型对比仅存档，不默认预览。
++
++- 流程：SKILL.md、正片/SKILL.md。
++- 规范与默认轮换：正片/references/风格设计规范.md、版式目录.md。
++- 认可房产预览：outputs/mg-gallery-re10/；新版共享复核：outputs/freeze-v6/。
++- 本地交接与关键文件：定版交接_5.0_玻璃v6.md；校验与变更清单：定版记录/。
++- 模板目录：正片/template/。不推送GitHub、不Copy Mac、不自动外发；独立4.5及既有成片保持不变。
+--- a/SKILL.md
++++ b/SKILL.md
+@@ -1,15 +1,13 @@
+ ---
+ name: 小滕分镜风格5.0版本
+-description: 董事长自用的一体化视频模板（本地，不上传 GitHub）。一期文案分成「片头」和「正片」两部分：片头用内置的小滕片头风格（大厂深空质感背景：深空冷色+soft glow、极淡网格与斜高光扫、玻璃卡片抠像、平滑缓动；去土黄）、按主题生成且颜色自然的透明抠像、冷白银与冷香槟银标题、图文接力），正片用内置的小滕分镜风格 4.5（深色电影感、暖金点缀、轻量 MG、音画同步、精致字幕），最后自动拼成一条带声音的 1920×1080 成片。
++description: 董事长自用的一体化视频模板（本地，不上传 GitHub）。一期文案分成「片头」和「正片」两部分：片头用内置的小滕片头风格（大厂深空质感背景：深空冷色+soft glow、极淡网格与斜高光扫、玻璃卡片抠像、平滑缓动；去土黄）、按主题生成且颜色自然的透明抠像、冷白银与冷香槟银标题、图文接力），正片用5.0新定版（玻璃v6 + 房产MG）（深色电影感、暖金点缀、轻量 MG、音画同步、精致字幕），最后自动拼成一条带声音的 1920×1080 成片。
+ ---
+ 
+-# 小滕分镜风格 5.0（片头 + 正片 一体模板）
++# 小滕分镜风格 5.0 新定版（玻璃v6 + 房产MG）
+ 
+-> **5.0 定版 (2026-10-31)**：老板确认「选楼层口诀」为 5.0 标准样子，所有效果均为模板默认。参考期 `正片/template/episodes/选楼层口诀/`（README 内有复现命令），细则见 `正片/references/风格设计规范.md` §11。
+->
+-> **工作流**：配音 → `/workspace/时间码字幕2.0/run-box.sh` 出逐字时间码 → 校对对齐（`校对后_动效时间轴_绝对.json` + SRT/Caption JSON，放进 `正片/template/episodes/<期名>/`）→ `node scripts/build-episode.mjs <期名> --audio=<配音.mp4>`（片头 + 正片 + 拼接 + setpts 混流，产物复制到 `outputs/成片/<期名>/`）。
+->
+-> 默认效果：短片头（第 1 句时长、关键词节拍、卡片单曲线下落、红叉、金色扫光、GlassLight）；浅玻璃无 backdrop-filter；液态玻璃 spring/邻居让位/sheen；运镜转场；关键词逐项揭示（图卡/箭头在左侧文字之后）；字幕无下划线、自然断句；setpts 混流；片尾小滕无 CTA。
++> **5.0 新定版（玻璃v6 + 房产MG）**：已定，2026-11-06（Asia/Shanghai）。正片所有GLASS/FROST/glassMat与旧存档卡统一经典薄玻璃；主底alpha .68–.74、细白边/轻顶光、轻tint，无颗粒/厚斜面/到位弹/僵硬扫光。不是旧v5厚边版本。
++> 默认26种（核心10+数据7+已定房产9），旧6套与unitCompare仅存档。轮换及准确参数以 `正片/references/版式目录.md`、`风格设计规范.md` 为准。
++> 配音→逐字时间码→校对对齐→镜头表/anchors→检查→stills→render→一体拼接/混流。原片头、独立4.5与旧定版成片不变。本地定版，不自动上传/推送/外发。
+ 
+ 本模板是自包含的：`片头/` 和 `正片/` 都是完整拷贝，不依赖、也不修改任何 GitHub 仓库或其他本地目录。
+ 
+@@ -17,7 +15,7 @@
+ 小滕分镜风格5.0版本/
+ ├─ SKILL.md            ← 本文件（总流程）
+ ├─ 片头/               ← 小滕片头风格模板（原 SKILL.md、母工程 assets/workspace、脚本、字体）
+-├─ 正片/               ← 小滕分镜风格 4.5（原 SKILL.md、template/ Remotion 工程、references）
++├─ 正片/               ← 5.0 新定版（玻璃v6 + 房产MG；template/ Remotion 工程、references）
+ ├─ scripts/concat.mjs  ← 片头 + 正片 拼成一条成片
+ ├─ episodes/<期名>/     ← 每期输入：文案、音频、SRT/Caption JSON
+ └─ outputs/
+@@ -41,7 +39,7 @@
+ - 渲染后 `npm run verify`，输出复制为 `outputs/成片/<期名>/片头.mp4`。
+ 
+ ### 2. 正片（片头完成后再做）
+-完全按 `正片/SKILL.md`（4.5）执行，Remotion 工程在 `正片/template/`。只用正片那段文案、音频和字幕：
++完全按 `正片/SKILL.md`（5.0 新定版）执行，Remotion 工程在 `正片/template/`。只用正片那段文案、音频和字幕：
+ 校对字幕（只改字不改时间码）→ 镜头表 → 找白天 1080p 中国城市航拍（优先当地）→ 生图 → shots.ts → `npm run check` → `npm run stills` → `npm run render`。
+ 输出复制为 `outputs/成片/<期名>/正片.mp4`。
+ 
+@@ -57,10 +55,32 @@
+ 交付 `成片.mp4`，同时保留 `片头.mp4`、`正片.mp4` 方便单独改。说明哪些是媒体检查、哪些需要董事长亲自看。
+ 
+ ## 规则
+-- 两部分各自的设计规则以各自 SKILL.md 为准（片头看 `片头/assets/workspace/DESIGN.md`，正片看 `正片/references/`），5.0 不改它们的风格。
++- 两部分各自的设计规则以各自 SKILL.md 为准（片头看 `片头/assets/workspace/DESIGN.md`，正片看 `正片/references/`），片头保持原样；正片以本次5.0新定版规范为准。
+ - 不写死城市名和人名，按每期文案安排。
+ - 依赖复用：两套工程沿用各自 setup 的复用逻辑，不在每期目录重复安装。
+ - 本模板只存在于本地，不推送 GitHub。
+ - 5.0 背景比 4.5 更亮，不要特别暗：正片背景 brightness 1.2、压暗层 max(0.13, dark−0.26)，渐变只留标题区和字幕区；可读性靠文字柔和投影，不靠整屏压黑。
+ - 正片可用 7 种数据版式（lineReveal / barGlow / rankBars / waffle / balance / yearRing / formulaCalc），用法和次数限制见 `正片/SKILL.md`，数字必须核算。
+ - 片尾默认 `outroHost`：左侧小滕挥手卡通（`正片/template/public/media/character/xiaoteng_outro.png`）+ 右侧按当期片尾文案分层排版（主标题→要点→收尾句→小字署名），沿用正片视觉；**禁止**点赞/关注/收藏/转发类引导语和按钮式 CTA。小样：`OutroSample` 合成。
++
++## 5.0 新定版（玻璃v6 + 房产MG）· 默认版式与轮换
++状态：**已定**，2026-11-06（Asia/Shanghai）。本节替代此前“待审/旧6套强制/到位后持续呼吸”等条款。
++
++默认 **26种逻辑版式**（`outroAir` 仅为 `outroHost` 别名，不重复计数）：
++- 原核心10：`titleFloat / bareNumber / splitVs / timeline / mediaRows / quoteStack / ringFeature / waitVs / triadSoft / outroHost`。
++- 数据7：`lineReveal / barGlow / rankBars / waffle / balance / yearRing / formulaCalc`。
++- 房产已定9：`floorLadder / paymentSplit / amenityOrbit / pitfallBoard / priceStep / decisionFork / districtTags / loanDial / layerReveal`。
++- 旧6套只存档：`keywordCascade / checklistFill / vsScore / tipStack / numberedReveal / kpiGrid`。材质已同步v6，但不自动推荐、不进入默认gallery。
++- `unitCompare` 仅保留实现存档；不在 LayoutName、默认推荐、预览或轮换计数中。
++
++执行条款：
++1. 标准8–12镜一期至少7种版式，其中至少2种不同的已定房产MG；短片少于7镜时不硬凑7种，逐镜不重复，优先安排1种语义匹配的房产MG。禁止为凑数量造数据。
++2. 同一版式每期最多2次（片尾仅1次）；相邻镜不得同版式，重复时中间至少隔2镜；别名合并计数。切换数字、流程、清单、图文、对比等信息结构，不只换标题。
++3. 真实数字/比例/金额至少1镜用数据图表、bareNumber/ringFeature，或匹配的 paymentSplit/priceStep/loanDial。7种数据图表合计每期≤3镜，同一种≤1镜，不相邻连用；数字先核算，示例显式标注，不能把示例用于实际楼盘判断。
++4. 清单/避坑优先 pitfallBoard、layerReveal，配合 quoteStack/mediaRows；楼层用 floorLadder，预算用 paymentSplit/priceStep，配套/区域用 amenityOrbit/districtTags；评分、热度必须有来源和口径，没数据就不造分。
++5. 对比/决策轮换 decisionFork、splitVs、waitVs，真实总账可用 balance；禁止默认使用 unitCompare 或旧 vsScore。
++6. 背景优先清晰视频，静图背景占比≤1/3；不整屏模糊，bg.blur=0，靠冷灰玻璃和字影保证可读。
++7. 卡片按口播锚点单调入场，16/20/12帧后精确停稳；禁止过冲、落地二次弹、邻居让位、整体呼吸/焦点缩放、僵硬扫光条。高亮只改变轻色光/文字亮度；数据绘制、进度填充、背景自然运镜与小滕人物摆手可保留，不让卡片整体晃动。
++
++唯一登记：`src/style/layouts.ts` 的 DEFAULT_LAYOUTS（10+7+9）；默认活目录 `src/gallery/shots-mg-gallery.ts` / `MgGallery`，每个默认版式一镜。房产子集 `shots-mg-re10.ts` / `MgGalleryRe10` 固定9镜、40.5秒；“re10”仅兼容旧文件名，不代表10套。
++检查：`npm run check:freeze` 验证材质、动效范围、默认/存档边界和gallery覆盖；正式出片还须 `npm run check`、stills/音画核验。新增版式必须先登记样镜并审核，不能直接加进默认清单。
+--- /dev/null
++++ b/定版交接_5.0_玻璃v6.md
+@@ -0,0 +1,38 @@
++# 5.0 新定版（玻璃v6 + 房产MG）· 本地仓库管理员交接
++
++状态：已定。生成日期2026-11-06（Asia/Shanghai）。本文件是本地交接资料，未向任何人发送。
++
++## 路径与提交边界
++- 本地项目根：`/workspace/小滕分镜风格5.0版本/`。
++- 正片工程：`/workspace/小滕分镜风格5.0版本/正片/template/`。
++- 经 `git rev-parse --show-toplevel` 核实，上述目录不是Git工作树；本轮未识别或操作远程仓库。管理员请映射到现有**5.0**仓库的对应位置，勿覆盖独立4.5仓库，勿把4.5 README中的历史仓库URL当本次目标。
++- 本地快照：`/workspace/定版_20261106_5.0_玻璃v6_房产MG.tar.gz`；旁边 `.sha256` 为整包校验，`.manifest.json` 为包验证结果。
++- 不推送、不提交、不创建PR；不Copy Mac、不发老板/管理员消息。后续Git操作由管理员在其目标仓库自行审核后执行。
++
++## 应提交的变更
++1. 共享材质与动画：`正片/template/src/style/{tokens.ts,components.tsx,mgEstate.tsx,mgCards.tsx,archetypes.tsx,layouts.ts,transitions.tsx}`。
++   - GLASS_V6唯一来源，FROST同对象，GLASS.dark/light兼容同源；frost/LG转调glassMat；原pearl/ghost/彩色卡、chip、timeline、IconRow、StatPill、SoftCallout、outro points与fx标签统一薄玻璃。
++   - 主底alpha .68–.74（透射32%–26%），soft .62–.68；1px白边.22、顶.26、底黑.12、轻影8/20 .20 + 1/3 .12，面光.12→.035→0，tint .08–.10；不启用backdrop blur。
++   - 16/20/12帧有限ease-out cubic；原spring/useLiquid适配，无形变/过冲；Sheen空实现、bump=0，无焦点缩放/整体漂移/WordSheen；转场去扫光并在dur内精确停稳。背景播放、图表数据绘制及人物挥手保留。
++2. 默认版式/样镜：`src/gallery/{shots-mg-gallery.ts,MgGallery.tsx,shots-mg-re10.ts,MgGalleryRe10.tsx}`；默认26种，房产子集9套；archiveAudit仅测试旧6套，不等于推荐。
++3. 校验/渲染脚本：`scripts/check-freeze.cjs`、`scripts/freeze-stills.mjs`、`scripts/re10-stills.mjs`；同步`package.json`/`package-lock.json`版本5.0.0与脚本，依赖版本未变。
++4. 项目文档：根`SKILL.md`、`README.md`，`正片/SKILL.md`、`正片/README.md`，`正片/references/{版式目录.md,风格设计规范.md,组件API.md}`，`正片/template/风格设计规范.md`；两份风格规范逐字一致。只更新项目内可携带SKILL，不改托管系统技能。
++5. 参考与定版证据：`正片/references/玻璃v6参考/classic_glass_ref.jpg`，本交接文件、`定版记录/`与`outputs/freeze-v6/`；大二进制预览/素材按原仓库LFS或制品策略存放，不盲目git add整个本地目录。准确逐文件变更以`定版记录/变更清单.json`为准。
++
++## 默认版式
++- 核心10：titleFloat / bareNumber / splitVs / timeline / mediaRows / quoteStack / ringFeature / waitVs / triadSoft / outroHost。
++- 数据7：lineReveal / barGlow / rankBars / waffle / balance / yearRing / formulaCalc。
++- 房产9：floorLadder / paymentSplit / amenityOrbit / pitfallBoard / priceStep / decisionFork / districtTags / loanDial / layerReveal。
++- outroAir仅outroHost别名，不重复计数。keywordCascade/checklistFill/vsScore/tipStack/numberedReveal/kpiGrid仅存档但材质同步；unitCompare只存实现，不登记/推荐/预览。勿恢复旧“6套至少用2套/到位后必须持续呼吸”条款。
++
++## 验证与现有限制
++- TypeScript与check:freeze通过；26默认+6存档均实际渲染静帧，联系表逐格检查过。原核心和房产卡均是冷灰通透薄玻璃，细边轻光、不白不砂纸、不厚斜面。两套房产同帧重渲与已审v6逐像素相同；已审9套contact/40.5秒preview/stills及ASCII副本保持不变。
++- 新复核：`outputs/freeze-v6/default_26_contact.jpg`、`shared_core_contact.jpg`、`archive_6_material_contact.jpg`、`estate_9_contact.jpg`、`shared_core_preview.mp4`（原核心前3镜，15秒）。房产已审预览：`outputs/mg-gallery-re10/mg_re10_preview.mp4`。
++- 原npm run check的旧16镜示例仍报13项素材复用+2项时长不足；原shots/检查脚本未改，未放宽检查，未重制旧成片。详见`定版记录/既有示例检查说明.md`。**不宣称旧示例全流程已验收**；新一期必须另跑素材/静态/DOM/音画检查。
++- 独立4.5、片头源码/母工程、已有outputs与旧成片按本轮前SHA256复核，不改文件。新增复核目录除外。
++
++## 快照内容
++含项目源码、脚本、项目SKILL/规范、fonts/public完整本地素材、片头源模板、当前episodes输入、认可房产预览、新共享复核、校验与交接资料；无node_modules/构建缓存/临时备份/episodes_work。排除历史outputs（旧mg-gallery、片头制作专用母工程、旧成片/小样），它们仍原样留在box，不被删除或覆盖；本包不是旧成片备份。重新安装锁定依赖即可渲染，需Node≥22.18与Chrome Headless Shell。
++
++## 一句话版本说明
++5.0新定版：统一玻璃v6经典薄玻璃与房产9套MG，26种默认版式，停稳无回弹/扫光；旧6套与户型对比仅存档，片头/独立4.5/既有成片不变。
+--- a/正片/README.md
++++ b/正片/README.md
+@@ -1,10 +1,12 @@
+-# 小滕分镜风格 4.5 版本
++# 5.0 新定版（玻璃v6 + 房产MG）· 正片
+ 
+ 用 Remotion 做 1920×1080 知识科普分镜视频的模板和 Skill。整体是深色电影感背景、暖金点缀、轻量 MG，自带排版检查和防顿帧处理，可在 Windows 和 macOS 上使用。
+ 
+ **音画同步**：给它口播音频和带时间码的字幕（SRT / Remotion Caption JSON），镜头会在对应的句子开始时切换，数字和要点在说到时到位，成片自带声音和精致的烧录字幕（磨砂浅底、42px、当前词沙金高亮）。
+ 
+-![联系表](references/preview/联系表.jpg)
++> 已定：2026-11-06（Asia/Shanghai），共享薄玻璃v6、房产9套。当前规范见风格设计规范/版式目录；默认26种，旧6套/户型对比非默认。以下references/preview图为历史核心版式资料，不是新材质验收。新预览见 `../outputs/mg-gallery-re10/` 和 `../outputs/freeze-v6/`。
++
++![历史联系表](references/preview/联系表.jpg)
+ 
+ | | |
+ |---|---|
+@@ -17,8 +19,7 @@
+ ## 安装
+ 需要 Node ≥ 22.18。
+ ```bash
+-git clone https://github.com/pensongchs/storyboard-visual-style-template-4.5.git
+-cd storyboard-visual-style-template-4.5/template
++cd 正片/template  # 从本地5.0定版目录或快照解压根目录进入
+ npm run setup      # 优先复用已有依赖（环境变量 XT_SHARED_NODE_MODULES / 父目录 / 同级模板），没有才 npm install；同时下载视频素材
+ npm run stock:verify  # 校验视频素材（≥1080p、时长、不重复、已登记）
+ npm run episode -- demo  # 读取 episodes/demo/ 的音频和字幕
+@@ -26,7 +27,7 @@
+ npm run stills     # 输出定格图和联系表
+ npm run render     # 输出带声音和字幕的 out/成片.mp4（--no-subs 不烧字幕，--no-highlight 不高亮）
+ ```
+-作为 Skill 使用时，把整个仓库放进你的 skills 目录（例如 `~/.codex/skills/小滕分镜风格4.5版本`），然后对 Codex 说「用小滕分镜风格4.5版本做这期视频」。
++作为 Skill 使用时，把整个仓库放进你的 skills 目录（例如 `~/.codex/skills/小滕分镜风格5.0版本`），然后对 Codex 说「用小滕分镜风格5.0新定版做这期视频」。
+ 
+ ## 每期怎么做
+ 1. 把口播音频和时间码字幕放进 `template/episodes/<期名>/`，跑 `npm run episode -- <期名>`。语音识别的字幕要先校对文字（不改时间码）。
+--- a/正片/SKILL.md
++++ b/正片/SKILL.md
+@@ -1,13 +1,12 @@
+ ---
+-name: 小滕分镜风格4.5版本
+-description: 用 Remotion 做 1920×1080 横屏的「深色电影感 + 暖金点缀 + 轻量 MG」知识科普分镜视频（房产、财经、城市科普等）。适用场景：用户给一段口播文案、一期选题，或者口播音频加带时间码的字幕（SRT / Caption JSON），想要小滕风格（4.5 / 5.0 样板）的分镜画面、定格图或成片；或者要在不同城市、不同期号之间复用这套风格。包含音画同步（镜头按字幕时间码切换、MG 在说到关键词时到位）、精致的烧录字幕、版式选择思路、12 栏网格、自动排版检查、防顿帧转场，可在 Windows 和 Mac 上直接运行。
++name: 小滕分镜风格5.0正片
++description: 用 Remotion 做 1920×1080 横屏的「深色电影感 + 暖金点缀 + 轻量 MG」知识科普分镜视频（房产、财经、城市科普等）。适用场景：用户给一段口播文案、一期选题，或者口播音频加带时间码的字幕（SRT / Caption JSON），想要小滕风格（5.0 新定版：玻璃v6 + 房产MG）的分镜画面、定格图或成片；或者要在不同城市、不同期号之间复用这套风格。包含音画同步（镜头按字幕时间码切换、MG 在说到关键词时到位）、精致的烧录字幕、版式选择思路、12 栏网格、自动排版检查、防顿帧转场，可在 Windows 和 Mac 上直接运行。
+ ---
+ 
+-# 小滕分镜风格 4.5 版本
++# 5.0 新定版（玻璃v6 + 房产MG）· 正片 SKILL
+ 
+-> **5.0 定版 (2026-10-31)**：本目录是 5.0 正片模板（在 4.5 基础上）。默认：浅玻璃（无 backdrop-filter，防闪）、液态玻璃 spring + 邻居让位 + sheen、运镜转场、`anchors` 关键词逐项揭示（mediaRows/quoteStack/timeline；图卡用 `anchors.media`，在左侧文字之后入场；splitVs/waitVs 左文字→左图→箭头→右图）、字幕无下划线自然断句、outroHost 小滕无 CTA。参考期 `template/episodes/选楼层口诀/`；规范见 `references/风格设计规范.md` §11（template 内副本已同步）。
+->
+-> **工作流**：配音 → `/workspace/时间码字幕2.0/run-box.sh` 出逐字时间码 → 校对对齐（`校对后_动效时间轴_绝对.json` + SRT/Caption JSON，放进 `正片/template/episodes/<期名>/`）→ `node scripts/build-episode.mjs <期名> --audio=<配音.mp4>`（片头 + 正片 + 拼接 + setpts 混流，产物复制到 `outputs/成片/<期名>/`）。
++> 已定：2026-11-06（Asia/Shanghai）。默认GLASS/FROST/glassMat统一v6经典薄玻璃；16/20/12帧单调入场，到位停稳，无颗粒/白底/厚斜面/二次弹/扫光。房产9套已定；默认26种，旧6套和unitCompare仅存档。项目内规范优先，独立4.5、片头与旧成片不动。
++> 工作流和音画同步沿用；玻璃/动效/版式不得照历史成片还原旧液态风。先 `npm run check:freeze`，再按本期数据做check/stills/render。
+ 
+ **这套风格的样子**：背景是深色、提亮过的城市实拍视频，前景是暖白文字加一处金色强调，用不加卡片的大数字、时间轴、圆环、编号条目等轻量 MG 讲清楚一个点。镜头在口播说到对应句子时切换，数字在说到它时到位，底部是一行磨砂浅底的精致字幕。镜头之间用 8–15 帧的克制转场，背景视频全程不停。
+ 
+@@ -63,12 +62,14 @@
+ | 年限进度（第几年还完…） | yearRing（年份进度环） | ringFeature |
+ | 计算过程（月供、总价） | formulaCalc（月供算式） | bareNumber |
+ 
++**房产9套优先映射**：楼层→floorLadder；首付构成→paymentSplit；配套→amenityOrbit；避坑→pitfallBoard；单价面积总价→priceStep；选择→decisionFork；片区→districtTags；房贷→loanDial；条件逐项→layerReveal。字段见版式目录；不以unitCompare替代现实户型分析。
++
+ **5.0 数据版式规则**：①协调合理、不过小也不过大——内容约占版式矩形 55–75%，字号守下限（标签 ≥26、正文 ≥34），大数字 76–150px 即可，不用空荡大卡片；②每镜只一处金色主强调；③每期数据版式合计最多 3 次、同一种最多 1 次，别连着两镜都用；④所有数字必须核算（月供按等额本息 M=P·r(1+r)ⁿ/((1+r)ⁿ−1) 自己算一遍，总利息、累计利息过半年份同样逐月算），示例数据必须挂「* 数据为示例」。字段见 `references/版式目录.md`。
+ 
+ ### 2. MG 要有变化
+ - 相邻两个镜头**不能**用同一种版式，主动画也不能一样（数字滚动、画线、圆环、条目焦点移动、左右对比，轮换着用）。
+-- 一期视频至少用到 6 种版式。同一种版式要重复用时，中间至少隔 2 个镜头，而且数据形态要不同（比如一个是金额、一个是面积单价）。
+-- 能不用卡片就不用：数字、时间轴、条目都直接放在背景上，只靠细描边和柔和阴影区分层次。全片最多 2 个镜头用玻璃卡。
++- 标准8–12镜一期至少7种版式，其中至少2种不同的已定房产MG；短片适配见下方轮换条款。同一种版式要重复用时，中间至少隔 2 个镜头，而且数据形态要不同（比如一个是金额、一个是面积单价）。
++- 能不用卡片就不用：数字、时间轴、条目都直接放在背景上，只靠细描边和柔和阴影区分层次。不限制房产MG出现次数为2；同版式次数与轮换遵从下方已定条款，禁止满屏同构堆卡。
+ 
+ ### 3. 密度和留白
+ - 全部用 12 栏网格，元素贴栏线。独立的 MG 组之间 ≥48px，左右相邻的组之间空出一整栏。
+@@ -78,19 +79,19 @@
+ 
+ ### 4. 亮度
+ - **（5.0 调整，比 4.5 更亮，不要特别暗）** 背景提亮 `brightness(1.2) saturate(1.06)`，压暗层 = max(0.13, dark−0.26)（4.5 为 brightness 1.1、max(0.22, dark−0.16)）。渐变只留左上标题区（径向）和底部字幕区，中部通透。可读性靠标题/栏目/数据组件上的 `.txs` 柔和投影，不靠整屏压黑。
+-- 按素材时段调 `bg.dark`：白天航拍 0.38–0.45（5.0 实际压暗 0.13–0.19），黄昏或阴天 0.45–0.52，夜景 0.52–0.60，静图背景 0.45–0.55 并加 blur 6–8。白天天空过曝时加 `blur: 2–4`，或者换一个天空少一点的 trim。
+-- 只用暖色：金色表示强调，珊瑚色表示风险，绿色表示利好。一个镜头里最多出现两种强调色。
++- 按素材时段调 `bg.dark`：白天航拍 0.38–0.45（5.0 实际压暗 0.13–0.19），黄昏或阴天 0.45–0.52，夜景 0.52–0.60，静图按可读性压暗；所有背景 blur=0，过曝换天空少一点的trim或换素材。
++- 保持冷灰玻璃基调，轻语义tint允许金/暖珊瑚/青绿/蓝：金强调、珊瑚风险、绿利好、蓝信息。一个镜头里最多出现两种强调色。
+ 
+ ### 5. 节奏和转场
+ - **画面跟着声音走**：镜头在它那句口播开始时切入，数字和要点在说到时到位（锚点）。镜头里没有固定的「最后 1 秒定格」，前景只在退场转场那几帧冻结，背景视频一直播放。
+-- 入场 20 帧，元素之间错开 6 帧，数字滚动 30 帧。
+-- 转场时长 8–15 帧，按 pushBlur → crossfade → maskWipe → lightSweep 轮换，不用花哨的转场。
++- 单调入场：主卡16/柔和20/小标签12帧；错开5帧；数字滚动32帧；到位后卡片停稳。
++- 正片转场 softPush18 → softZoom16 → driftDissolve16 → liftReveal18，有限单调缓动，无扫光/回弹；房产子gallery为10帧柔叠化。
+ - 防顿帧有三条硬规则：① 视频一律用 `LiveVideo`（受 `LiveFrameCtx` 驱动）；② 每个 Sequence 设 `premountFor={30}`；③ 素材长度要够。详见规范 §9.9。
+ 
+ ### 6. 字幕要精致，不要大
+ - 阿里健康体 42px（38–46），暖白字 + 柔和投影，底部一枚磨砂浅底胶囊，不用黑色长条。
+ - 一行最多 18 字，优先单行，长句按词的时间拆成先后两条；去掉行尾标点。
+-- 5 帧淡入上浮；有逐词时间时，正在说的词变沙金色并带一条细下划线。只在底部 180px 字幕区里，不挡画面信息。
++- 5 帧淡入上浮；有逐词时间时，正在说的词变沙金色，不画下划线。只在底部 180px 字幕区里，不挡画面信息。
+ 
+ ### 7. 城市中性
+ - 模板默认不写城市名，检查脚本会拦截。需要标城市时，只在镜头里加 `city: '某市'`，它只会显示为栏目行的前缀。
+@@ -121,20 +122,34 @@
+ - `references/版式目录.md`、`references/组件API.md`
+ - `references/preview/`：预览图
+ 
+-### 11.x MG 版式轮换（2026-11-05 · 默认硬规则）
+-默认可选版式共 24 种（含片尾）：
+-- 定版 6：quoteStack / mediaRows / timeline / titleFloat / splitVs / outroHost
+-- 少用但默认：bareNumber / ringFeature / waitVs / triadSoft
+-- 数据图表 7：lineReveal / barGlow / rankBars / waffle / balance / yearRing / formulaCalc
+-- MG 卡片新增 6（src/style/mgCards.tsx）：keywordCascade（关键词瀑布）/ checklistFill（清单+进度格）/ vsScore（VS 计分板）/ tipStack（通知式提示堆叠）/ numberedReveal（序号翻牌）/ kpiGrid（迷你 KPI 网格）
+-  - data：words[{t,s,tone}] / items[{t,tone}]+label / L,R,rows[{k,w:'L'|'R'|'='}] / tips[{icon,t,s,tone}] / cards[{t,s}] / kpis[{k,v,unit,dec,text,ratio,tone}]；可选 media（右侧配图/视频）
+-  - 锚点：r0/r1/…（说到该词时该项入场）；无锚点按节拍自动兜底
+-**每期必须遵守：**
+-1. 单个版式一期最多用 2 次（片尾除外）；相邻两镜不得同版式。
+-2. 一期正片至少 7 种不同版式，其中至少 2 种来自「MG 卡片新增 6」。
+-3. 口播出现数字/比例/金额 → 至少 1 镜用数据图表或 ringFeature / bareNumber / kpiGrid。没有真实数字不造数，用 checklistFill / numberedReveal / keywordCascade。
+-4. 清单/盘点类选题（N 笔钱、N 个坑）默认 checklistFill 贯穿计数，配合 numberedReveal / tipStack 轮换。
+-5. 对比类默认 vsScore 或 splitVs/waitVs 轮换，不要连用。
+-6. 背景优先视频（media/stock），图片背景一期不超过 1/3。
+-7. 卡片入场后必须持续有动作（呼吸浮动/焦点移动/进度填充），禁止等卡片时画面静止。
+-活目录：src/gallery/shots-mg-gallery.ts（Composition「MgGallery」）；新增版式必须在这里登记一镜。预览：outputs/mg-gallery/。
++## 5.0 新定版（玻璃v6 + 房产MG）· 默认版式与轮换
++状态：**已定**，2026-11-06（Asia/Shanghai）。本节替代此前“待审/旧6套强制/到位后持续呼吸”等条款。
++
++默认 **26种逻辑版式**（`outroAir` 仅为 `outroHost` 别名，不重复计数）：
++- 原核心10：`titleFloat / bareNumber / splitVs / timeline / mediaRows / quoteStack / ringFeature / waitVs / triadSoft / outroHost`。
++- 数据7：`lineReveal / barGlow / rankBars / waffle / balance / yearRing / formulaCalc`。
++- 房产已定9：`floorLadder / paymentSplit / amenityOrbit / pitfallBoard / priceStep / decisionFork / districtTags / loanDial / layerReveal`。
++- 旧6套只存档：`keywordCascade / checklistFill / vsScore / tipStack / numberedReveal / kpiGrid`。材质已同步v6，但不自动推荐、不进入默认gallery。
++- `unitCompare` 仅保留实现存档；不在 LayoutName、默认推荐、预览或轮换计数中。
++
++执行条款：
++1. 标准8–12镜一期至少7种版式，其中至少2种不同的已定房产MG；短片少于7镜时不硬凑7种，逐镜不重复，优先安排1种语义匹配的房产MG。禁止为凑数量造数据。
++2. 同一版式每期最多2次（片尾仅1次）；相邻镜不得同版式，重复时中间至少隔2镜；别名合并计数。切换数字、流程、清单、图文、对比等信息结构，不只换标题。
++3. 真实数字/比例/金额至少1镜用数据图表、bareNumber/ringFeature，或匹配的 paymentSplit/priceStep/loanDial。7种数据图表合计每期≤3镜，同一种≤1镜，不相邻连用；数字先核算，示例显式标注，不能把示例用于实际楼盘判断。
++4. 清单/避坑优先 pitfallBoard、layerReveal，配合 quoteStack/mediaRows；楼层用 floorLadder，预算用 paymentSplit/priceStep，配套/区域用 amenityOrbit/districtTags；评分、热度必须有来源和口径，没数据就不造分。
++5. 对比/决策轮换 decisionFork、splitVs、waitVs，真实总账可用 balance；禁止默认使用 unitCompare 或旧 vsScore。
++6. 背景优先清晰视频，静图背景占比≤1/3；不整屏模糊，bg.blur=0，靠冷灰玻璃和字影保证可读。
++7. 卡片按口播锚点单调入场，16/20/12帧后精确停稳；禁止过冲、落地二次弹、邻居让位、整体呼吸/焦点缩放、僵硬扫光条。高亮只改变轻色光/文字亮度；数据绘制、进度填充、背景自然运镜与小滕人物摆手可保留，不让卡片整体晃动。
++
++唯一登记：`src/style/layouts.ts` 的 DEFAULT_LAYOUTS（10+7+9）；默认活目录 `src/gallery/shots-mg-gallery.ts` / `MgGallery`，每个默认版式一镜。房产子集 `shots-mg-re10.ts` / `MgGalleryRe10` 固定9镜、40.5秒；“re10”仅兼容旧文件名，不代表10套。
++检查：`npm run check:freeze` 验证材质、动效范围、默认/存档边界和gallery覆盖；正式出片还须 `npm run check`、stills/音画核验。新增版式必须先登记样镜并审核，不能直接加进默认清单。
++
++## 共享玻璃 v6（已定参数）
++- 唯一来源：`tokens.ts: GLASS_V6`；`FROST = GLASS_V6`，`GLASS.dark/light` 是同源兼容视图。所有正片玻璃入口用 `glassMat(mode,tint?,edge?,soft?)`；mgEstate.frost 与旧 mgCards.LG 均委托它。旧 light/pearl 名称保留接口，但不再渲白卡；旧 edge 参数不覆盖细白边。
++- 主底：165°，rgba(62,64,72,**.68**) → rgba(38,40,48,**.74**)；基础透射约32%→26%。soft/ghost：.62→.68（基础透射38%→32%）。这是**底层不透明alpha**，不是“透明度68%”；叠加层后的有效透射会略低。
++- 细白边1px，alpha .22；轻顶缘1px .26；轻底线1px黑 .12；阴影 `0 8px 20px rgba(0,0,0,.20), 0 1px 3px rgba(0,0,0,.12)`。
++- 固定宽柔面光：160°，白 .12→.035（38%）→0（60%）。无移动扫光、颗粒纹理、厚斜面、双层厚框、夸张弧面或重影。
++- 轻语义tint：金/暖珊瑚 .10，青绿/蓝 .08；旧接口传入更浓rgba会钳至≤.10。保持冷灰基调、暖白主字/浅副字；不改成白底或彩色实心板。
++- `backdropFilter/WebkitBackdropFilter='none'`：保留经典参考的环境透射细节，用确定性半透明和面光做玻璃层次，避免祖先opacity/filter改变backdrop root而闪烁。不是28px雾化玻璃，也不是v5厚斜面版本。
++- `useSpringP/useLiquid` 旧API适配有限时长ease-out cubic `1-(1-t)^3`；p严格[0,1]、到期精确1，sx/sy=1；主卡16、柔和20、小标签12帧@30fps。SPRING旧令牌改成 damping26 + overshootClamping，保留给外部兼容；本模板卡片不再用物理弹簧驱动。
++- `Sheen` 兼容API返回null，`bump`返回0；关闭卡片整体前景视差、焦点推近和WordSheen。保留背景视频和有意义的数据变化；人物摆手不是卡片动画。
+--- a/正片/references/版式目录.md
++++ b/正片/references/版式目录.md
+@@ -1,4 +1,4 @@
+-# 版式目录（10 种 archetype + 5.0 新增 7 种数据版式）
++# 5.0 新定版（玻璃v6 + 房产MG）· 版式目录
+ 
+ 每种版式由 `src/style/layouts.ts` 给出「独立 MG 组」的矩形，再由 `src/style/archetypes.tsx` 填入组件。画布是 1920×1080 的 12 栏网格：左边距 96，栏宽 106，间距 24，内容右边界 1632。内容区从 y=248 到 y=880，底部 180px 留给字幕。
+ 
+@@ -40,28 +40,29 @@
+ 2. 在 `archetypes.tsx` 里写 View，并注册到 `VIEWS`。
+ 3. 运行 `npm run stills`，DOM 检查要全部显示 ✓，再逐张看定格图。
+ 
+-### 11.x MG 版式轮换（2026-11-05 · ⚠ 待定，未锁定）
+-> ⚠ 老板已否掉下面「MG 卡片新增 6」，本版不采用；含这 6 种的条款（第 2/3/4/5 条中涉及它们的部分）暂停执行，改用下方「待审新MG」后再重写规则，等老板点头再锁。
+-默认可选版式共 24 种（含片尾）：
+-- 定版 6：quoteStack / mediaRows / timeline / titleFloat / splitVs / outroHost
+-- 少用但默认：bareNumber / ringFeature / waitVs / triadSoft
+-- 数据图表 7：lineReveal / barGlow / rankBars / waffle / balance / yearRing / formulaCalc
+-- ~~MG 卡片新增 6~~（本版不采用，代码保留于 src/style/mgCards.tsx 仅作存档）：keywordCascade（关键词瀑布）/ checklistFill（清单+进度格）/ vsScore（VS 计分板）/ tipStack（通知式提示堆叠）/ numberedReveal（序号翻牌）/ kpiGrid（迷你 KPI 网格）
+-  - data：words[{t,s,tone}] / items[{t,tone}]+label / L,R,rows[{k,w:'L'|'R'|'='}] / tips[{icon,t,s,tone}] / cards[{t,s}] / kpis[{k,v,unit,dec,text,ratio,tone}]；可选 media（右侧配图/视频）
+-  - 锚点：r0/r1/…（说到该词时该项入场）；无锚点按节拍自动兜底
+-**每期必须遵守：**
+-1. 单个版式一期最多用 2 次（片尾除外）；相邻两镜不得同版式。
+-2. 一期正片至少 7 种不同版式，其中至少 2 种来自「MG 卡片新增 6」。
+-3. 口播出现数字/比例/金额 → 至少 1 镜用数据图表或 ringFeature / bareNumber / kpiGrid。没有真实数字不造数，用 checklistFill / numberedReveal / keywordCascade。
+-4. 清单/盘点类选题（N 笔钱、N 个坑）默认 checklistFill 贯穿计数，配合 numberedReveal / tipStack 轮换。
+-5. 对比类默认 vsScore 或 splitVs/waitVs 轮换，不要连用。
+-6. 背景优先视频（media/stock），图片背景一期不超过 1/3。
+-7. 卡片入场后必须持续有动作（呼吸浮动/焦点移动/进度填充），禁止等卡片时画面静止。
+-活目录：src/gallery/shots-mg-gallery.ts（Composition「MgGallery」）；新增版式必须在这里登记一镜。预览：outputs/mg-gallery/。
++## 5.0 新定版（玻璃v6 + 房产MG）· 默认版式与轮换
++状态：**已定**，2026-11-06（Asia/Shanghai）。本节替代此前“待审/旧6套强制/到位后持续呼吸”等条款。
+ 
+-### 待审新MG（房产主题，2026-11-06 · 9 套，未定版）
+-组件：`src/style/mgEstate.tsx`；登记：`layouts.ts` / `archetypes.tsx`（ESTATE_VIEWS）；活目录：`src/gallery/shots-mg-re10.ts`（Composition「MgGalleryRe10」）；预览：`outputs/mg-gallery-re10/`。数据均为示例，正式用要换真实数据。
+-材质 v6（2026-11-06，参考 `classic_glass_ref.jpg`）：**经典冷灰半透明薄玻璃，非白底**。主底严格回到原 `GLASS.dark` 的 RGB（62,64,72→38,40,48），仅将原基础 alpha .56/.64 提高到 .68/.74（基础透射 .44/.36 → .32/.26，较原更实、字更稳）；小件 .62/.68。移除v5厚斜面、双描边、3px厚度投影、重悬浮影、凸面/弧面高光块、暗角与沿边衍射装饰；不再用28px背景模糊，恢复原经典玻璃可透见环境细节的状态（backdrop blur:none）。只保留1px细白边(.22)、1px轻顶高光(.26)、轻底线(.12)、轻柔阴影(8px/20px .20 + 1px/3px .12)，固定的宽柔面光 .12→.035→0，不是移动扫光条。语义轻tint克制保留，强度由约 .30 降为 .08–.10；暖白主字/副字不变。无颗粒、无白底、无到位弹；9套仍待审，户型对比不预览。原 `GLASS` / `glassMat` / 全局 `SPRING` 不改。
++默认 **26种逻辑版式**（`outroAir` 仅为 `outroHost` 别名，不重复计数）：
++- 原核心10：`titleFloat / bareNumber / splitVs / timeline / mediaRows / quoteStack / ringFeature / waitVs / triadSoft / outroHost`。
++- 数据7：`lineReveal / barGlow / rankBars / waffle / balance / yearRing / formulaCalc`。
++- 房产已定9：`floorLadder / paymentSplit / amenityOrbit / pitfallBoard / priceStep / decisionFork / districtTags / loanDial / layerReveal`。
++- 旧6套只存档：`keywordCascade / checklistFill / vsScore / tipStack / numberedReveal / kpiGrid`。材质已同步v6，但不自动推荐、不进入默认gallery。
++- `unitCompare` 仅保留实现存档；不在 LayoutName、默认推荐、预览或轮换计数中。
++
++执行条款：
++1. 标准8–12镜一期至少7种版式，其中至少2种不同的已定房产MG；短片少于7镜时不硬凑7种，逐镜不重复，优先安排1种语义匹配的房产MG。禁止为凑数量造数据。
++2. 同一版式每期最多2次（片尾仅1次）；相邻镜不得同版式，重复时中间至少隔2镜；别名合并计数。切换数字、流程、清单、图文、对比等信息结构，不只换标题。
++3. 真实数字/比例/金额至少1镜用数据图表、bareNumber/ringFeature，或匹配的 paymentSplit/priceStep/loanDial。7种数据图表合计每期≤3镜，同一种≤1镜，不相邻连用；数字先核算，示例显式标注，不能把示例用于实际楼盘判断。
++4. 清单/避坑优先 pitfallBoard、layerReveal，配合 quoteStack/mediaRows；楼层用 floorLadder，预算用 paymentSplit/priceStep，配套/区域用 amenityOrbit/districtTags；评分、热度必须有来源和口径，没数据就不造分。
++5. 对比/决策轮换 decisionFork、splitVs、waitVs，真实总账可用 balance；禁止默认使用 unitCompare 或旧 vsScore。
++6. 背景优先清晰视频，静图背景占比≤1/3；不整屏模糊，bg.blur=0，靠冷灰玻璃和字影保证可读。
++7. 卡片按口播锚点单调入场，16/20/12帧后精确停稳；禁止过冲、落地二次弹、邻居让位、整体呼吸/焦点缩放、僵硬扫光条。高亮只改变轻色光/文字亮度；数据绘制、进度填充、背景自然运镜与小滕人物摆手可保留，不让卡片整体晃动。
++
++唯一登记：`src/style/layouts.ts` 的 DEFAULT_LAYOUTS（10+7+9）；默认活目录 `src/gallery/shots-mg-gallery.ts` / `MgGallery`，每个默认版式一镜。房产子集 `shots-mg-re10.ts` / `MgGalleryRe10` 固定9镜、40.5秒；“re10”仅兼容旧文件名，不代表10套。
++检查：`npm run check:freeze` 验证材质、动效范围、默认/存档边界和gallery覆盖；正式出片还须 `npm run check`、stills/音画核验。新增版式必须先登记样镜并审核，不能直接加进默认清单。
++
++## 房产MG已定9套：数据字段
+ | 中文名 | id | 用途 | data |
+ |---|---|---|---|
+ | 楼层阶梯 | floorLadder | 低→高楼层逐级点亮，讲楼层差异 | floors[{f,k,s,tone}] |
+@@ -73,8 +74,15 @@
+ | 片区热度 | districtTags | 片区标签云，大小/色温=热度 | tags[{t,heat 0–1,s}], legend? |
+ | 贷款仪表 | loanDial | 利率仪表+贷款三项小环 | dial{k,v,dec,unit,min,max,s}, stats[{k,v,dec,sep,unit,ratio,rl,hi}] |
+ | 条件层叠 | layerReveal | 采光/景观/噪音逐层揭开+综合分 | layers[{k,s,score 0–5,tone}], verdict |
+-锚点 r0/r1/…（无锚点按节拍兜底）。本轮只预览剩余 9 套，轮换规则仍待老板审核，未锁定。
+ 
+-动效 v4：取消 QSPRING 和全部 overshoot / 回弹；改为 `1-(1-t)^3` 的有限时长单调入场（主卡 16 帧、柔和图形 20 帧、小标签 12 帧，均 @30fps），缩放仅 .97→1（少量标签 .96→1），到位后精确固定。取消整体浮动、呼吸缩放、轨道慢转、警示抖动、跳球、仪表针轻摆、热度自动轮跳及 re10 前景视差；v6 不保留 v5 的沿边衍射装饰，只留固定柔面高光和自然透过玻璃的背景变化。re10 gallery 改用 10 帧无几何变形的柔和叠化，共 40.5 秒。以上仅针对本轮 9 套，不改旧组件/片头/4.5/定版。
++锚点 `r0/r1/…`；无锚点按节拍兜底。示例须换成有依据的当期数据。
+ 
+-撤下存档：户型对比因不符合现实，已从本轮活目录、`LayoutName`/矩形登记、ESTATE_VIEWS 及上方待审表删除；`mgEstate.tsx` 的实现仅存档，不推荐、不预览。
++## 共享玻璃 v6（已定参数）
++- 唯一来源：`tokens.ts: GLASS_V6`；`FROST = GLASS_V6`，`GLASS.dark/light` 是同源兼容视图。所有正片玻璃入口用 `glassMat(mode,tint?,edge?,soft?)`；mgEstate.frost 与旧 mgCards.LG 均委托它。旧 light/pearl 名称保留接口，但不再渲白卡；旧 edge 参数不覆盖细白边。
++- 主底：165°，rgba(62,64,72,**.68**) → rgba(38,40,48,**.74**)；基础透射约32%→26%。soft/ghost：.62→.68（基础透射38%→32%）。这是**底层不透明alpha**，不是“透明度68%”；叠加层后的有效透射会略低。
++- 细白边1px，alpha .22；轻顶缘1px .26；轻底线1px黑 .12；阴影 `0 8px 20px rgba(0,0,0,.20), 0 1px 3px rgba(0,0,0,.12)`。
++- 固定宽柔面光：160°，白 .12→.035（38%）→0（60%）。无移动扫光、颗粒纹理、厚斜面、双层厚框、夸张弧面或重影。
++- 轻语义tint：金/暖珊瑚 .10，青绿/蓝 .08；旧接口传入更浓rgba会钳至≤.10。保持冷灰基调、暖白主字/浅副字；不改成白底或彩色实心板。
++- `backdropFilter/WebkitBackdropFilter='none'`：保留经典参考的环境透射细节，用确定性半透明和面光做玻璃层次，避免祖先opacity/filter改变backdrop root而闪烁。不是28px雾化玻璃，也不是v5厚斜面版本。
++- `useSpringP/useLiquid` 旧API适配有限时长ease-out cubic `1-(1-t)^3`；p严格[0,1]、到期精确1，sx/sy=1；主卡16、柔和20、小标签12帧@30fps。SPRING旧令牌改成 damping26 + overshootClamping，保留给外部兼容；本模板卡片不再用物理弹簧驱动。
++- `Sheen` 兼容API返回null，`bump`返回0；关闭卡片整体前景视差、焦点推近和WordSheen。保留背景视频和有意义的数据变化；人物摆手不是卡片动画。
+--- a/正片/references/组件API.md
++++ b/正片/references/组件API.md
+@@ -1,4 +1,4 @@
+-# 组件 API（src/style/components.tsx）
++# 5.0 新定版（玻璃v6 + 房产MG）· 组件 API
+ 
+ 所有尺寸都基于 1920×1080。`r: Rect = {x,y,w,h}` 一律来自 `layouts.ts`。`start` 是入场开始的帧（30fps），`from` 是入场方向：`'up'|'left'|'right'|'scale'|'fade'|'blur'|'none'`。
+ 
+@@ -44,5 +44,17 @@
+ ## 令牌（tokens.ts）
+ - 颜色：墨黑 `#121110`、暖白 `#F4EEE4`、金 `#D9B26F` / 高光 `#F3D79E`、珊瑚 `#E0715C`（风险）、绿 `#8DB89A`（利好）。
+ - 字号：kicker 30、title 80、heroTitle 92、number 150、quote 60、rowTitle 40、body 34、label 28、chip 28、ringValue 52。
+-- 动效（帧）：enter 20、stagger 6、chip 14、count 30、focus 10、freeze 30。
+-- 转场（transitions.tsx）：pushBlur 12 → crossfade 10 → maskWipe 14 → lightSweep 12，按顺序轮换。
++- 动效（帧）：enter16/soft20/chip12、stagger5、count32、focus12、freeze 30。
++- 转场（transitions.tsx）：softPush18 → softZoom16 → driftDissolve16 → liftReveal18（无扫光/过冲），按顺序轮换。
++
++## 共享玻璃 v6（已定参数）
++- 唯一来源：`tokens.ts: GLASS_V6`；`FROST = GLASS_V6`，`GLASS.dark/light` 是同源兼容视图。所有正片玻璃入口用 `glassMat(mode,tint?,edge?,soft?)`；mgEstate.frost 与旧 mgCards.LG 均委托它。旧 light/pearl 名称保留接口，但不再渲白卡；旧 edge 参数不覆盖细白边。
++- 主底：165°，rgba(62,64,72,**.68**) → rgba(38,40,48,**.74**)；基础透射约32%→26%。soft/ghost：.62→.68（基础透射38%→32%）。这是**底层不透明alpha**，不是“透明度68%”；叠加层后的有效透射会略低。
++- 细白边1px，alpha .22；轻顶缘1px .26；轻底线1px黑 .12；阴影 `0 8px 20px rgba(0,0,0,.20), 0 1px 3px rgba(0,0,0,.12)`。
++- 固定宽柔面光：160°，白 .12→.035（38%）→0（60%）。无移动扫光、颗粒纹理、厚斜面、双层厚框、夸张弧面或重影。
++- 轻语义tint：金/暖珊瑚 .10，青绿/蓝 .08；旧接口传入更浓rgba会钳至≤.10。保持冷灰基调、暖白主字/浅副字；不改成白底或彩色实心板。
++- `backdropFilter/WebkitBackdropFilter='none'`：保留经典参考的环境透射细节，用确定性半透明和面光做玻璃层次，避免祖先opacity/filter改变backdrop root而闪烁。不是28px雾化玻璃，也不是v5厚斜面版本。
++- `useSpringP/useLiquid` 旧API适配有限时长ease-out cubic `1-(1-t)^3`；p严格[0,1]、到期精确1，sx/sy=1；主卡16、柔和20、小标签12帧@30fps。SPRING旧令牌改成 damping26 + overshootClamping，保留给外部兼容；本模板卡片不再用物理弹簧驱动。
++- `Sheen` 兼容API返回null，`bump`返回0；关闭卡片整体前景视差、焦点推近和WordSheen。保留背景视频和有意义的数据变化；人物摆手不是卡片动画。
++
++默认/存档清单和轮换以版式目录.md与layouts.ts为准；不把兼容API当作旧视觉开关。
+--- a/正片/references/风格设计规范.md
++++ b/正片/references/风格设计规范.md
+@@ -1,256 +1,71 @@
+-# 5.0 质感卡片风格 · Remotion 设计规范（4.5 版）
++# 5.0 新定版（玻璃v6 + 房产MG）· Remotion 风格规范
+ 
+-> 写给 Remotion / 写 Remotion 的人与 AI。新视频只写 `shots.ts` 数据，**不写坐标**。  
+-> 代码：`src/style/`（grid / tokens / layouts / components / archetypes / types），示例：`src/demo/`。
++已定：2026-11-06（Asia/Shanghai）。本规范只更新本目录5.0正片模板；独立4.5、片头模板/母工程和既有定版成片不修改。旧玻璃v5/液态弹簧/待审轮换条款废止，以下为新一期默认。
+ 
+-## 0. 核心原则
+-1. **背景铺满、元素浮上**：每镜都有相关实景背景（视频或图，压暗 0.4–0.6，可模糊），上面叠 MG。
+-2. **不全是大玻璃卡**：一屏最多 1–2 张「重」玻璃卡；优先用裸数字、时间轴、细行、引用号、进度环、软提示条、浮动标签、下划线等轻量元素。大小元素穿插，禁止十镜同构。
+-3. **严格网格**：左右边必须落在 12 栏栏线上，内容块间距 ≥24px，**禁止重叠**。页眉三行（栏目/标题/示例标注）之间允许 8px。
+-4. **不要装饰框**：禁止金色 L 形角标、聚焦框、外发光框。质感靠玻璃底、细描边、内高光、投影。
+-5. **一屏一件事**：正在讲的那项最大、最亮；金色面积全屏 ≤8%。
+-6. **安全区**：底部 180px 字幕禁区；右侧约 15% 留给抖音按钮。
+-7. **素材规则（学员版）**：
+-   - **禁止**依赖本地剪映 / Mac 私有素材。
+-   - 城市航拍等视频放在 `public/media/stock/`，来源写进 `stock/SOURCES.md`（Mixkit / Coverr 等可商用免费授权）。
+-   - 关键概念用 `GenerateImage` 生成，放 `public/media/gen/`。
+-   - **一片一用**：同一文件在一条片子里只能出现一次（背景与框内都算）。
+-8. **数字标示例**：示例数据必须显示 `ExampleMark`（片尾除外）。
++## 0. 原则与网格
++- 深色电影实拍背景、冷灰经典薄玻璃、暖白主字、一处金色主强调；金色面积≤8%，轻珊瑚风险、青绿利好、蓝色信息tint不抢字。
++- 不全屏堆大卡；先选信息结构，再挑版式；每镜1个主信息+2–3辅助信息。
++- 1920×1080@30fps；12栏，left96/right1632，栏宽106/沟24/步长130；栏目y56/h36，标题y100/h100，内容y248–880。
++- 所有矩形来自 `layouts.ts` 的 rect/splitRows；独立组距≥48px（左右空一栏），连接件conn*≥24px；页眉间距允许8px。严禁截字、重叠、角标装饰框。
++- 底部y900–1080给字幕；右侧288px留平台按钮。
++- 字体 PuHui/Health/ArialB；TYPE：kicker30/title80/heroTitle92/number150/quote60/rowTitle40/body34/label28/chip28/ringValue52。
++- 正文≥34px，任意标签≥26px，多行行高≥1.3，文字填充≤75%；当前项靠颜色/亮度强调，不靠卡片弹跳或变形。
+ 
+-## 1. 网格（grid.ts）
+-| 项 | 值 |
+-|---|---|
+-| 画布 | 1920×1080 @30fps |
+-| SAFE.left / right | 96 / 1632 |
+-| 字幕禁区 | y ≥ 900 |
+-| 栏 | 12 栏；栏宽 106；间距 24；步长 130 |
+-| 栏目行 | y 56，高 36 |
+-| 标题行 | y 100，高 100 |
+-| 内容区 | y 232–880（高 648） |
++## 共享玻璃 v6（已定参数）
++- 唯一来源：`tokens.ts: GLASS_V6`；`FROST = GLASS_V6`，`GLASS.dark/light` 是同源兼容视图。所有正片玻璃入口用 `glassMat(mode,tint?,edge?,soft?)`；mgEstate.frost 与旧 mgCards.LG 均委托它。旧 light/pearl 名称保留接口，但不再渲白卡；旧 edge 参数不覆盖细白边。
++- 主底：165°，rgba(62,64,72,**.68**) → rgba(38,40,48,**.74**)；基础透射约32%→26%。soft/ghost：.62→.68（基础透射38%→32%）。这是**底层不透明alpha**，不是“透明度68%”；叠加层后的有效透射会略低。
++- 细白边1px，alpha .22；轻顶缘1px .26；轻底线1px黑 .12；阴影 `0 8px 20px rgba(0,0,0,.20), 0 1px 3px rgba(0,0,0,.12)`。
++- 固定宽柔面光：160°，白 .12→.035（38%）→0（60%）。无移动扫光、颗粒纹理、厚斜面、双层厚框、夸张弧面或重影。
++- 轻语义tint：金/暖珊瑚 .10，青绿/蓝 .08；旧接口传入更浓rgba会钳至≤.10。保持冷灰基调、暖白主字/浅副字；不改成白底或彩色实心板。
++- `backdropFilter/WebkitBackdropFilter='none'`：保留经典参考的环境透射细节，用确定性半透明和面光做玻璃层次，避免祖先opacity/filter改变backdrop root而闪烁。不是28px雾化玻璃，也不是v5厚斜面版本。
++- `useSpringP/useLiquid` 旧API适配有限时长ease-out cubic `1-(1-t)^3`；p严格[0,1]、到期精确1，sx/sy=1；主卡16、柔和20、小标签12帧@30fps。SPRING旧令牌改成 damping26 + overshootClamping，保留给外部兼容；本模板卡片不再用物理弹簧驱动。
++- `Sheen` 兼容API返回null，`bump`返回0；关闭卡片整体前景视差、焦点推近和WordSheen。保留背景视频和有意义的数据变化；人物摆手不是卡片动画。
+ 
+-API：`cols(c,n)` · `splitRows(y,H,parts)` · `rect(c,n,row)` · `FULL`。
++## 5.0 新定版（玻璃v6 + 房产MG）· 默认版式与轮换
++状态：**已定**，2026-11-06（Asia/Shanghai）。本节替代此前“待审/旧6套强制/到位后持续呼吸”等条款。
+ 
+-## 2. 色彩 / 字体 / 动效令牌（tokens.ts）
+-- **COLOR**：ink `#121110` · warm `#F4EEE4` · gold `#D9B26F` / goldHi `#F3D79E` / goldDeep `#9C7536` · coral `#E0715C`（风险）· green `#8DB89A`（利好）
+-- **FONT**：标题 `PuHui` · 正文 `Health` · 数字 `ArialB`
+-- **TYPE**：kicker 28 · title 80 · heroTitle 100 · number 150 · cardTitle 44 · cardNum 72 · body 30 · label 26 · chip 24（正文 ≥24）
+-- **MOTION**（帧@30fps）：enter 20 · stagger 6 · chip 14 · count 30 · freeze 30 · maxShift 36
+-- 重点词用 `{…}`，由 `GoldText` 渲成金色
++默认 **26种逻辑版式**（`outroAir` 仅为 `outroHost` 别名，不重复计数）：
++- 原核心10：`titleFloat / bareNumber / splitVs / timeline / mediaRows / quoteStack / ringFeature / waitVs / triadSoft / outroHost`。
++- 数据7：`lineReveal / barGlow / rankBars / waffle / balance / yearRing / formulaCalc`。
++- 房产已定9：`floorLadder / paymentSplit / amenityOrbit / pitfallBoard / priceStep / decisionFork / districtTags / loanDial / layerReveal`。
++- 旧6套只存档：`keywordCascade / checklistFill / vsScore / tipStack / numberedReveal / kpiGrid`。材质已同步v6，但不自动推荐、不进入默认gallery。
++- `unitCompare` 仅保留实现存档；不在 LayoutName、默认推荐、预览或轮换计数中。
+ 
+-## 3. 组件 API（components.tsx）
++执行条款：
++1. 标准8–12镜一期至少7种版式，其中至少2种不同的已定房产MG；短片少于7镜时不硬凑7种，逐镜不重复，优先安排1种语义匹配的房产MG。禁止为凑数量造数据。
++2. 同一版式每期最多2次（片尾仅1次）；相邻镜不得同版式，重复时中间至少隔2镜；别名合并计数。切换数字、流程、清单、图文、对比等信息结构，不只换标题。
++3. 真实数字/比例/金额至少1镜用数据图表、bareNumber/ringFeature，或匹配的 paymentSplit/priceStep/loanDial。7种数据图表合计每期≤3镜，同一种≤1镜，不相邻连用；数字先核算，示例显式标注，不能把示例用于实际楼盘判断。
++4. 清单/避坑优先 pitfallBoard、layerReveal，配合 quoteStack/mediaRows；楼层用 floorLadder，预算用 paymentSplit/priceStep，配套/区域用 amenityOrbit/districtTags；评分、热度必须有来源和口径，没数据就不造分。
++5. 对比/决策轮换 decisionFork、splitVs、waitVs，真实总账可用 balance；禁止默认使用 unitCompare 或旧 vsScore。
++6. 背景优先清晰视频，静图背景占比≤1/3；不整屏模糊，bg.blur=0，靠冷灰玻璃和字影保证可读。
++7. 卡片按口播锚点单调入场，16/20/12帧后精确停稳；禁止过冲、落地二次弹、邻居让位、整体呼吸/焦点缩放、僵硬扫光条。高亮只改变轻色光/文字亮度；数据绘制、进度填充、背景自然运镜与小滕人物摆手可保留，不让卡片整体晃动。
+ 
+-### 3.1 基础
+-| 组件 | 用途 |
+-|---|---|
+-| `GlassCard` | 玻璃卡（少用）。tone: dark/pearl/gold/coral/ghost |
+-| `MediaFrame` | 图/视频框；`soft` 去描边更轻。描边在内侧 |
+-| `Chip` / `Badge` / `Count` / `Bar` | 标签、序号、滚数、对比条 |
+-| `Kicker` / `Headline` / `ExampleMark` / `Backdrop` | 页眉与背景 |
++唯一登记：`src/style/layouts.ts` 的 DEFAULT_LAYOUTS（10+7+9）；默认活目录 `src/gallery/shots-mg-gallery.ts` / `MgGallery`，每个默认版式一镜。房产子集 `shots-mg-re10.ts` / `MgGalleryRe10` 固定9镜、40.5秒；“re10”仅兼容旧文件名，不代表10套。
++检查：`npm run check:freeze` 验证材质、动效范围、默认/存档边界和gallery覆盖；正式出片还须 `npm run check`、stills/音画核验。新增版式必须先登记样镜并审核，不能直接加进默认清单。
+ 
+-### 3.2 轻量 MG（优先用这些打破「全是卡」）
+-| 组件 | 用途 | 典型入场 |
+-|---|---|---|
+-| `BareNumber` | 无卡底大数字 | up |
+-| `SplitType` | 双行分裂大标题 + 下划线 | 错落入场 |
+-| `UnderlineDraw` | 金色下划线描画 | wipe |
+-| `FloatLabel` | 浮动小标签（可轻微浮动） | fade |
+-| `Timeline` | 横向节点 + 连接线进度 | stagger |
+-| `IconRow` | 图标/序号 + 标题细行（非卡） | right |
+-| `QuoteBlock` | 大引号 + 引文 | blur |
+-| `SoftCallout` | 软发光提示条（比玻璃卡轻） | scale |
+-| `ProgressRing` | SVG 进度环 | draw |
+-| `ArrowConnector` | 箭头连接 | wipe |
+-| `HighlightBar` | 焦点竖条 | grow |
+-| `StatPill` | 紧凑统计胶囊（小卡） | up |
++## 口播节奏与转场
++- 镜头起点按字幕 `at:{cue/text/ms}`；不用手写sec。`F(ms)=ceil(ms*30/1000)`，总帧数=音频帧+15，无空隙。
++- anchors绑定关键词，现有适配默认提前6帧启动；media在左侧文字之后；splitVs/waitVs顺序：左文字→左图→箭头→右图。用实际口播预览微调，不破坏字幕时间码。
++- MOTION：enter16/stagger5/chip12/count32/focus12/freeze30/maxShift48（30fps）。卡片只做单调进入，到位停；滚数/画线按语义推进。
++- 正片转场保留 softPush18 → softZoom16 → driftDissolve16 → liftReveal18；旧kind名兼容。用有限单调缓动，在dur末帧精确到位；去掉softZoom移动扫光，禁止spring超调。房产子gallery继续独立10帧柔叠化。
++- 前景只在退场转场延长帧冻结；LiveFrameCtx/LiveVideo保证背景与媒体视频不停，每个Sequence premountFor30；不为“有动效”而让已到位卡片继续晃。
+ 
+-入场 `Enter`：`up | left | right | scale | fade | blur | none`。  
+-Chip 放进横向居中行时外包 `<div style={{flexShrink:0}}>`。
++## 背景、素材与亮度
++- 视频≥1920×1080、中国城市航拍、优先白天与当期城市，可商用无水印；一片一用，登记SOURCES并跑stock:verify。概念图无文字/logo/水印，≤300KB。
++- `bg.blur=0`，不糊整幅背景。brightness1.2/saturate1.06；实际压暗max(.13,dark−.26)，只留标题/字幕区渐变；白天dark .38–.45，黄昏.45–.52，夜景.52–.60。曝光或可读性差先换trim/素材或调压暗，不能回白卡。
++- 素材长度≥trim+镜长+转场余量，太短最多慢放至.75×，再短换素材。保留视频播放和背景自然缓慢运镜。
++- 不写死城市/人名；城市只在可选city字段；样例均显式标示例，正式金额/月供/税费先核算。
+ 
+-## 4. 版式（layouts.ts + archetypes.tsx）
+-`layoutRects(name, n)` 只返回矩形；`ShotView` 按 `layout` 选渲染器。
++## 字幕、片尾与工作流
++- 配音→逐字时间码→只校对文字不改时间→镜头表/anchors→check→stills→render→核对音画。详见音画同步与字幕.md。
++- Health Bold42px（38–46）、暖白+当前词沙金，底部磨砂胶囊；自然断句、行尾去标点，每行≤18字，优先单行、最多2行。当前实现以画面中心x960居中；无下划线。
++- 片尾outroHost默认左侧小滕+右侧文案；outroAir同一别名。只用当期文案，points≤3；无点赞/关注/收藏/转发类CTA。人物微呼吸摆手保留，玻璃要点条停稳。
++- 片头（EpisodeOpening/GlassLight）遵从片头原规范，未改实现；既有选楼层口诀等成片只作历史参考，不能用旧片倒推覆盖本次玻璃v6。
++- 一体build/concat/setpts混流流程不变；本轮不重制旧片、不推GitHub、不Copy Mac、不代发消息。
+ 
+-| 版式 | 视觉性格 | 元素 |
+-|---|---|---|
+-| `titleFloat` | 开场：大字 + 小插图，几乎无重卡 | SplitType · chips · soft MediaFrame · SoftCallout |
+-| `bareNumber` | 核心数字：裸数字 + 概念图 | BareNumber · Underline · chips · soft MediaFrame |
+-| `splitVs` | 左右对比 | 双 MediaFrame · Arrow · 双 BareNumber · FloatLabel |
+-| `timeline` | 流程：无卡 | Timeline 节点 · SoftCallout 结论 |
+-| `mediaRows` | 一图多行 | MediaFrame · IconRow 列表（焦点接力） |
+-| `quoteStack` | 避坑清单 | QuoteBlock · IconRow · SoftCallout(coral) |
+-| `ringFeature` | 月供等比例概念 | MediaFrame · ProgressRing · 2× StatPill |
+-| `waitVs` | 等待对比 | 双 Media · HighlightBar · BareNumber · Arrow |
+-| `triadSoft` | 总结三列 | 3× StatPill（中列高亮）· SoftCallout |
+-| `outroHost` | 片尾小滕 | 左侧小滕挥手 + 右侧片尾文案分层，禁止点赞关注类引导语 |
+-
+-新增版式：① layouts 只用 rect/splitRows ② archetypes 写渲染器 ③ 跑检查脚本。
+-
+-## 5. 镜头数据（shots.ts）
+-```ts
+-{id:'S04', layout:'timeline', sec:6.5, kicker:'…', title:'房贷审批，{四步}走完',
+- bg:{src:'media/stock/….mp4', video:true, dark:0.58},
+- data:{steps:[{t,s,chip}], note:{t}}}
+-```
+-路径约定：`media/stock/*` 航拍 · `media/gen/*` 概念图 · `media/xiaoteng.png` 角色。  
+-各版式 `data` 字段以 `src/demo/shots.ts` 为准。
+-
+-## 6. 动画时序（5.0 运镜版）
+-- **运动语言**：Q 弹入场（Remotion spring：过冲→回落）+ 镜间运镜（推/拉/漂/起）+ 镜头内视差推近。方向跟内容走（对比横移、流程轻横移、标题推近、片尾稳住），不乱跳。
+-- 入场约 24 帧弹簧；位移 ≤48px；缩放可过冲到约 1.08 再回 1；可 blur/fade。`SPRING.enter/soft/snappy/cam` 见 tokens.ts。
+-- 顺序：页眉 → 主元素 → stagger 5 帧依次弹簧出现。
+-- 焦点接力（timeline / IconRow）：约第 24 帧到 dur−60，当前项最亮。
+-- 结论条：dur−56 左右弹簧弹出。
+-- 镜头起止由字幕时间码决定（§10）；前景只在退场转场的几帧定格；镜间用 16–18 帧运镜转场（见 §9）。成片带口播音频和烧录字幕。
+-- 每镜 5–7 秒；整片约 60 秒、约 10 镜；**相邻镜版式不得相同**。
+-
+-## 7. 素材
+-见 `public/media/stock/SOURCES.md`。下载优先 Mixkit / Coverr / Pexels（Pexels 若 Cloudflare 拦 curl，可用浏览器或换 Mixkit CDN）。生成图用 `GenerateImage`，16:9，无字。
+-
+-## 8. 出片检查清单
+-1. `node --no-warnings scripts/check-layout.mjs` → 越界 / 间距≥24 / 栏线 / 素材不复用  
+-2. `npm run stills` → `out/联系表.png`  
+-3. 人眼：无截字、无角标、不全是大卡、片尾留白、字幕区与右侧按钮区空、金色 ≤8%、版式有变化  
+-4. `npx remotion render src/index.ts Style50-Demo out/….mp4 --muted --browser-executable=…/浏览器.sh`
+-
+-## 9. 终版（v3）新增硬规则
+-### 9.1 城市中立
+-- 文案、组件、样片中不得出现任何城市名；城市只能写在镜头的可选字段 `city`（如 `city: '长沙'`）。设了 city 时 kicker 自动加前缀，不设则不显示。
+-- check-layout 会用正则扫描 `city` 字段以外的城市名。
+-- 背景素材可能拍到真实城市的天际线，学员可以按自己的城市替换素材。
+-
+-### 9.2 字号下限（tokens.ts `MIN_FONT`）
+-- 正文 / 说明文字（`data-role="body"`）≥ 34px；标签、chip、kicker ≥ 26px。
+-- 当前令牌：kicker 30、title 80、heroTitle 92、number 150、quote 60、rowTitle 40、body 34、label 28、chip 28、ringValue 52。
+-
+-### 9.3 留白与填充率
+-- 带 `data-fit` 的容器（chip、pill、callout）里，文字宽度不超过容器宽度的 75%（`RULE.fillMax`）。
+-- 多行文字行高 ≥ 1.3（`RULE.lineHeight`）。
+-- 不允许溢出。所有文字必须落在 layoutRects 给出的版式区内（容差 ±6px）。装饰性字形加 `data-deco` 可以跳过检查。
+-
+-### 9.4 组间距
+-- 独立的 MG 组之间至少相隔 48px（`MG_GAP`）：横向隔一个空栏，纵向用 `splitRows` 留 48px。只有连接件（`conn*`）可以放宽到 24px。
+-- 内容区从 contentTop 248 开始，高度 632。
+-
+-### 9.5 片尾（outroHost）
+-- 默认版式 `outroHost`（`outroAir` 为同一实现的别名）。小滕卡通（`media/character/xiaoteng_outro.png`，挥手+竖拇指）默认出镜：占左侧约 1/3 宽、底边贴画面底并渐隐，脚下暖色地面光晕；从左下柔和滑入 → 轻微呼吸浮动 + 小幅摆动模拟挥手。`character:false` 关闭，文字居中。
+-- 右侧 5–11 栏按片尾文案分层：眉标 → 主标题（核心观点，可一处金色）→ 金线 → 要点玻璃条 `points`（≤3 条，编号 01/02/03）→ 收尾句 `note` → 小字署名 `account`（如「极限小滕 · 房产科普」）。
+-- 数据：`OutroData = {eyebrow?, line, points?, note?, account?, character?}`。屏幕文字只来自当期片尾文案。
+-- **禁止引导语**：模板不加、也会自动过滤含「点赞/关注/收藏/转发/三连/评论区/订阅」的要点/收尾句；不做按钮式 CTA。
+-
+-### 9.6 转场（运镜衔接，替代硬切）
+-| 序号 | 类型（旧名兼容） | 帧数 | 做法 |
+-|---|---|---|---|
+-| 1 | softPush（原 pushBlur） | 18 | 相机侧向推入，弹簧落地；旧镜反方向滑出并虚化 |
+-| 2 | softZoom（原 crossfade） | 16 | 推近落地 + 柔光扫；旧镜放大淡出 |
+-| 3 | driftDissolve（原 maskWipe） | 16 | 同向漂入叠化，空间连续 |
+-| 4 | liftReveal（原 lightSweep） | 18 | 自下上浮揭示，模糊变清晰 |
+-- 上表四种转场按顺序轮换（transitions.tsx）。旧 kind 名仍可映射到新实现。重叠 Sequence：旧镜定格延长 T 帧，总时长不变。镜头内 Backdrop 另有缓慢推近+方向漂移（CamCtx），前景同向更快一点做视差。
+-
+-### 9.7 亮度
+-- （5.0 调整，背景比 4.5 更亮）背景遮罩 = max(0.13, dark − 0.26)，滤镜为 `brightness(1.2) saturate(1.06)`；渐变只留左上标题区（径向 0.42）和底部字幕区（0.36），中部通透；文字可读性靠 `.txs` 柔和投影（0 2px 14px rgba(0,0,0,.55)），金字用 drop-shadow。4.5 原值为 max(0.22, dark−0.16) / brightness(1.1) / 上下渐变。COLOR.sub 的不透明度为 0.78。
+-- 按时段设 `bg.dark`：白天航拍 0.38–0.45（5.0 实际压暗 0.13–0.19），黄昏或阴天 0.45–0.52，夜景 0.52–0.60，静图背景 0.45–0.55 并加 blur 6–8。白天天空过曝时加 blur 2–4，或者换 trim。详见 `素材与生图规则.md` 的 C 部分。
+-
+-### 9.8 检查命令
+-- `npm run check`：静态检查，包括贴栏线、组距、素材不复用、城市名、字号令牌。
+-- `npm run stills`：静态检查加 DOM 检查（用 @remotion/renderer 打开 onBrowserLog，读取每镜定格帧的 `CHECK|id|[...]`），同时输出 `out/stills/*.png` 和 `out/联系表.png`。只有全部 ✓ 才能出片。
+-
+-### 9.9 防「顿一下」（4.5 修复）
+-- （4.5 音画同步版起，定格只发生在退场转场期间）定格**只冻结前景**（文字和 MG）。背景视频和媒体框里的视频继续播放：`LiveFrameCtx` 记录真实帧，`LiveVideo` 用 `<Freeze frame={真实帧}>` 跳出外层的定格。
+-- 静态图背景按真实帧缓慢推近（`scale 1.02 → +0.0003/帧`），所以静图镜头也不会停住。
+-- 每个 Sequence 都设 `premountFor={30}`，提前 1 秒挂载下一镜，Studio 预览时不会因为加载而卡一下。
+-- 视频素材时长必须 ≥ trim + 镜长 + 0.5s（转场时旧镜头还要多播 T 帧）。素材太短时，末尾会停在最后一帧，`npm run check` 会报错。
+-- 验收方法：对成片逐帧求亮度差（ffmpeg `signalstats` 的 YDIF），**不能出现连续 ≥2 帧差值为 0** 的情况。24/25fps 素材每 4–6 帧会有 1 帧重复，这是帧率换算造成的，属于正常现象。
+-
+-
+-## 10. 音画同步与字幕（4.5 音画同步版）
+-完整说明见 `references/音画同步与字幕.md`。
+-### 10.1 同步规则
+-- 输入：`episodes/<期名>/` 下的音频 + SRT 和/或 Caption JSON；`npm run episode` 生成 `src/demo/episode.json`。
+-- `F(ms) = ceil(ms × 30 / 1000)`。镜头 `at` 绑定到句子；本镜时长 = 下一镜起点 − 本镜起点；最后一镜 = 音频帧数 + 15 − 起点。总帧数 = 音频帧数 + 15。
+-- 转场从上一镜借帧，不改变总时长。不再有固定的提前定格。
+-- `anchors`：关键元素在说到对应词前 6 帧开始入场，说到时到位；焦点类版式（timeline / quoteStack / mediaRows）随口播逐项移动。
+-- 素材比镜头短时自动慢放（≥0.75×）。
+-### 10.2 字幕设计
+-| 项 | 值 |
+-|---|---|
+-| 区域 | 底部 180px（y 900–1080），以内容区中心 x=864 居中，离底 44px |
+-| 字体 | 阿里健康体 Bold 42px（允许 38–46），字距 1.5，行高 1.32 |
+-| 颜色 | 暖白 `#F4EEE4`，投影 `0 2px 10px rgba(0,0,0,.45)` |
+-| 底 | 磨砂胶囊 `rgba(18,17,16,.38)` + blur 10 + 1px `rgba(243,215,158,.14)` 描边，圆角 16，内边距 10/28 |
+-| 行 | 每行 ≤18 字（半角 0.55），优先单行，长句按词时间拆成先后两条；只在无逐词时间时用 2 行 |
+-| 标点 | 行尾去掉，句中换成空格，保留小数点和 % |
+-| 动效 | 淡入 5 帧 + 上浮 8px；淡出 4 帧；间隔 <600ms 直接衔接 |
+-| 高亮 | 当前词沙金 `#F3D79E` + 3px 下划线扫过；未读到的字 72% 透明度；可关 |
+-### 10.3 检查
+-音频存在、总帧数匹配、镜头无空隙且递增、每镜 ≥1.2s 且含口播、每句字幕都在成片内、锚点可解析、字幕字号和行宽合规；stills 抽 8 句检查字幕框位于字幕区。
+-
+-
+-## 玻璃材质（5.0 默认 · 苹果磨砂玻璃）
+-- 统一用 `glassMat(mode, tint?, edge?)`（components.tsx）+ `GLASS` token（tokens.ts）；不要再手写低透明 rgba。
+-- 参数：`backdrop-filter: blur(28px) saturate(170%) brightness(0.92)`；深色底 dark（默认）填充 rgba(34,36,42,.62)→rgba(18,19,24,.70)；亮底 light 填充 rgba(252,250,246,.78)→.72。
+-- 1px 内白发丝边（.20）+ 顶部 inset 高光（.22）+ 柔阴影 0 14px 36px rgba(0,0,0,.32)。着色玻璃（gold/coral/green/高亮行）= 在底色上叠 tint，不做纯色块。
+-- 已默认套用：GlassCard dark/ghost、Chip glass/coral/green、IconRow（新增 glass 属性，默认 true；glass={false} 回旧细线行）、Timeline 步骤卡、StatPill、SoftCallout、titleFloat 要点行。
+-- 文字：卡内正文用 COLOR.warm/sub；小字芯片加 GLASS.textShadow；行号不低于 .62 不透明度。
+-- 片头玻璃卡在深空底上已可读，保持原样（GlassLight 彩光不变）。
+-
+-## 玻璃材质 v5 修订（浅玻璃 · 防闪 · 液态玻璃 · 随口播节拍）
+-
+-### 浅玻璃（覆盖上一节的 blur/brightness 参数）
+-- 不再使用 `backdrop-filter`（GLASS.blur = 'none'）。原因见下「防闪」。
+-- 暗色玻璃底：`linear-gradient(165deg, rgba(62,64,72,0.56), rgba(38,40,48,0.64))`（旧：34,36,42 @.62 → 18,19,24 @.70 + brightness .92，偏深）。
+-- 叠加固定镜面高光 `GLASS.sheen`（左上 16% 白 → 透明），保留 1px 发丝边、顶部内高光、投影与文字阴影，保证可读。
+-- ghost 底：rgba(50,52,60,.40)→rgba(30,32,40,.48)。字幕胶囊、柱状图同样去掉 backdrop-filter。
+-
+-### 防闪（根因与规则）
+-- 根因 1：`backdrop-filter` 的元素只要祖先有 opacity<1 或 filter（入场 enterStyle、转场 blur/淡入、dim），Chrome 会把该祖先当作 backdrop root，玻璃只采样到组内（≈透明）；动画结束 opacity 回到 1 后又采样整幅画面（≈磨砂不透明）→ 一会儿透明一会儿不透明。
+-- 根因 2：高亮态是布尔切换，金色底、金色 chip、边框在 1 帧内跳变。
+-- 规则：玻璃一律用确定性半透明填充（不依赖 backdrop）；高亮 `hi` 是 0→1 连续弹簧量（激活弹起、被下一项接管时平滑退回），用叠加层 opacity 与 interpolateColors 过渡；Chip 支持 `hi` 交叉淡入金色。
+-
+-### 随口播节拍（mediaRows / quoteStack / timeline 默认）
+-- 行卡在锚点词说出时入场（`r0/r1/r2`、`s0/s1/s2`，提前 6 帧）；没有锚点时每行间隔 40 帧，不再一次全出。
+-- quoteStack：引文逐行（`q0/q1`）、副句按逗号分段（`sub0/sub1`）出现；第一张卡进来后引文退后变暗（焦点交接），`warn` 出现时整体回亮。
+-- 当前项高亮、前项变暗（opacity −30%、缩 1.5%）；镜头每一拍向焦点轻推（≈3–6px、+0.3% 推近）。
+-- 目标：长镜头每 1.5–2.5s 至少有一处有意义的变化。
+-
+-### 液态玻璃（Q 弹）
+-- `useLiquid(start)`：弹簧速度→沿运动方向拉伸（≤6%），过冲→落地压扁（≤3.5%）。
+-- 邻居让位 `bump()`：新卡落地后约 6 帧，相邻卡被轻推开 9px/距离，再弹回。
+-- `Sheen`：入场与焦点切换时一道斜向镜面高光扫过玻璃（22 帧，强度 .22–.28）。
+-- 高亮卡放大 2%，与邻居的间距随之收放（合并/分离感）。克制，不做卡通形变。
+-
+-### 片头起步（防前 0.5s 卡顿）
+-- 根因：片头 0–560ms（slam 之前）卡片 opacity=0，画面只有 ≈10px 的环境光漂移，逐帧差≈0 → 看起来冻住；另外拼接后视频首帧 PTS=21ms（AAC 预滚），混流 `-r 30` 在 0s 补了一帧重复帧，并造成 21ms 音画偏移。
+-- 规则：第 0 帧起卡片已在空中加速下落（预运动），整体镜头 1.06→1 推近；字体用 delayRender 等待；混流时视频加 `-vf setpts=PTS-STARTPTS`。
+-
+-- 片头起步（v6 修正）：卡片用单一连续曲线下落——第 0 帧起 y=-420→0、scale 0.74→1，Easing.bezier(.42,0,.2,1)，在 slam+8 帧落地；落地后仅一次 ≤3px 过阻尼沉降（spring damping 26），禁止再叠加二次 drop / 欠阻尼 spring 驱动 scale。
+-
+-- 图卡跟随口播（v7 默认）：media/split 版式的图卡与箭头不在镜头开头出现。先出左侧文字，再按 anchors.media（无则在标题之后）入场；splitVs/waitVs 依次为 左文字→左图→箭头(R 锚点前约 0.5s)→右图(R 锚点)。
+-
+-## 11. 5.0 定版（2026-10-31）
+-老板确认「选楼层口诀」为 5.0 标准样子，以下全部是**模板默认**（新一期不用再手动开）：
+-- **工作流**：配音 → `/workspace/时间码字幕2.0/run-box.sh` 出逐字时间码 → 校对对齐（`校对后_动效时间轴_绝对.json`、SRT/Caption JSON）→ `node scripts/build-episode.mjs <期名> --audio=配音.mp4` 出片头 + 正片 + 拼接 + 混流。
+-- **片头（EpisodeOpening，50fps）**：时长 = 第 1 句 endMs（参考期 3.8s/190 帧）；节拍由第 1 句关键词驱动（`scripts/episode-opening-config.mjs --keys=slam:…,tilt:…,x0:…,x1:…,x2:…,title:…`）。右侧卡片从第 0 帧起单一连续曲线下落（y −420→0、scale 0.74→1，bezier(.42,0,.2,1)，slam+8 帧落地，仅一次 ≤3px 过阻尼沉降）；红叉 x0–x2、金色扫光标题、彩色 GlassLight。
+-- **玻璃**：浅玻璃，无 backdrop-filter（防闪），液态玻璃 spring + 邻居让位（nudge）+ 高光 sheen。
+-- **运动**：spring 入场、镜间运镜转场（§9.6）、关键词锚点逐项揭示（§10.1）。
+-- **图卡/箭头**：media/split 版式图卡在左侧文字之后、按 `anchors.media` 入场；splitVs/waitVs 顺序 左文字→左图→箭头→右图（右锚点）。
+-- **字幕**：无下划线，按自然语气断句。
+-- **混流**：拼接后 `-vf setpts=PTS-STARTPTS` 再混配音，`-t` 定长，防首帧重复。
+-- **片尾**：outroHost 用小滕抠像，无 CTA。
+-- **参考期**：`template/episodes/选楼层口诀/`（含 README 与复现命令）。
+-
+-### 11.x MG 版式轮换（2026-11-05 · 默认硬规则）
+-默认可选版式共 24 种（含片尾）：
+-- 定版 6：quoteStack / mediaRows / timeline / titleFloat / splitVs / outroHost
+-- 少用但默认：bareNumber / ringFeature / waitVs / triadSoft
+-- 数据图表 7：lineReveal / barGlow / rankBars / waffle / balance / yearRing / formulaCalc
+-- MG 卡片新增 6（src/style/mgCards.tsx）：keywordCascade（关键词瀑布）/ checklistFill（清单+进度格）/ vsScore（VS 计分板）/ tipStack（通知式提示堆叠）/ numberedReveal（序号翻牌）/ kpiGrid（迷你 KPI 网格）
+-  - data：words[{t,s,tone}] / items[{t,tone}]+label / L,R,rows[{k,w:'L'|'R'|'='}] / tips[{icon,t,s,tone}] / cards[{t,s}] / kpis[{k,v,unit,dec,text,ratio,tone}]；可选 media（右侧配图/视频）
+-  - 锚点：r0/r1/…（说到该词时该项入场）；无锚点按节拍自动兜底
+-**每期必须遵守：**
+-1. 单个版式一期最多用 2 次（片尾除外）；相邻两镜不得同版式。
+-2. 一期正片至少 7 种不同版式，其中至少 2 种来自「MG 卡片新增 6」。
+-3. 口播出现数字/比例/金额 → 至少 1 镜用数据图表或 ringFeature / bareNumber / kpiGrid。没有真实数字不造数，用 checklistFill / numberedReveal / keywordCascade。
+-4. 清单/盘点类选题（N 笔钱、N 个坑）默认 checklistFill 贯穿计数，配合 numberedReveal / tipStack 轮换。
+-5. 对比类默认 vsScore 或 splitVs/waitVs 轮换，不要连用。
+-6. 背景优先视频（media/stock），图片背景一期不超过 1/3。
+-7. 卡片入场后必须持续有动作（呼吸浮动/焦点移动/进度填充），禁止等卡片时画面静止。
+-活目录：src/gallery/shots-mg-gallery.ts（Composition「MgGallery」）；新增版式必须在这里登记一镜。预览：outputs/mg-gallery/。
++## API与验收
++- 版式data见版式目录.md；组件参数见组件API.md；样镜在GALLERY/RE10，非正式当期事实。
++- `npm run check:freeze`：材质同源、26默认/9房产/6存档、无unitCompare、入场单调、到位几何稳定与文档一致性。
++- `npm run gallery:stills`：生成26套默认+6套存档复核图（存档不等于推荐）；`MgGalleryRe10`仍是已审9套子预览。
++- `npm run check`（静态+DOM按stills脚本流程）和正式每期音画/素材校验仍必须执行；本次模板抽帧不代替每期验收。
++- 人眼确认：可透见环境的冷灰薄玻璃、更实而非实心板、细白边/轻顶光、无颗粒/厚边/重影/白底/扫光/到位弹，文字无截断，平台安全区空。
+--- a/正片/template/package-lock.json
++++ b/正片/template/package-lock.json
+@@ -1,10 +1,10 @@
+ {
+-  "name": "xiaoteng-storyboard-style-4-5",
++  "name": "xiaoteng-storyboard-style-5-0",
+   "lockfileVersion": 3,
+   "requires": true,
+   "packages": {
+     "": {
+-      "name": "xiaoteng-storyboard-style-4-5",
++      "name": "xiaoteng-storyboard-style-5-0",
+       "dependencies": {
+         "@remotion/bundler": "4.0.484",
+         "@remotion/cli": "4.0.484",
+@@ -20,7 +20,8 @@
+       },
+       "engines": {
+         "node": ">=22.18.0"
+-      }
++      },
++      "version": "5.0.0"
+     },
+     "node_modules/@babel/helper-string-parser": {
+       "version": "7.29.11",
+@@ -3052,5 +3053,6 @@
+         "url": "https://github.com/sponsors/colinhacks"
+       }
+     }
+-  }
++  },
++  "version": "5.0.0"
+ }
+--- a/正片/template/package.json
++++ b/正片/template/package.json
+@@ -1,8 +1,8 @@
+ {
+-  "name": "xiaoteng-storyboard-style-4-5",
++  "name": "xiaoteng-storyboard-style-5-0",
+   "private": true,
+   "type": "module",
+-  "description": "小滕分镜风格4.5版本 · Remotion 模板",
++  "description": "5.0 新定版（玻璃v6 + 房产MG）· 本地 Remotion 模板",
+   "engines": {
+     "node": ">=22.18.0"
+   },
+@@ -14,7 +14,9 @@
+     "check": "node --no-warnings scripts/check-layout.mjs",
+     "stills": "node --no-warnings scripts/stills.mjs",
+     "render": "node scripts/render.mjs",
+-    "studio": "node scripts/render.mjs --studio"
++    "studio": "node scripts/render.mjs --studio",
++    "check:freeze": "node scripts/check-freeze.cjs",
++    "gallery:stills": "node scripts/freeze-stills.mjs"
+   },
+   "dependencies": {
+     "remotion": "4.0.484",
+@@ -28,5 +30,6 @@
+     "typescript": "6.0.3",
+     "@types/react": "19.2.17",
+     "@types/react-dom": "19.2.3"
+-  }
++  },
++  "version": "5.0.0"
+ }
+--- /dev/null
++++ b/正片/template/scripts/check-freeze.cjs
+@@ -0,0 +1,100 @@
++// Portable local-template regression: real TS modules, mocked Remotion clock/assets (not a DOM pixel test).
++const fs = require('node:fs'), path = require('node:path'), assert = require('node:assert/strict');
++const root = path.resolve(__dirname, '..');
++const ts = require(path.join(root, 'node_modules/typescript'));
++const realReact = require(path.join(root, 'node_modules/react'));
++const React = {...realReact, useContext: c => c._currentValue};
++const remotion = require(path.join(root, 'node_modules/remotion'));
++let frame = 0; const cache = new Map();
++const asset = props => React.createElement('asset', {src: props.src});
++function load(file) {
++  file = path.resolve(root, file);
++  if (cache.has(file)) return cache.get(file).exports;
++  const module = {exports: {}}; cache.set(file, module);
++  const code = ts.transpileModule(fs.readFileSync(file, 'utf8'), {compilerOptions: {module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.React, esModuleInterop: true}}).outputText;
++  const req = name => {
++    if (name === 'react') return React;
++    if (name === 'remotion') return {...remotion, useCurrentFrame: () => frame, useVideoConfig: () => ({fps: 30, width: 1920, height: 1080}), getInputProps: () => ({}), Img: asset, OffthreadVideo: asset, Freeze: p => p.children};
++    if (name.startsWith('.')) {
++      const b = path.resolve(path.dirname(file), name);
++      const f = [b, b+'.ts', b+'.tsx', b+'.json'].find(p => fs.existsSync(p) && fs.statSync(p).isFile());
++      if (f?.endsWith('.json')) return JSON.parse(fs.readFileSync(f, 'utf8'));
++      if (f) return load(f);
++    }
++    throw new Error('Unexpected module '+name);
++  };
++  new Function('require','module','exports',code)(req,module,module.exports);
++  return module.exports;
++}
++const token = load('src/style/tokens.ts'), comp = load('src/style/components.tsx');
++const layouts = load('src/style/layouts.ts');
++const {GALLERY, ARCHIVE_GALLERY} = load('src/gallery/shots-mg-gallery.ts');
++const {RE10} = load('src/gallery/shots-mg-re10.ts');
++const {ShotView} = load('src/style/archetypes.tsx');
++const {frost} = load('src/style/mgEstate.tsx');
++assert.equal(token.FROST, token.GLASS_V6);
++assert.equal(token.GLASS.dark.fill, token.FROST.fill);
++assert.equal(token.GLASS.light.fill, token.FROST.fill);
++assert.equal(token.FROST.fill, 'linear-gradient(165deg, rgba(62,64,72,0.68), rgba(38,40,48,0.74))');
++assert.equal(token.FROST.blur, 'none');
++assert.equal(token.FROST.hair, 'rgba(255,255,255,0.22)');
++for (const tone of ['none','gold','coral','green','blue']) for (const soft of [false,true]) {
++  const a = comp.glassMat('dark', token.FROST.tint[tone], undefined, soft), b = frost(tone, soft);
++  for (const k of ['background','border','boxShadow','textShadow','backdropFilter','WebkitBackdropFilter','color']) assert.equal(a[k],b[k],tone+' '+k);
++}
++assert.equal(comp.glassMat('light').background, comp.glassMat().background);
++assert.match(comp.glassMat('dark','rgba(224,113,92,0.42)').background, /rgba\(224,113,92,0.1\)/);
++assert.equal(comp.Sheen({at: 0}), null);
++for (let f=-20; f<=240; f+=0.25) assert.equal(comp.bump(f), 0);
++for (const kind of ['enter','soft','chip']) {
++  let prev = -1;
++  for (let f=-30;f<=240;f+=0.25) {
++    const p = token.glassEnter(f,0,kind); assert(p>=prev && p>=0 && p<=1); prev=p;
++    frame=f; const L = comp.useLiquid(0, kind==='soft'?token.SPRING.soft:kind==='chip'?token.SPRING.snappy:token.SPRING.enter);
++    assert.equal(L.p,p); assert.equal(L.sx,1); assert.equal(L.sy,1);
++  }
++  assert.equal(token.glassEnter(token.GLASS_ENTER_FRAMES[kind],0,kind),1);
++}
++assert.equal(layouts.DEFAULT_LAYOUTS.length,26);
++assert.equal(new Set(layouts.DEFAULT_LAYOUTS).size,26);
++assert.deepEqual([...new Set(GALLERY.map(s=>s.layout))].sort(), [...layouts.DEFAULT_LAYOUTS].sort());
++assert.equal(GALLERY.length,26); assert.equal(RE10.length,9); assert.equal(ARCHIVE_GALLERY.length,6);
++assert.deepEqual(RE10.map(s=>s.layout), [...layouts.ESTATE_LAYOUTS]);
++assert.equal(layouts.canonicalLayout('outroAir'),'outroHost');
++assert(!layouts.isDefaultLayout('unitCompare'));
++assert.deepEqual(layouts.layoutRects('unitCompare'),{});
++for (const s of ARCHIVE_GALLERY) assert(!layouts.isDefaultLayout(s.layout));
++const geomKeys=['left','top','right','bottom','width','height','transform','transformOrigin','padding','gap','fontSize','filter'];
++const take = st => Object.fromEntries(geomKeys.filter(k=>k in st).map(k=>[k,st[k]]));
++function walk(node, out, p='0', parents=[]) {
++  if (node == null || typeof node === 'boolean' || typeof node !== 'object') return;
++  if (Array.isArray(node)) return node.forEach((n,i)=>walk(n,out,p+'.'+i,parents));
++  if (typeof node.type === 'function') return walk(node.type(node.props),out,p+'.fn',parents);
++  const st = node.props?.style || {}, chain=[...parents,take(st)];
++  if (st.backdropFilter === 'none') {
++    assert(st.background?.includes(token.FROST.fill) || st.background?.includes(token.FROST.fillSoft), 'Noncanonical card '+p);
++    out.push({path:p, ancestors:chain});
++  }
++  const ctx = node.type && typeof node.type === 'object' && '_currentValue' in node.type ? node.type : null;
++  const prev=ctx?ctx._currentValue:null;
++  if(ctx) ctx._currentValue=node.props.value;
++  walk(node.props?.children,out,p+'.child',chain);
++  if(ctx) ctx._currentValue=prev;
++}
++function sample(s,f) { frame=f; const out=[]; walk(ShotView({s,dur:210}),out); return out; }
++const stable=[];
++for (const s of [...GALLERY,...ARCHIVE_GALLERY]) {
++  const ref=JSON.stringify(sample(s,185));
++  for(let f=186;f<209;f++) assert.equal(JSON.stringify(sample(s,f)),ref,s.layout+' card/ancestor moved after settling at '+f);
++  stable.push({layout:s.layout, glassElements:JSON.parse(ref).length, stableFrames:[185,208]});
++}
++const project=path.resolve(root,'../..');
++assert.equal(fs.readFileSync(path.join(root,'风格设计规范.md'),'utf8'),fs.readFileSync(path.join(project,'正片/references/风格设计规范.md'),'utf8'));
++for(const f of ['SKILL.md','正片/SKILL.md','正片/references/版式目录.md','正片/references/风格设计规范.md']) {
++ const text=fs.readFileSync(path.join(project,f),'utf8');
++ assert(text.includes('5.0 新定版（玻璃v6 + 房产MG）'),f);
++ assert(!/至少 2 种来自「MG 卡片新增 6」|9 套，未定版|卡片入场后必须持续有动作/.test(text),f+' stale policy');
++}
++const report={version:'5.0.0-glass-v6-estate',status:'approved',timezone:'Asia/Shanghai',testedAt:new Date().toLocaleString('sv-SE',{timeZone:'Asia/Shanghai'}),defaultCount:26,defaultLayouts:layouts.DEFAULT_LAYOUTS,estateLayouts:layouts.ESTATE_LAYOUTS,archiveLayouts:layouts.ARCHIVE_LAYOUTS,estateCount:9,archiveCount:6,unitCompareDefault:false,material:'GLASS_V6 = FROST; GLASS.dark/light and glassMat/frost/LG same source',baseAlpha:[0.68,0.74],entryFrames:token.GLASS_ENTER_FRAMES,overshoot:false,scanbar:false,settledGeometry:stable,scope:'TS/React-tree parameter regression; actual rendered stills checked separately, not a DOM pixel measurement'};
++const dest=path.join(project,'定版记录');fs.mkdirSync(dest,{recursive:true});fs.writeFileSync(path.join(dest,'freeze-regression.json'),JSON.stringify(report,null,2)+'\n');
++console.log(`PASS: same-source glass; monotonic 16/20/12f; 26 default + 6 archive settled-card checks; 9 estate; unitCompare excluded; synchronized docs`);
+--- /dev/null
++++ b/正片/template/scripts/freeze-stills.mjs
+@@ -0,0 +1,19 @@
++// Approved default gallery + explicit archival material audit (archive is not recommendation).
++import {mkdirSync, writeFileSync} from 'node:fs';
++import {resolve} from 'node:path';
++import {bundle} from '@remotion/bundler';
++import {selectComposition, renderStill} from '@remotion/renderer';
++import {GALLERY, ARCHIVE_GALLERY} from '../src/gallery/shots-mg-gallery.ts';
++const out = resolve(process.argv[2] || '../../outputs/freeze-v6');
++const serveUrl=await bundle({entryPoint:'src/index.ts'});
++const composition=await selectComposition({serveUrl,id:'MgGallery',inputProps:{}});
++const manifest=[];
++for(const [kind,shots] of [['default',GALLERY],['archive',ARCHIVE_GALLERY]]) {
++ mkdirSync(`${out}/${kind}`,{recursive:true});
++ for(let i=0;i<shots.length;i++) {
++  const file=`${kind}/${String(i+1).padStart(2,'0')}_${shots[i].layout}.png`;
++  await renderStill({serveUrl,composition,inputProps:{archiveAudit:kind==='archive'},frame:i*150+140,output:`${out}/${file}`,chromiumOptions:{gl:'swangle'},timeoutInMilliseconds:120000});
++  manifest.push({group:kind,layout:shots[i].layout,file,frame:i*150+140});console.log('✓',file);
++ }
++}
++writeFileSync(`${out}/stills-manifest.json`,JSON.stringify(manifest,null,2)+'\n');
+--- a/正片/template/scripts/re10-stills.mjs
++++ b/正片/template/scripts/re10-stills.mjs
+@@ -1,4 +1,4 @@
+-// 房产MG待审9种：每镜定格帧（全入场后）→ outputs/mg-gallery-re10/stills
++// 房产MG已定9种：每镜定格帧（全入场后）→ outputs/mg-gallery-re10/stills
+ import {mkdirSync} from 'node:fs';
+ const OUT = process.argv[2]; const FR = +(process.argv[3] || 118); const only = process.argv[4];
+ mkdirSync(OUT, {recursive: true});
+--- a/正片/template/src/gallery/MgGallery.tsx
++++ b/正片/template/src/gallery/MgGallery.tsx
+@@ -1,14 +1,18 @@
+ import React from 'react';
+-import {AbsoluteFill, Sequence} from 'remotion';
++import {AbsoluteFill, Sequence, getInputProps} from 'remotion';
+ import {Fonts} from '../style/components';
+ import {ShotView} from '../style/archetypes';
+ import {Transition, TRANSITIONS} from '../style/transitions';
+ import {COLOR} from '../style/tokens';
+-import {GALLERY} from './shots-mg-gallery.ts';
++import {GALLERY, ARCHIVE_GALLERY} from './shots-mg-gallery.ts';
+ export const G_SHOT = 150; export const GALLERY_FRAMES = G_SHOT * GALLERY.length;
+-export const MgGallery: React.FC = () => <AbsoluteFill style={{background: COLOR.ink}}><Fonts />
+-  {GALLERY.map((s, i) => { const inT = i ? TRANSITIONS[(i - 1) % TRANSITIONS.length] : null; const outT = i < GALLERY.length - 1 ? TRANSITIONS[i % TRANSITIONS.length] : null;
++/** archiveAudit 只供存档材质回归；默认始终26套，不作推荐入口。 */
++export const MgGallery: React.FC = () => {
++  const shots = (getInputProps() as {archiveAudit?: boolean}).archiveAudit ? ARCHIVE_GALLERY : GALLERY;
++  return <AbsoluteFill style={{background: COLOR.ink}}><Fonts />
++  {shots.map((s, i) => { const inT = i ? TRANSITIONS[(i - 1) % TRANSITIONS.length] : null; const outT = i < shots.length - 1 ? TRANSITIONS[i % TRANSITIONS.length] : null;
+     return <Sequence key={s.id} from={i * G_SHOT} durationInFrames={G_SHOT + (outT?.dur ?? 0)} premountFor={30}>
+       <Transition d={G_SHOT} inT={inT} outT={outT} z={i}><ShotView s={s} dur={G_SHOT} exampleData={!String(s.layout).startsWith('outro')} /></Transition>
+     </Sequence>; })}
+ </AbsoluteFill>;
++};
+--- a/正片/template/src/gallery/MgGalleryRe10.tsx
++++ b/正片/template/src/gallery/MgGalleryRe10.tsx
+@@ -1,4 +1,4 @@
+-// 房产 MG 待审 9 套 v4：每套 4.5 秒，仅本 gallery 用 10 帧柔和叠化；无扫光、无镜头回弹。
++// 房产 MG 已定 9 套 v6：每套 4.5 秒，仅本 gallery 用 10 帧柔和叠化；无扫光、无镜头回弹。
+ import React from 'react';
+ import {AbsoluteFill, Sequence, useCurrentFrame} from 'remotion';
+ import {Fonts} from '../style/components';
+--- a/正片/template/src/gallery/shots-mg-gallery.ts
++++ b/正片/template/src/gallery/shots-mg-gallery.ts
+@@ -1,10 +1,12 @@
+ // 5.0 MG 版式活目录：每个默认版式一镜，示例数据（画面带「示例」角标）。新增版式必须在这里登记一镜。
+ import type {Shot} from '../style/types.ts';
++import {RE10} from './shots-mg-re10.ts';
++import {ARCHIVE_LAYOUTS, isDefaultLayout} from '../style/layouts.ts';
+ import {SHOTS as FLOOR} from './floor-ref-shots.ts';
+ const V = (f: string) => ({src: `media/stock/${f}.mp4`, video: true, dark: 0.55});
+ const G = (f: string) => `media/gen/${f}`;
+ const pick = (l: string) => FLOOR.find((s) => s.layout === l)!;
+-export const GALLERY: Shot[] = ([
++const HISTORICAL_SAMPLES: Shot[] = ([
+   // —— 定版原有 6 种（取自选楼层口诀）——
+   pick('quoteStack'), pick('mediaRows'), pick('timeline'), pick('titleFloat'), pick('splitVs'),
+   // —— 原有但少用 ——
+@@ -32,7 +34,7 @@
+     data: {years: 30, key1: 10, title: '第 10 年\n才还完一半利息', sub: '等额本息前期主要在还利息', side: [{k: '总利息', v: '112.8 万'}, {k: '前10年', v: '≈ 57.8 万'}]}},
+   {layout: 'formulaCalc', kicker: '公式计算', title: '每月要还多少', bg: V('mixkit_2005_day'),
+     data: {result: 8967, unit: '元', terms: [{v: '210万', k: '贷款额'}, {v: '3.1%', k: '年利率'}, {v: '360期', k: '30年'}], ops: ['×', '×'], note: 'r = 年利率÷12，n = 360'}},
+-  // —— 新增 MG 卡片 ——
++  // —— 旧6套：只导出到 ARCHIVE_GALLERY，绝不进入默认预览 ——
+   {layout: 'keywordCascade', kicker: '关键词瀑布', title: '看房先看{这四样}', bg: V('mixkit_42332_day'),
+     data: {words: [{t: '采光', s: '楼间距'}, {t: '噪声', s: '临不临街'}, {t: '视野', s: '窗外是啥'}, {t: '物业', s: '管得好不好', tone: 'gold'}], media: {src: V('yl_v_viewroom').src, video: true, label: '实地看房'}}},
+   {layout: 'checklistFill', kicker: '清单进度', title: '首付之外 {7笔钱}', bg: V('mixkit_42333_day'),
+@@ -47,3 +49,11 @@
+     data: {kpis: [{k: '房龄', v: 8, unit: '年', ratio: 0.3}, {k: '得房率', v: 82, unit: '%', ratio: 0.82, tone: 'green'}, {k: '楼间距', text: '宽', ratio: 0.8}, {k: '物业', text: '一般', ratio: 0.45, tone: 'coral'}], media: {src: G('clean_complex.jpg'), label: '小区', tag: '概念图'}}},
+   pick('outroHost'),
+ ] as any[]).map((s, i) => ({...s, id: `G${String(i + 1).padStart(2, '0')}`})) as Shot[];
++
++/** 存档复核入口（不注册默认预览 composition）。 */
++export const ARCHIVE_GALLERY = HISTORICAL_SAMPLES.filter(s => (ARCHIVE_LAYOUTS as readonly string[]).includes(s.layout));
++/** 26套 = 原核心10（outroAir别名不重复）+ 数据7 + 已定房产9；无户型对比/旧6套。 */
++export const GALLERY: Shot[] = [
++  ...HISTORICAL_SAMPLES.filter(s => isDefaultLayout(s.layout) && s.layout !== 'outroHost'),
++  ...RE10, pick('outroHost'),
++].map((s, i) => ({...s, id: `G${String(i + 1).padStart(2, '0')}`}));
+--- a/正片/template/src/gallery/shots-mg-re10.ts
++++ b/正片/template/src/gallery/shots-mg-re10.ts
+@@ -1,4 +1,4 @@
+-// 5.0 房产科普 MG「待审 9 种」预览（2026-11-06）。全部示例数据（画面右上「* 数据为示例」），正式片换真数。
++// 5.0 房产科普 MG「已定 9 种」预览（2026-11-06）。全部示例数据（画面右上「* 数据为示例」），正式片换真数。
+ import type {Shot} from '../style/types.ts';
+ const V = (f: string, dark = 0.55) => ({src: `media/stock/${f}.mp4`, video: true, dark});
+ export const RE10: Shot[] = ([
+--- a/正片/template/src/style/archetypes.tsx
++++ b/正片/template/src/style/archetypes.tsx
+@@ -1,5 +1,5 @@
+ import React from 'react';
+-import {AbsoluteFill, Freeze, Img, staticFile, useCurrentFrame, useVideoConfig, spring, getInputProps} from 'remotion';
++import {AbsoluteFill, Freeze, Img, staticFile, useCurrentFrame, useVideoConfig, getInputProps} from 'remotion';
+ import {bump, 
+   ArrowConnector, Backdrop, BareNumber, CamCtx, Chip, ExampleMark, FloatLabel, GoldText, Headline, HighlightBar,
+   IconRow, Kicker, MediaFrame, ProgressRing, QuoteBlock, SoftCallout, SplitType, StatPill, Timeline, UnderlineDraw, prog, glassMat,
+@@ -7,7 +7,7 @@
+ } from './components';
+ import {layoutRects, titleRect, usesTitle} from './layouts.ts';
+ import {splitRows, type Rect} from './grid.ts';
+-import {COLOR, FONT, MOTION, SPRING, TYPE} from './tokens';
++import {COLOR, FONT, MOTION, SPRING, TYPE, FROST, steadySpring as spring} from './tokens';
+ import type {Shot} from './types';
+ import {DomCheck} from './domcheck';
+ import {LineChartReveal, BarGlow} from './DataCharts';
+@@ -88,17 +88,15 @@
+ 
+ const rowRects = (r: Rect, n: number) => splitRows(r.y, r.h, Array(n).fill(1), 24).map((y) => ({x: r.x, w: r.w, ...y}));
+ 
+-/** 逐项节拍（5.0 默认）：每行在其锚点词说出时入场；当前项高亮、前项变暗；新卡落地时邻居让位；镜头随焦点微移 */
++/** 逐项节拍（5.0 默认）：每行在其锚点词说出时入场；当前项高亮、前项变暗；卡片到位停稳；焦点仅改变颜色/亮度 */
+ const useRowBeats = (n: number, fb: (i: number) => number) => {
+   const f = useCurrentFrame(); const at = useAt(); const a = React.useContext(AnchorCtx);
+   const starts = Array.from({length: n}, (_, i) => at(`r${i}`, fb(i)));
+   const act = anchoredIdx(f, n, 'r', a) ?? starts.reduce((k, st, i) => (f >= st ? i : k), 0);
+   const sp = (st: number) => Math.min(1, spring({frame: Math.max(0, f - st), fps: 30, config: SPRING.soft}));
+   const dim = (i: number) => (i < act ? sp(starts[i + 1] + 4) : 0);
+-  const nudge = (i: number) => starts.reduce((acc, st, j) => (j === i ? acc : acc + (i < j ? -1 : 1) * (9 / Math.abs(i - j)) * bump(f - st - 6)), 0);
+-  // 镜头微移：每到新一拍向焦点行轻推 ~6px + 0.6% 推近
+-  const camK = starts.reduce((acc, st) => acc + sp(st), 0);
+-  const cam = {transform: `translateY(${-3 * camK + (act - (n - 1) / 2) * -4 * sp(starts[act])}px) scale(${1 + 0.003 * camK})`, transformOrigin: '60% 50%'};
++  const nudge = (_i: number) => 0;
++  const cam: React.CSSProperties = {}; // v6：关闭前景整体漂移与焦点推近
+   return {starts, act, dim, nudge, cam};
+ };
+ 
+@@ -245,7 +243,7 @@
+   numberedReveal: mv('numberedReveal', NumberedReveal, 'cards', 'cards', 30),
+   kpiGrid: mv('kpiGrid', KpiGrid, 'grid', 'kpis', 14),
+ };
+-/* ===== 5.0 房产科普 MG（待审 9 种，mgEstate.tsx）：锚点 r0/r1…；n = 节拍数；R 传整组矩形 ===== */
++/* ===== 5.0 房产科普 MG（已定 9 种，mgEstate.tsx）：锚点 r0/r1…；n = 节拍数；R 传整组矩形 ===== */
+ const ev = (name: any, C: any, beats: (d: any) => number, gap = 24, one?: string) => (({s, dur}: {s: Shot; dur: number}) => {
+   const at = useAt(); const R = layoutRects(name); const d = s.data; const n = Math.max(1, beats(d));
+   const g = Math.min(gap, Math.max(10, (dur - 70) / n)); const st = (i: number) => at(`r${i}`, 16 + i * g);
+@@ -299,13 +297,8 @@
+   const kt = kickerText(s);
+   const fx = (s as any).fx as number | undefined; // 可选：本期加强运镜 + 口播节拍动效
+   const cam = {...camFor(s.layout), move: fx ?? 1};
+-  // 前景相对背景更快一点的同向漂移（视差），只在镜头前段建立空间感
+-  // re10 待审卡片到位后不再整体漂移/推近；所有非房产旧版式保持原逻辑。
+-  const steadyEstate = Object.prototype.hasOwnProperty.call(ESTATE_VIEWS, s.layout);
+-  const fgT = steadyEstate ? 0 : fx ? f / Math.max(1, dur) : Math.min(1, f / Math.max(1, dur * 0.85));
+-  const fgTX = cam.dirX * fgT * 10 * (fx ? 2.2 : 1) + (!steadyEstate && fx ? Math.sin(f / 30 * 0.9) * 4 : 0);
+-  const fgTY = cam.dirY * fgT * 6 * (fx ? 2 : 1) + (!steadyEstate && fx ? Math.sin(f / 30 * 1.3) * 3 : 0);
+-  const fgScale = 1 + fgT * 0.012 * cam.zoom * (fx ? 1.8 : 1);
++  // v6：所有 MG 前景到位即停，背景自然运镜保留（含旧版式与 fx 路径）。
++  const fgTX = 0, fgTY = 0, fgScale = 1;
+   const body = <AbsoluteFill>
+     <CamCtx.Provider value={cam}>
+       <Backdrop src={s.bg.src} video={s.bg.video} blur={s.bg.blur} dark={s.bg.dark} trimStart={s.bg.trim} />
+@@ -317,7 +310,6 @@
+       {View ? <View s={s} dur={dur} /> : null}
+       {fx ? <Beats s={s} /> : null}
+     </AbsoluteFill>
+-    {fx ? <WordSheen /> : null}
+   </AbsoluteFill>;
+   // 音画同步：不再提前 1 秒定格（会和口播错位），只在退场转场期间冻结前景
+   const freezeAt = dur - 1;
+@@ -331,7 +323,7 @@
+   </>;
+ };
+ 
+-/* ===== 可选（shot.fx）：口播节拍动效。beats = 说到某词时弹出的小标签/图标；每个锚点触发一次轻扫光 ===== */
++/* ===== 可选（shot.fx）：口播节拍动效。beats = 说到某词时弹出的小标签/图标；无扫光/整体浮动 ===== */
+ type Beat = {k: string; t: string; x: number; y: number; tone?: 'gold' | 'green' | 'coral' | 'glass'; icon?: string};
+ const TONE: Record<string, [string, string]> = {gold: ['rgba(243,215,158,.34)', '#F3D79E'], green: ['rgba(141,184,154,.36)', '#BFE8CB'], coral: ['rgba(224,113,92,.36)', '#FFC2B4'], glass: ['rgba(255,255,255,.16)', '#FFFFFF']};
+ const Beats: React.FC<{s: Shot}> = ({s}) => {
+@@ -342,23 +334,14 @@
+     const p = spring({frame: f - (st - 4), fps, config: SPRING.snappy});
+     const ring = Math.min(1, (f - st + 4) / 22);
+     const [bg, fg] = TONE[b.tone ?? 'glass'];
+-    const bob = Math.sin((f - st) / 30 * 2.1 + i) * 4;
++    const bob = 0;
+     return <div key={i} style={{position: 'absolute', left: b.x, top: b.y + bob, transform: `translate(-50%,-50%) scale(${0.3 + 0.7 * p})`, opacity: Math.min(1, p * 1.8)}}>
+       <div style={{position: 'absolute', left: '50%', top: '50%', width: 140, height: 140, marginLeft: -70, marginTop: -70, borderRadius: '50%', border: `3px solid ${fg}`, opacity: (1 - ring) * 0.8, transform: `scale(${0.4 + ring * 1.6})`}} />
+-      <div style={{display: 'flex', alignItems: 'center', gap: 12, whiteSpace: 'nowrap', padding: '12px 28px', borderRadius: 999, background: bg, border: '1.5px solid rgba(255,255,255,.55)',
+-        backdropFilter: 'blur(14px) saturate(1.2)', WebkitBackdropFilter: 'blur(14px) saturate(1.2)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.5), 0 14px 30px rgba(0,0,0,.3)',
++      <div style={{display: 'flex', alignItems: 'center', gap: 12, whiteSpace: 'nowrap', padding: '12px 28px', borderRadius: 999, ...glassMat('dark', bg),
+         fontFamily: FONT.body, fontWeight: 700, fontSize: 32, color: '#fff', textShadow: '0 2px 6px rgba(0,0,0,.4)'}}>
+-        {b.icon && <span style={{display: 'inline-flex', width: 40, height: 40, borderRadius: '50%', alignItems: 'center', justifyContent: 'center', background: fg, color: '#1d1b19', fontSize: 24}}>{b.icon}</span>}
++        {b.icon && <span style={{display: 'inline-flex', width: 40, height: 40, borderRadius: '50%', alignItems: 'center', justifyContent: 'center', background: fg, color: '#1d1b19', fontSize: 26}}>{b.icon}</span>}
+         {b.t}
+       </div>
+     </div>;
+   })}</>;
+ };
+-const WordSheen: React.FC = () => {
+-  const f = useCurrentFrame(); const a = React.useContext(AnchorCtx);
+-  const hits = Object.values(a).filter((v) => f >= v - 2 && f < v + 16);
+-  if (!hits.length) return null;
+-  const p = (f - (hits[0] - 2)) / 18; const x = -30 + p * 160;
+-  return <AbsoluteFill style={{pointerEvents: 'none', mixBlendMode: 'screen', opacity: 0.22 * Math.sin(Math.PI * Math.min(1, p)),
+-    background: `linear-gradient(110deg, transparent ${x - 14}%, rgba(255,255,255,.55) ${x}%, transparent ${x + 14}%)`}} />;
+-};
+--- a/正片/template/src/style/components.tsx
++++ b/正片/template/src/style/components.tsx
+@@ -1,38 +1,27 @@
+ import React from 'react';
+-import {AbsoluteFill, Easing, Freeze, interpolateColors, Img, OffthreadVideo, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
++import {AbsoluteFill, Easing, Freeze, interpolateColors, Img, OffthreadVideo, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+ import type {Rect} from './grid.ts';
+-import {COLOR, FONT, GLASS, MIN_FONT, MOTION, RADIUS, SPRING, TYPE} from './tokens';
+-
+-/** 苹果磨砂玻璃：返回可直接展开的 style。mode 自适应：dark（默认，暗背景）/light（亮背景）；tint 可选着色 rgba 叠在底色上 */
+-export const glassMat = (mode: 'dark' | 'light' = 'dark', tint?: string, edge?: string): React.CSSProperties => {
+-  const m = GLASS[mode];
+-  return {background: tint ? `${GLASS.sheen}, linear-gradient(165deg, ${tint}, rgba(0,0,0,0) 140%), ${m.fill}` : `${GLASS.sheen}, ${m.fill}`,
+-    border: `1px solid ${edge ?? m.hair}`,
+-    boxShadow: `inset 0 1px 0 ${m.top}, inset 0 0 0 0.5px rgba(255,255,255,0.06), ${GLASS.shadow}`};
+-};
+-
+-
+-/** 液态玻璃（5.0 默认）：弹簧速度→拉伸，过冲→落地压扁；配合 Sheen 镜面高光扫过 */
++import {COLOR, FONT, FROST, GLASS, glassEnter, steadySpring as spring, MIN_FONT, MOTION, RADIUS, SPRING, TYPE} from './tokens';
++
++/** 5.0 新定版：唯一玻璃入口。旧 light/edge 接口兼容，不恢复白底或彩色厚边。 */
++const softTint = (tint?: string) => tint?.replace(/rgba\(([^,]+),([^,]+),([^,]+),\s*([\d.]+)\)/g,
++  (_, r, g, b, a) => `rgba(${r},${g},${b},${Math.min(0.10, Number(a))})`);
++export const glassMat = (_mode: 'dark' | 'light' = 'dark', tint?: string, _edge?: string, soft = false): React.CSSProperties => ({
++  color: FROST.ink, textShadow: FROST.textShadow,
++  background: `${FROST.surfaceHighlight}, linear-gradient(165deg, ${softTint(tint) ?? FROST.tint.none}, rgba(0,0,0,0) 120%), ${soft ? FROST.fillSoft : FROST.fill}`,
++  backdropFilter: FROST.blur, WebkitBackdropFilter: FROST.blur,
++  border: `1px solid ${FROST.hair}`,
++  boxShadow: `inset 0 1px 0 ${FROST.top}, inset 0 -1px 0 ${FROST.bottom}, ${FROST.shadow}`,
++});
++/** 兼容旧 useLiquid，现为单调入场；不拉伸、不压扁。 */
+ export const useLiquid = (start: number, config: typeof SPRING.enter = SPRING.enter) => {
+   const f = useCurrentFrame(); const {fps} = useVideoConfig();
+-  const p = spring({frame: Math.max(0, f - start), fps, config});
+-  const p0 = spring({frame: Math.max(0, f - 1 - start), fps, config});
+-  const v = Math.max(-0.06, Math.min(0.06, (p - p0) * 0.45));   // 运动中沿方向拉伸
+-  const over = Math.max(-0.035, Math.min(0.035, (p - 1) * 0.7)); // 过冲时压扁
+-  return {p, sx: 1 + v + over, sy: 1 - v * 0.8 - over};
+-};
+-/** 邻居让位：t 帧前有新卡落地 → 0→1→0 的小脉冲（峰值在落地后 ~6 帧） */
+-export const bump = (t: number) => (t <= 0 ? 0 : (t / 6) * Math.exp(1 - t / 6));
+-/** 镜面高光扫过（入场 / 焦点切换时） */
+-export const Sheen: React.FC<{at: number; dur?: number; strength?: number}> = ({at, dur = 22, strength = 0.22}) => {
+-  const f = useCurrentFrame(); const t = (f - at) / dur;
+-  if (t < 0 || t > 1) return null;
+-  const x = -60 + 220 * Easing.inOut(Easing.cubic)(t); const a = strength * Math.sin(Math.PI * t);
+-  return <div data-deco style={{position: 'absolute', inset: 0, pointerEvents: 'none', borderRadius: 'inherit', overflow: 'hidden'}}>
+-    <div style={{position: 'absolute', top: '-20%', bottom: '-20%', left: `${x}%`, width: '38%', transform: 'skewX(-18deg)',
+-      background: `linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,${a}) 50%, rgba(255,255,255,0) 100%)`}} />
+-  </div>;
+-};
++  return {p: spring({frame: f - start, fps, config}), sx: 1, sy: 1};
++};
++/** 兼容 API：新定版关闭邻居让位与到位后反弹。 */
++export const bump = (_t: number) => 0;
++/** 兼容 API：新定版没有移动扫光条；面光已固定在 glassMat 内。 */
++export const Sheen: React.FC<{at: number; dur?: number; strength?: number}> = () => null;
+ 
+ export const Fonts: React.FC = () => (
+   <style>{`
+@@ -51,10 +40,7 @@
+ 
+ const ease = (p: number) => 1 - Math.pow(1 - p, 3);
+ 
+-/**
+- * Q 弹进度：Remotion spring，可 >1（过冲）再回落到 1。
+- * 在组件里调用（依赖 useCurrentFrame / useVideoConfig）。
+- */
++/** 旧 hook 名兼容；现在使用16/20/12帧有限时长单调入场。 */
+ export const useSpringP = (start: number, config: typeof SPRING.enter = SPRING.enter) => {
+   const f = useCurrentFrame(); const {fps} = useVideoConfig();
+   return spring({frame: Math.max(0, f - start), fps, config});
+@@ -63,19 +49,16 @@
+ export type Tone = 'dark' | 'pearl' | 'gold' | 'coral' | 'ghost';
+ export type Enter = 'up' | 'left' | 'right' | 'scale' | 'fade' | 'blur' | 'none';
+ 
+-/**
+- * 入场样式：p 允许 >1（弹簧过冲）。透明度钳在 0–1；位移/缩放跟着过冲再回弹 → Q 弹感。
+- * 逻辑：从焦点方向弹入（up=上浮落地、left/right=侧滑回弹、scale=放大回弹）。
+- */
++/** 单调入场，进度钳制0–1，到位后固定。 */
+ const enterStyle = (from: Enter, p: number): React.CSSProperties => {
+   const o = Math.min(1, Math.max(0, p));
+-  const t = p; // 允许过冲
++  const t = o; // 禁止过冲
+   const sh = MOTION.maxShift;
+   switch (from) {
+     case 'up': return {opacity: o, transform: `translateY(${(1 - t) * sh}px) scale(${0.96 + 0.04 * Math.min(t, 1.15)})`};
+     case 'left': return {opacity: o, transform: `translateX(${(1 - t) * -sh}px) scale(${0.97 + 0.03 * Math.min(t, 1.12)})`};
+     case 'right': return {opacity: o, transform: `translateX(${(1 - t) * sh}px) scale(${0.97 + 0.03 * Math.min(t, 1.12)})`};
+-    case 'scale': return {opacity: o, transform: `scale(${0.88 + 0.12 * t})`};
++    case 'scale': return {opacity: o, transform: `scale(${0.97 + 0.03 * t})`};
+     case 'blur': return {opacity: o, filter: `blur(${Math.max(0, (1 - Math.min(t, 1)) * 8)}px)`, transform: `translateY(${(1 - t) * 16}px) scale(${0.97 + 0.03 * Math.min(t, 1.1)})`};
+     case 'fade': return {opacity: o, transform: `scale(${0.985 + 0.015 * Math.min(t, 1.08)})`};
+     default: return {opacity: 1};
+@@ -83,14 +66,9 @@
+ };
+ 
+ const toneBg: Record<Tone, React.CSSProperties> = {
+-  dark: {...glassMat('dark'), color: COLOR.warm},
+-  pearl: {background: 'linear-gradient(160deg, rgba(250,246,238,0.94), rgba(232,224,210,0.9))', color: COLOR.pearlInk, border: '1px solid rgba(255,255,255,0.7)',
+-    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.9), 0 18px 40px rgba(0,0,0,0.35)'},
+-  gold: {background: 'linear-gradient(160deg, rgba(80,60,28,0.88), rgba(36,28,14,0.86))', color: COLOR.warm, border: '1px solid rgba(243,215,158,0.55)',
+-    boxShadow: 'inset 0 1px 0 rgba(255,240,210,0.35), 0 0 36px rgba(217,178,111,0.28), 0 18px 40px rgba(0,0,0,0.45)'},
+-  coral: {background: 'linear-gradient(160deg, rgba(120,42,32,0.9), rgba(56,22,18,0.88))', color: '#FFE3DB', border: '1px solid rgba(224,113,92,0.7)',
+-    boxShadow: 'inset 0 1px 0 rgba(255,200,180,0.25), 0 0 28px rgba(224,113,92,0.35), 0 18px 40px rgba(0,0,0,0.45)'},
+-  ghost: {...glassMat('dark'), background: `${GLASS.sheen}, linear-gradient(165deg, rgba(50,52,60,0.40), rgba(30,32,40,0.48))`, color: COLOR.warm},
++  dark: glassMat(), pearl: glassMat('light'),
++  gold: glassMat('dark', FROST.tint.gold), coral: glassMat('dark', FROST.tint.coral),
++  ghost: glassMat('dark', undefined, undefined, true),
+ };
+ 
+ /** 玻璃卡（少用；全屏不要堆满） */
+@@ -124,7 +102,7 @@
+         : <Img src={staticFile(src)} style={{width: '100%', height: '100%', objectFit: fit}} />}
+     </div>
+     {tag && <div data-fit="tag" style={{position: 'absolute', top: 20, right: 20, padding: '8px 30px', borderRadius: 999, fontFamily: FONT.body, fontWeight: 700, fontSize: TYPE.chip,
+-      background: 'linear-gradient(135deg,#F3D79E,#C99A52)', color: '#2a2012'}}>{tag}</div>}
++      ...glassMat('dark', FROST.tint.gold), color: FROST.gold}}>{tag}</div>}
+     {label && <div style={{position: 'absolute', left: 24, bottom: 22, display: 'flex', alignItems: 'center', gap: 12}}>
+       <div style={{width: 4, height: 28, background: COLOR.goldHi, borderRadius: 2}} />
+       <span style={{fontFamily: FONT.body, fontWeight: 700, fontSize: TYPE.label, color: COLOR.warm, textShadow: '0 2px 8px rgba(0,0,0,0.6)'}}>{label}</span>
+@@ -137,16 +115,16 @@
+   const p = useSpringP(start, SPRING.snappy);
+   const o = Math.min(1, Math.max(0, p));
+   const st: Record<ChipTone, React.CSSProperties> = {
+-    gold: {background: 'linear-gradient(135deg,#F3D79E,#C99A52)', color: '#2a2012', border: '1px solid rgba(255,240,210,0.9)'},
++    gold: {...glassMat('dark', FROST.tint.gold), color: FROST.gold},
+     glass: {...glassMat('dark'), color: COLOR.warm, textShadow: GLASS.textShadow},
+     coral: {...glassMat('dark', 'rgba(224,113,92,0.42)', 'rgba(240,150,130,0.6)'), color: '#FFE6DF', textShadow: GLASS.textShadow},
+     green: {...glassMat('dark', 'rgba(141,184,154,0.40)', 'rgba(170,210,182,0.6)'), color: '#E4F5EA', textShadow: GLASS.textShadow},
+   };
+   return <div data-fit="chip" style={{display: 'inline-flex', alignItems: 'center', alignSelf: 'flex-start', flexShrink: 0, whiteSpace: 'nowrap', padding: `${Math.round(size * 0.42)}px ${Math.round(size * 1.3)}px`, borderRadius: 999,
+-    fontFamily: FONT.body, fontWeight: 700, fontSize: size, opacity: o, transform: `translateY(${(1 - p) * 10}px) scale(${0.92 + 0.08 * Math.min(p, 1.12)})`,
++    fontFamily: FONT.body, fontWeight: 700, fontSize: size, opacity: o, transform: `translateY(${(1 - p) * 10}px) scale(${0.97 + 0.03 * Math.min(p, 1)})`,
+     boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 8px 18px rgba(0,0,0,0.3)', ...st[tone],
+-    ...(hi != null ? {position: 'relative', overflow: 'hidden', color: interpolateColors(hi, [0, 1], [COLOR.warm, '#2a2012']), textShadow: hi > 0.5 ? 'none' : GLASS.textShadow} : {})}}>
+-    {hi != null && hi > 0.001 && <div style={{position: 'absolute', inset: 0, borderRadius: 999, opacity: hi, background: 'linear-gradient(135deg,#F3D79E,#C99A52)'}} />}
++    ...(hi != null ? {position: 'relative', overflow: 'hidden', color: interpolateColors(hi, [0, 1], [COLOR.warm, FROST.gold]), textShadow: GLASS.textShadow} : {})}}>
++    {hi != null && hi > 0.001 && <div style={{position: 'absolute', inset: 0, borderRadius: 999, opacity: hi, background: FROST.tint.gold}} />}
+     {hi != null ? <span style={{position: 'relative'}}>{children}</span> : children}</div>;
+ };
+ 
+@@ -251,7 +229,7 @@
+ /** 浮动标签（轻量，无大卡） */
+ export const FloatLabel: React.FC<{r: Rect; start: number; text: string; tone?: ChipTone | 'plain'; from?: Enter}> = ({r, start, text, tone = 'glass', from = 'fade'}) => {
+   const f = useCurrentFrame(); const p = prog(f, start, MOTION.chip);
+-  const bob = Math.sin((f - start) / 18) * 3;
++  const bob = 0; // v6：标签到位即停
+   if (tone === 'plain') return <div style={{position: 'absolute', left: r.x, top: r.y + bob, width: r.w, height: r.h, display: 'flex', alignItems: 'center',
+     fontFamily: FONT.body, fontWeight: 700, fontSize: TYPE.body, color: COLOR.warm, ...enterStyle(from, p)}}>{text}</div>;
+   return <div style={{position: 'absolute', left: r.x, top: r.y + bob * 0.4, ...enterStyle(from, p)}}><Chip start={start} tone={tone as ChipTone}>{text}</Chip></div>;
+@@ -268,22 +246,20 @@
+     </div>
+     {steps.map((st, i) => {
+       const st0 = starts?.[i] ?? start + i * MOTION.stagger;
+-      const sp = spring({frame: Math.max(0, f - st0), fps, config: SPRING.enter}); const sp0 = spring({frame: Math.max(0, f - 1 - st0), fps, config: SPRING.enter});
+-      const v = Math.max(-0.06, Math.min(0.06, (sp - sp0) * 0.45)); const ov = Math.max(-0.035, Math.min(0.035, (sp - 1) * 0.7));
++      const sp = glassEnter(f, st0);
+       const o = Math.min(1, Math.max(0, sp)); const on = i === active; const done = i < active;
+       const hs = (x?: number) => (x == null ? 0 : spring({frame: Math.max(0, f - x), fps, config: SPRING.snappy}));
+       const hi = starts ? Math.max(0, Math.min(1, hs(starts[i]) - hs(starts[i + 1]))) : (on ? 1 : 0);
+       const dn = starts ? Math.min(1, hs(starts[i + 1])) : (done ? 1 : 0);
+-      const nud = (starts ?? []).reduce((a, s2, j) => (j === i ? a : a + (i < j ? -1 : 1) * (10 / Math.abs(i - j)) * bump(f - s2 - 6)), 0);
+       const x = i * (cw + gap);
+       return <div key={i} style={{position: 'absolute', left: x, top: 0, width: cw, height: r.h, display: 'flex', flexDirection: 'column', alignItems: 'center', opacity: o * (1 - 0.28 * dn),
+-        transform: `translate(${nud}px, ${(1 - sp) * 28}px) scale(${(0.94 + 0.06 * Math.min(sp, 1.1)) * (1 - v * 0.8 - ov) * (1 + 0.02 * hi)}, ${(0.94 + 0.06 * Math.min(sp, 1.1)) * (1 + v + ov) * (1 + 0.02 * hi)})`, transformOrigin: '50% 100%'}}>
++        transform: `translateY(${(1 - sp) * 28}px) scale(${0.97 + 0.03 * sp})`, transformOrigin: '50% 100%'}}>
+         <div style={{width: 28, height: 28, borderRadius: 14, marginTop: 22, background: hi + dn > 0.5 ? 'radial-gradient(circle at 30% 25%,#FBE6BC,#D9B26F)' : 'rgba(255,255,255,0.2)',
+           boxShadow: `0 0 22px rgba(217,178,111,${0.7 * hi})`, border: `2px solid rgba(255,255,255,${hi})`}} />
+         <div style={{position: 'relative', marginTop: 24, padding: '20px 26px 24px', borderRadius: 24, display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', boxSizing: 'border-box',
+           ...glassMat('dark')}}>
+-        <div data-deco style={{position: 'absolute', inset: 0, borderRadius: 24, pointerEvents: 'none', opacity: hi, background: 'linear-gradient(165deg, rgba(217,178,111,0.20), rgba(0,0,0,0) 140%)', boxShadow: 'inset 0 0 0 1px rgba(243,215,158,0.5)'}} />
+-        <div style={{fontFamily: FONT.title, position: 'relative', fontSize: 40 + 6 * hi, lineHeight: 1.3, color: interpolateColors(hi, [0, 1], [COLOR.warm, COLOR.goldHi]), textAlign: 'center'}}>{st.t}</div>
++        <div data-deco style={{position: 'absolute', inset: 0, borderRadius: 24, pointerEvents: 'none', opacity: hi, background: 'linear-gradient(165deg, rgba(159,123,61,0.10), rgba(0,0,0,0) 140%)', boxShadow: 'none'}} />
++        <div style={{fontFamily: FONT.title, position: 'relative', fontSize: 40, lineHeight: 1.3, color: interpolateColors(hi, [0, 1], [COLOR.warm, COLOR.goldHi]), textAlign: 'center'}}>{st.t}</div>
+         <div data-role="body" style={{position: 'relative', marginTop: 14, fontFamily: FONT.body, fontSize: TYPE.body, color: COLOR.sub, textAlign: 'center', lineHeight: 1.4}}>{st.s}</div>
+         {st.chip && <div style={{position: 'relative', marginTop: 22}}><Chip start={(starts?.[i] ?? start + i * 6) + 10} tone="glass" hi={hi}>{st.chip}</Chip></div>}
+         <div style={{position: 'absolute', inset: 0, borderRadius: 24, overflow: 'hidden', pointerEvents: 'none'}}><Sheen at={st0 + 6} />{on && starts && <Sheen at={st0 + 8} strength={0.26} />}</div>
+@@ -298,17 +274,17 @@
+   activeAt?: number; offAt?: number; dim?: number; nudge?: number}> =
+ ({r, start, idx, title, sub, tip, active, from = 'right', glass = true, activeAt, offAt, dim = 0, nudge = 0}) => {
+   const f = useCurrentFrame(); const L = useLiquid(start, SPRING.enter); const p = L.p; const g = glass ? 7 : 0;
+-  // 高亮是连续量（不再一帧内切换金色/暗色，避免“闪”）：激活时弹起，被下一项接管时平滑退回
++  // 焦点只改变色光/文字亮度，不再放大或移动卡片
+   const aAt = activeAt ?? start;
+   const hi = activeAt == null ? (active ? 1 : 0) : Math.max(0, Math.min(1, useSpringPOnce(f, aAt) - (offAt != null ? useSpringPOnce(f, offAt) : 0)));
+-  const hiO = Math.min(1.06, hi);
+-  const es = enterStyle(from, p); const lift = 1 + 0.02 * hiO;
++  
++  const es = enterStyle(from, p);
+   return <div style={{position: 'absolute', left: r.x, top: r.y + g, width: r.w, height: r.h - g * 2, display: 'flex', alignItems: 'center', gap: 32, padding: glass ? '0 28px' : '0 24px', boxSizing: 'border-box',
+     ...(glass ? {...glassMat('dark'), borderRadius: 22, overflow: 'hidden'} : {borderBottom: '1px solid rgba(255,255,255,0.12)'}),
+     opacity: ((es.opacity as number) ?? 1) * (1 - 0.30 * dim),
+-    transform: `${es.transform ?? ''} translateY(${nudge}px) scale(${L.sx * lift * (1 - 0.015 * dim)}, ${L.sy * lift * (1 - 0.015 * dim)})`, transformOrigin: '50% 50%'}}>
++    transform: es.transform, transformOrigin: '50% 50%'}}>
+     {glass && <div data-deco style={{position: 'absolute', inset: 0, borderRadius: 22, pointerEvents: 'none', opacity: hi,
+-      background: 'linear-gradient(165deg, rgba(217,178,111,0.24), rgba(0,0,0,0) 140%)', boxShadow: 'inset 0 0 0 1px rgba(243,215,158,0.55)'}} />}
++      background: 'linear-gradient(165deg, rgba(159,123,61,0.10), rgba(0,0,0,0) 140%)', boxShadow: 'none'}} />}
+     <div style={{position: 'relative', fontFamily: FONT.num, fontSize: 40, color: interpolateColors(hi, [0, 1], ['rgba(244,238,228,0.62)', COLOR.goldHi]), width: 64, flexShrink: 0}}>{idx}</div>
+     <div style={{position: 'relative', flex: 1, minWidth: 0}}>
+       <div style={{fontFamily: FONT.title, fontSize: TYPE.rowTitle, lineHeight: 1.3, color: interpolateColors(hi, [0, 1], [COLOR.warm, COLOR.goldHi])}}>{title}</div>
+@@ -333,7 +309,7 @@
+       transform: `translateY(${(1 - L) * 22}px) scale(${0.97 + 0.03 * Math.min(L, 1.1)})`, transformOrigin: '0 60%'}}>{node}</span>;
+   };
+   return <div style={{position: 'absolute', left: r.x, top: r.y, width: r.w, height: r.h, opacity: Math.min(1, p * 1.5) * (1 - 0.4 * focus),
+-    transform: `scale(${1 - 0.03 * focus}) translateX(${-10 * focus}px)`, transformOrigin: '0 40%'}}>
++    transform: 'none', transformOrigin: '0 40%'}}>
+     <div data-deco style={{fontFamily: FONT.title, fontSize: 120, lineHeight: 0.8, color: 'rgba(217,178,111,0.35)'}}>“</div>
+     <div style={{fontFamily: FONT.title, fontSize: TYPE.quote, color: COLOR.warm, lineHeight: 1.35, marginTop: 0}}>{lines.map((l, i) => piece(ln(i), i, <GoldText text={l} />))}</div>
+     {sub && <div data-role="body" style={{fontFamily: FONT.body, fontSize: TYPE.body, lineHeight: 1.4, color: COLOR.sub, marginTop: 40}}>{subs.map((t, i) => piece(sb(i), i, t, true))}</div>}
+@@ -345,7 +321,7 @@
+   const p = useSpringP(start, SPRING.snappy); const H = Math.min(h, r.h);
+   // 宽度随文字收缩（左边贴栏线），内边距 56；文字宽 ≤ 容器 75%
+   return <div data-fit="callout" style={{position: 'absolute', left: r.x, top: r.y + (r.h - H) / 2, maxWidth: r.w, height: H, display: 'inline-flex', alignItems: 'center', gap: 24, padding: '0 56px', boxSizing: 'border-box', whiteSpace: 'nowrap',
+-    borderRadius: 18, ...glassMat('dark', tone === 'coral' ? 'rgba(224,113,92,0.30)' : 'rgba(217,178,111,0.24)', tone === 'coral' ? 'rgba(240,150,130,0.55)' : 'rgba(243,215,158,0.5)'), ...enterStyle('scale', p)}}>
++    borderRadius: 18, ...glassMat('dark', tone === 'coral' ? 'rgba(224,113,92,0.30)' : 'rgba(159,123,61,0.10)', tone === 'coral' ? 'rgba(240,150,130,0.55)' : 'rgba(243,215,158,0.5)'), ...enterStyle('scale', p)}}>
+     <div style={{width: 52, height: 52, borderRadius: 26, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: FONT.num, fontSize: 28,
+       color: tone === 'coral' ? '#fff' : '#2a2012', background: tone === 'coral' ? COLOR.coral : 'radial-gradient(circle at 30% 25%,#FBE6BC,#D9B26F)'}}>{icon ?? (tone === 'coral' ? '!' : '✓')}</div>
+     <span data-fit-text style={{fontFamily: FONT.title, fontSize: 38, color: tone === 'coral' ? '#FFE3DB' : COLOR.warm}}><GoldText text={text} /></span>
+--- a/正片/template/src/style/layouts.ts
++++ b/正片/template/src/style/layouts.ts
+@@ -6,11 +6,20 @@
+   | 'triadSoft' | 'outroAir' | 'outroHost'
+   // 5.0 数据版式
+   | 'lineReveal' | 'barGlow' | 'rankBars' | 'waffle' | 'balance' | 'yearRing' | 'formulaCalc'
+-  // 5.0 MG 卡片扩展（mgCards.tsx）
++  // 5.0 旧6套存档（兼容，不默认推荐）
+   | 'keywordCascade' | 'checklistFill' | 'vsScore' | 'tipStack' | 'numberedReveal' | 'kpiGrid'
+-  // 5.0 房产科普 MG（待审 9 种，mgEstate.tsx）
++  // 5.0 房产科普 MG（已定 9 种，mgEstate.tsx）
+   | 'floorLadder' | 'paymentSplit' | 'amenityOrbit' | 'pitfallBoard'
+   | 'priceStep' | 'decisionFork' | 'districtTags' | 'loanDial' | 'layerReveal';
++
++/** 5.0 新定版（玻璃v6 + 房产MG）：推荐/预览的唯一机器可读清单。 */
++export const CORE_LAYOUTS = ['titleFloat','bareNumber','splitVs','timeline','mediaRows','quoteStack','ringFeature','waitVs','triadSoft','outroHost'] as const;
++export const DATA_LAYOUTS = ['lineReveal','barGlow','rankBars','waffle','balance','yearRing','formulaCalc'] as const;
++export const ESTATE_LAYOUTS = ['floorLadder','paymentSplit','amenityOrbit','pitfallBoard','priceStep','decisionFork','districtTags','loanDial','layerReveal'] as const;
++export const ARCHIVE_LAYOUTS = ['keywordCascade','checklistFill','vsScore','tipStack','numberedReveal','kpiGrid'] as const;
++export const DEFAULT_LAYOUTS: readonly LayoutName[] = [...CORE_LAYOUTS, ...DATA_LAYOUTS, ...ESTATE_LAYOUTS];
++export const canonicalLayout = (name: string) => name === 'outroAir' ? 'outroHost' : name;
++export const isDefaultLayout = (name: string) => DEFAULT_LAYOUTS.includes(canonicalLayout(name) as LayoutName);
+ 
+ /**
+  * 各版式「独立 MG 组」矩形。规则：
+@@ -77,7 +86,7 @@
+     case 'tipStack': return {stack: rect(0, 7, FULL), media: rect(8, 4, FULL)};
+     case 'numberedReveal': return {cards: rect(0, 12, FULL)};
+     case 'kpiGrid': return {grid: rect(0, 8, FULL), media: rect(9, 3, FULL)};
+-    // ===== 5.0 房产科普 MG（待审 9 种）=====
++    // ===== 5.0 房产科普 MG（已定 9 种）=====
+     case 'floorLadder': return {ladder: rect(0, 12, FULL)};
+     case 'paymentSplit': {
+       const [total, parts] = splitRows(ROWS.contentTop, CONTENT_H, [30, 70]);
+--- a/正片/template/src/style/mgCards.tsx
++++ b/正片/template/src/style/mgCards.tsx
+@@ -1,21 +1,20 @@
+-// 5.0 MG 卡片扩展版式（默认可选）：关键词瀑布 / 清单进度 / VS 计分板 / 提示堆叠 / 序号翻牌 / 迷你KPI。
+-// 规则：浅磨砂玻璃 + 1px 白发丝边 + Q 弹入场 + 镜面高光；入场后持续「呼吸」微动，不出现画面停滞。
++// 5.0 旧6套 MG 存档（非默认推荐）：关键词瀑布 / 清单进度 / VS 计分板 / 提示堆叠 / 序号翻牌 / 迷你KPI。
++// 材质与已定 v6 共用 glassMat；无颗粒、无白底、无到位弹、无扫光。
+ import React from 'react';
+-import {useCurrentFrame, useVideoConfig, spring, interpolate} from 'remotion';
+-import {Sheen, Count} from './components';
+-import {COLOR, FONT, SPRING, TYPE} from './tokens';
++import {useCurrentFrame, useVideoConfig, interpolate} from 'remotion';
++import {Sheen, Count, glassMat} from './components';
++import {COLOR, FONT, SPRING, TYPE, FROST, steadySpring as spring} from './tokens';
+ import type {Rect} from './grid.ts';
+ 
+-const LG = (a = 0.16, tint?: string): React.CSSProperties => ({
+-  background: `linear-gradient(160deg, rgba(255,255,255,${a + 0.1}) 0%, rgba(255,255,255,${a}) 45%, rgba(255,255,255,${a * 0.6}) 100%)${tint ? `, linear-gradient(165deg, ${tint}, rgba(0,0,0,0) 120%)` : ''}`,
+-  border: '1px solid rgba(255,255,255,0.55)', borderRadius: 26,
+-  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7), 0 16px 40px rgba(0,0,0,0.30)', color: COLOR.warm, boxSizing: 'border-box', overflow: 'hidden', position: 'absolute',
++const LG = (_a = 0.16, tint?: string): React.CSSProperties => ({
++  ...glassMat('dark', tint), borderRadius: 26,
++  boxSizing: 'border-box', overflow: 'hidden', position: 'absolute',
+ });
+-const TINT: Record<string, string> = {gold: 'rgba(243,215,158,0.38)', coral: 'rgba(224,113,92,0.38)', green: 'rgba(141,184,154,0.40)', glass: 'rgba(255,255,255,0)'};
++const TINT: Record<string, string> = {gold: FROST.tint.gold, coral: FROST.tint.coral, green: FROST.tint.green, glass: FROST.tint.none};
+ const ACC: Record<string, string> = {gold: COLOR.goldHi, coral: '#FFB4A3', green: '#BFE8CB', glass: '#FFFFFF'};
+ const useSp = (st: number, cfg = SPRING.enter) => { const f = useCurrentFrame(); const {fps} = useVideoConfig(); return spring({frame: Math.max(0, f - st), fps, config: cfg}); };
+-/** 持续呼吸：入场后 ±3px 浮动 + 极轻缩放，保证画面一直在动 */
+-const breathe = (f: number, i: number, amp = 3) => `translateY(${Math.sin(f / 22 + i * 1.3) * amp}px)`;
++/** 旧签名兼容：新定版到位后不整体呼吸/漂浮。 */
++const breathe = (_f: number, _i: number, _amp = 3) => 'translateY(0px)';
+ const T: React.CSSProperties = {fontFamily: FONT.title, fontWeight: 900};
+ const B: React.CSSProperties = {fontFamily: FONT.body, fontWeight: 700};
+ const txs = 'txs';
+@@ -68,14 +67,14 @@
+     {(['L', 'R'] as const).map((sd, j) => <div key={sd} className={txs} style={{...LG(0.16, TINT[j ? 'green' : 'coral']), left: j ? r.x + colW + 300 : r.x, top: r.y, width: colW, height: 130, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 40px',
+       opacity: Math.min(1, head), transform: `translateX(${(1 - head) * (j ? 80 : -80)}px)`}}>
+       <div style={{...T, fontSize: 52}}>{sd === 'L' ? L : R}</div>
+-      <div style={{fontFamily: FONT.num, fontWeight: 700, fontSize: 72, color: COLOR.goldHi, transform: `scale(${1 + 0.03 * Math.sin(f / 9)})`}}>{sc(sd)}</div>
++      <div style={{fontFamily: FONT.num, fontWeight: 700, fontSize: 72, color: COLOR.goldHi, transform: 'none'}}>{sc(sd)}</div>
+     </div>)}
+-    <div style={{position: 'absolute', left: r.x + colW, top: r.y, width: 300, height: 130, display: 'flex', alignItems: 'center', justifyContent: 'center', ...T, fontSize: 64, color: '#fff', opacity: Math.min(1, head), transform: `scale(${0.6 + 0.4 * head}) rotate(${Math.sin(f / 18) * 3}deg)`}} className={txs}>VS</div>
++    <div style={{position: 'absolute', left: r.x + colW, top: r.y, width: 300, height: 130, display: 'flex', alignItems: 'center', justifyContent: 'center', ...T, fontSize: 64, color: '#fff', opacity: Math.min(1, head), transform: `scale(${0.6 + 0.4 * head}) rotate(0deg)`}} className={txs}>VS</div>
+     {rows.map((x, i) => { const p = useSp(st(i)); const lit = useSp(st(i) + 8, SPRING.snappy); const y = r.y + 160 + i * (rh + 14);
+       const cell = (side: 'L' | 'R') => { const win = x.w === side || x.w === '='; return <div style={{...LG(win ? 0.1 + 0.14 * Math.min(1, lit) : 0.08, win ? TINT[side === 'L' ? 'coral' : 'green'] : undefined), position: 'absolute', left: side === 'L' ? r.x : r.x + colW + 300, top: 0, width: colW, height: rh, display: 'flex', alignItems: 'center', justifyContent: 'center', ...T, fontSize: 40, color: win ? '#fff' : 'rgba(255,255,255,0.45)'}}>{win ? (x.w === '=' ? '平' : '胜') : '—'}{win && <Sheen at={st(i) + 8} />}</div>; };
+       return <div key={i} className={txs} style={{position: 'absolute', left: 0, top: y, opacity: Math.min(1, p), transform: `translateY(${(1 - p) * 40}px)`}}>
+         {cell('L')}{cell('R')}
+-        <div style={{...LG(0.22), left: r.x + colW + 24, top: 0, width: 252, height: rh, display: 'flex', alignItems: 'center', justifyContent: 'center', ...B, fontSize: 36, background: 'linear-gradient(160deg, rgba(40,42,50,0.62), rgba(28,30,36,0.70))'}}>{x.k}</div>
++        <div style={{...LG(0.22), left: r.x + colW + 24, top: 0, width: 252, height: rh, display: 'flex', alignItems: 'center', justifyContent: 'center', ...B, fontSize: 36}}>{x.k}</div>
+       </div>; })}
+   </>;
+ };
+@@ -96,7 +95,7 @@
+ /** 5 序号翻牌：大号序号卡 3D 翻转揭晓内容，横排；当前卡抬升 */
+ export const NumberedReveal: React.FC<{r: Rect; cards: {t: string; s?: string}[]; st: Starts}> = ({r, cards, st}) => {
+   const f = useCurrentFrame(); const n = cards.length; const gap = 36; const w = (r.w - gap * (n - 1)) / n; const act = cards.reduce((k, _, i) => (f >= st(i) ? i : k), -1);
+-  return <>{cards.map((c, i) => { const p = useSp(st(i) - 14, SPRING.soft); const flip = useSp(st(i), SPRING.enter); const ang = 180 - 180 * Math.min(1.08, flip); const front = ang < 90; const up = i === act ? 1 : 0;
++  return <>{cards.map((c, i) => { const p = useSp(st(i) - 14, SPRING.soft); const flip = useSp(st(i), SPRING.enter); const ang = 180 - 180 * Math.min(1.08, flip); const front = ang < 90; const up = 0;
+     return <div key={i} style={{position: 'absolute', left: r.x + i * (w + gap), top: r.y + 40 - up * 24, width: w, height: r.h - 80, perspective: 1400, opacity: Math.min(1, p), transform: `translateY(${(1 - p) * 60}px) ${breathe(f, i, 2.5)}`}}>
+       <div className={txs} style={{...LG(front ? 0.18 : 0.12, front && up ? TINT.gold : undefined), inset: 0, transform: `rotateY(${front ? ang : ang - 180}deg)`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 32, gap: 24, textAlign: 'center'}}>
+         {front ? <>
+--- a/正片/template/src/style/mgEstate.tsx
++++ b/正片/template/src/style/mgEstate.tsx
+@@ -1,32 +1,23 @@
+-// 5.0 房产 MG 待审9套 v6：对齐经典参考图的冷灰、薄边、轻高光玻璃，基础透射较原GLASS降低。
++// 5.0 房产 MG 已定9套 v6：对齐经典参考图的冷灰、薄边、轻高光玻璃，基础透射较原GLASS降低。
+ // 无厚斜面/重影/颗粒/扫描光条；单调入场后固定。UnitCompare仅存档，不登记、不预览。
+ import React from 'react';
+ import {useCurrentFrame, interpolate} from 'remotion';
+-import {Count} from './components';
+-import {FONT, FROST} from './tokens';
++import {Count, glassMat} from './components';
++import {FONT, FROST, glassEnter as enter, type GlassEnterKind as EnterKind} from './tokens';
+ import type {Rect} from './grid.ts';
+ 
+ export type Starts = (i: number) => number;
+ type Tone = 'gold' | 'coral' | 'green' | 'blue' | 'none';
+ const clamp = {extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as const};
+ const c01 = (x: number) => Math.max(0, Math.min(1, x));
+-/** re10 专用有限时长单调入场；不使用弹簧，严格无过冲/回弹，最后一帧精确等于 1。 */
+-const ENTER_FRAMES = {enter: 16, soft: 20, chip: 12};
+-type EnterKind = keyof typeof ENTER_FRAMES;
+-const enter = (f: number, st: number, kind: EnterKind = 'enter') => {
+-  const t = c01((f - st) / ENTER_FRAMES[kind]);
+-  return t === 1 ? 1 : 1 - Math.pow(1 - t, 3);
+-};
++/** 与原核心/存档卡片共享同一个有限时长入场。 */
+ const useEnter = (st: number, kind: EnterKind = 'enter') => enter(useCurrentFrame(), st, kind);
+ const enterScale = (p: number, k = 0.03) => 1 - k + k * p;
+ 
+ /** 经典薄玻璃：原冷灰半透明色相，略增不透明度；只保留细白边、1px轻顶高光与轻柔阴影。 */
+ export const frost = (tone: Tone = 'none', soft = false, radius = 26): React.CSSProperties => ({
+   position: 'absolute', boxSizing: 'border-box', overflow: 'hidden', borderRadius: radius, color: FROST.ink, textShadow: FROST.textShadow,
+-  background: `${FROST.surfaceHighlight}, linear-gradient(165deg, ${FROST.tint[tone]}, rgba(0,0,0,0) 120%), ${soft ? FROST.fillSoft : FROST.fill}`,
+-  backdropFilter: FROST.blur, WebkitBackdropFilter: FROST.blur,
+-  border: `1px solid ${FROST.hair}`,
+-  boxShadow: `inset 0 1px 0 ${FROST.top}, inset 0 -1px 0 ${FROST.bottom}, ${FROST.shadow}`,
++  ...glassMat('dark', FROST.tint[tone], undefined, soft),
+ });
+ const ACC: Record<Tone, string> = {gold: FROST.gold, coral: FROST.coral, green: FROST.green, blue: FROST.blue, none: FROST.ink};
+ const T: React.CSSProperties = {fontFamily: FONT.title, fontWeight: 900, lineHeight: 1.3};
+--- a/正片/template/src/style/tokens.ts
++++ b/正片/template/src/style/tokens.ts
+@@ -15,34 +15,29 @@
+   lineHeight: 1.3,  // 多行文字最小行高倍数
+ };
+ export const RADIUS = {card: 26, frame: 24, chip: 999, badge: 0.3};
+-/** Q 弹弹簧（Remotion spring）：overshoot → settle，克制不卡通 */
++/** 5.0 新定版：遗留 spring 配置只作兼容，所有正片卡片使用下方有限单调入场。 */
+ export const SPRING = {
+-  enter: {damping: 13, stiffness: 150, mass: 0.78},   // 入场：轻过冲回弹
+-  soft:  {damping: 18, stiffness: 110, mass: 0.95},   // 柔和落地
+-  snappy:{damping: 11, stiffness: 190, mass: 0.7},    // 芯片/焦点：更脆一点
+-  cam:   {damping: 20, stiffness: 90,  mass: 1.1},    // 运镜：重、稳
++  enter: {damping: 26, stiffness: 150, mass: 0.78, overshootClamping: true},
++  soft: {damping: 26, stiffness: 110, mass: 0.95, overshootClamping: true},
++  snappy: {damping: 26, stiffness: 190, mass: 0.7, overshootClamping: true},
++  cam: {damping: 26, stiffness: 90, mass: 1.1, overshootClamping: true},
+ };
+-export const MOTION = { // 帧 @30fps（5.0 运镜版：入场略长、位移略大以配合弹簧）
+-  enter: 24, stagger: 5, chip: 16, count: 32, focus: 12, freeze: 30, maxShift: 48,
++export const MOTION = {enter: 16, stagger: 5, chip: 12, count: 32, focus: 12, freeze: 30, maxShift: 48};
++export const GLASS_ENTER_FRAMES = {enter: 16, soft: 20, chip: 12};
++export type GlassEnterKind = keyof typeof GLASS_ENTER_FRAMES;
++/** 有限时长 ease-out cubic；范围严格 [0,1]，到位精确等于1，无过冲/回弹。 */
++export const glassEnter = (frame: number, start = 0, kind: GlassEnterKind = 'enter', fps = 30) => {
++  const t = Math.max(0, Math.min(1, (frame - start) / (GLASS_ENTER_FRAMES[kind] * fps / 30)));
++  return t === 1 ? 1 : 1 - Math.pow(1 - t, 3);
+ };
++/** 旧组件 spring 调用的稳定适配器；保留参数接口，不再调用物理弹簧。 */
++export const steadySpring = ({frame, fps = 30, config = SPRING.enter}: {frame: number; fps?: number; config?: typeof SPRING.enter}) =>
++  glassEnter(frame, 0, config === SPRING.soft ? 'soft' : config === SPRING.snappy ? 'chip' : 'enter', fps);
+ 
+-/** 5.0 苹果磨砂玻璃材质（iOS/visionOS 风）：强模糊+饱和、半实底色、1px 内发丝边+顶部高光、柔阴影。
+- *  dark = 深色背景上（默认，文字白）；light = 亮背景/珍珠卡（文字深）；tint 用于 gold/coral/green 着色玻璃。 */
+-export const GLASS = {
+-  // 不用 backdrop-filter：它在 opacity<1 / filter 的祖先（入场、转场、dim）下会换 backdrop root，
+-  // 导致卡片动画中“透明”、静止后“磨砂”来回闪。改为确定性的半透明着色 + 镜面高光，逐帧一致。
+-  blur: 'none',
+-  sheen: 'linear-gradient(160deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.05) 38%, rgba(255,255,255,0) 60%)',
+-  dark:  {fill: 'linear-gradient(165deg, rgba(62,64,72,0.56), rgba(38,40,48,0.64))', hair: 'rgba(255,255,255,0.20)', top: 'rgba(255,255,255,0.22)'},
+-  light: {fill: 'linear-gradient(165deg, rgba(252,250,246,0.78), rgba(236,232,224,0.72))', hair: 'rgba(255,255,255,0.75)', top: 'rgba(255,255,255,0.95)'},
+-  shadow: '0 14px 36px rgba(0,0,0,0.32), 0 2px 6px rgba(0,0,0,0.18)',
+-  textShadow: '0 1px 2px rgba(0,0,0,0.35), 0 0 18px rgba(0,0,0,0.25)',
+-};
+-
+-/** 5.0 · 房产 MG 待审 9 套 v6（2026-11-06），仅 mgEstate 使用；原 GLASS/SPRING 不变。
++/** 5.0 新定版（玻璃v6 + 房产MG，2026-11-06 Asia/Shanghai）：唯一共享玻璃材质。
+  *  对齐 classic_glass_ref：定版原冷灰色、偏薄的半透明玻璃，只降低基础透射，不做厚斜面/双边/重影。
+  *  原 GLASS.dark alpha .56/.64 → .68/.74；背景仍可透见，文字更稳。无噪点、无扫描光条。 */
+-export const FROST = {
++export const GLASS_V6 = {
+   // 经典玻璃原组件本来不启用 backdrop blur；不再用 v5 的28px雾化抹掉背景细节。
+   blur: 'none',
+   fill: 'linear-gradient(165deg, rgba(62,64,72,0.68), rgba(38,40,48,0.74))',
+@@ -59,3 +54,10 @@
+   // 沿用语义配色，仅将染色强度约 .30 降到 .08–.10，不让玻璃变成彩色实心块。
+   tint: {gold: 'rgba(159,123,61,0.10)', coral: 'rgba(162,91,80,0.10)', green: 'rgba(51,131,112,0.08)', blue: 'rgba(67,107,157,0.08)', none: 'rgba(0,0,0,0)'},
+ };
++
++/** FROST 是新默认；GLASS 仅为旧调用的兼容视图，dark/light 不再分成两套质感。 */
++export const FROST = GLASS_V6;
++const classic = {fill: GLASS_V6.fill, hair: GLASS_V6.hair, top: GLASS_V6.top};
++export const GLASS = {
++  ...GLASS_V6, sheen: GLASS_V6.surfaceHighlight, dark: classic, light: classic,
++};
+--- a/正片/template/src/style/transitions.tsx
++++ b/正片/template/src/style/transitions.tsx
+@@ -1,7 +1,6 @@
+-// 5.0 运镜转场：镜头之间用「推/拉/漂/起」连续空间感，弹簧落地；旧 kind 名仍可用（映射到新实现）
++// 5.0 运镜转场：镜头之间用「推/拉/漂/起」连续空间感，有限缓动停稳；旧 kind 名仍可用（映射到新实现）
+ import React from 'react';
+-import {AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig, Easing} from 'remotion';
+-import {SPRING} from './tokens';
++import {AbsoluteFill, interpolate, useCurrentFrame, Easing} from 'remotion';
+ 
+ export type TKind =
+   | 'crossfade' | 'pushBlur' | 'lightSweep' | 'maskWipe'   // 旧名（兼容）
+@@ -31,32 +30,28 @@
+ /** 包住一镜：入场按 inT（第 0..dur 帧），退场按 outT（d..d+dur 帧，此时画面已定格） */
+ export const Transition: React.FC<{d: number; inT: TSpec | null; outT: TSpec | null; z: number; children: React.ReactNode}> = ({d, inT, outT, z, children}) => {
+   const f = useCurrentFrame();
+-  const {fps} = useVideoConfig();
+   let style: React.CSSProperties = {zIndex: z, willChange: 'transform, opacity, filter'};
+   let overlay: React.ReactNode = null;
+ 
+   if (inT && f < inT.dur + 6) {
+     const kind = resolve(inT.kind);
+     const dir = inT.dir ?? 1;
+-    const sp = spring({frame: f, fps, config: SPRING.cam});
+     const lin = interpolate(f, [0, inT.dur], [0, 1], {...clamp, easing: easeCam});
+-    const o = Math.min(1, Math.max(0, sp));
++    const sp = lin; const o = lin; // 精确在转场末帧停稳，无过冲
+     if (kind === 'softPush') {
+-      // 相机从侧向推入：带轻微模糊与缩放，弹簧落地
++      // 相机从侧向推入：带轻微模糊与缩放，缓动停稳
+       style = {...style, opacity: o,
+         transform: `translateX(${(1 - sp) * 110 * dir}px) scale(${0.96 + 0.04 * Math.min(sp, 1.06)})`,
+         filter: `blur(${Math.max(0, (1 - Math.min(sp, 1)) * 8)}px)`};
+     } else if (kind === 'softZoom') {
+-      // 推近落地：从 1.10 收到 1.0，带柔光扫
++      // 推近落地：从 1.10 收到 1.0，无移动扫光
+       style = {...style, opacity: o, transform: `scale(${1.10 - 0.10 * Math.min(sp, 1.05)})`};
+-      overlay = <AbsoluteFill style={{zIndex: z + 0.5, pointerEvents: 'none', opacity: 0.18 * Math.sin(Math.PI * lin),
+-        background: `linear-gradient(105deg, transparent ${lin * 120 - 40}%, rgba(255,240,215,0.85) ${lin * 120 - 18}%, transparent ${lin * 120}%)`}} />;
+     } else if (kind === 'driftDissolve') {
+       // 同向漂入叠化：空间连续
+       style = {...style, opacity: o,
+         transform: `translateX(${(1 - sp) * 48 * dir}px) translateY(${(1 - sp) * 10}px) scale(${0.985 + 0.015 * Math.min(sp, 1.04)})`};
+     } else if (kind === 'liftReveal') {
+-      // 上浮揭示：从下方带模糊弹入
++      // 上浮揭示：从下方带模糊进入
+       style = {...style, opacity: o,
+         transform: `translateY(${(1 - sp) * 56}px) scale(${0.97 + 0.03 * Math.min(sp, 1.06)})`,
+         filter: `blur(${Math.max(0, (1 - Math.min(sp, 1)) * 6)}px)`};
+--- a/正片/template/风格设计规范.md
++++ b/正片/template/风格设计规范.md
+@@ -1,256 +1,71 @@
+-# 5.0 质感卡片风格 · Remotion 设计规范（4.5 版）
++# 5.0 新定版（玻璃v6 + 房产MG）· Remotion 风格规范
+ 
+-> 写给 Remotion / 写 Remotion 的人与 AI。新视频只写 `shots.ts` 数据，**不写坐标**。  
+-> 代码：`src/style/`（grid / tokens / layouts / components / archetypes / types），示例：`src/demo/`。
++已定：2026-11-06（Asia/Shanghai）。本规范只更新本目录5.0正片模板；独立4.5、片头模板/母工程和既有定版成片不修改。旧玻璃v5/液态弹簧/待审轮换条款废止，以下为新一期默认。
+ 
+-## 0. 核心原则
+-1. **背景铺满、元素浮上**：每镜都有相关实景背景（视频或图，压暗 0.4–0.6，可模糊），上面叠 MG。
+-2. **不全是大玻璃卡**：一屏最多 1–2 张「重」玻璃卡；优先用裸数字、时间轴、细行、引用号、进度环、软提示条、浮动标签、下划线等轻量元素。大小元素穿插，禁止十镜同构。
+-3. **严格网格**：左右边必须落在 12 栏栏线上，内容块间距 ≥24px，**禁止重叠**。页眉三行（栏目/标题/示例标注）之间允许 8px。
+-4. **不要装饰框**：禁止金色 L 形角标、聚焦框、外发光框。质感靠玻璃底、细描边、内高光、投影。
+-5. **一屏一件事**：正在讲的那项最大、最亮；金色面积全屏 ≤8%。
+-6. **安全区**：底部 180px 字幕禁区；右侧约 15% 留给抖音按钮。
+-7. **素材规则（学员版）**：
+-   - **禁止**依赖本地剪映 / Mac 私有素材。
+-   - 城市航拍等视频放在 `public/media/stock/`，来源写进 `stock/SOURCES.md`（Mixkit / Coverr 等可商用免费授权）。
+-   - 关键概念用 `GenerateImage` 生成，放 `public/media/gen/`。
+-   - **一片一用**：同一文件在一条片子里只能出现一次（背景与框内都算）。
+-8. **数字标示例**：示例数据必须显示 `ExampleMark`（片尾除外）。
++## 0. 原则与网格
++- 深色电影实拍背景、冷灰经典薄玻璃、暖白主字、一处金色主强调；金色面积≤8%，轻珊瑚风险、青绿利好、蓝色信息tint不抢字。
++- 不全屏堆大卡；先选信息结构，再挑版式；每镜1个主信息+2–3辅助信息。
++- 1920×1080@30fps；12栏，left96/right1632，栏宽106/沟24/步长130；栏目y56/h36，标题y100/h100，内容y248–880。
++- 所有矩形来自 `layouts.ts` 的 rect/splitRows；独立组距≥48px（左右空一栏），连接件conn*≥24px；页眉间距允许8px。严禁截字、重叠、角标装饰框。
++- 底部y900–1080给字幕；右侧288px留平台按钮。
++- 字体 PuHui/Health/ArialB；TYPE：kicker30/title80/heroTitle92/number150/quote60/rowTitle40/body34/label28/chip28/ringValue52。
++- 正文≥34px，任意标签≥26px，多行行高≥1.3，文字填充≤75%；当前项靠颜色/亮度强调，不靠卡片弹跳或变形。
+ 
+-## 1. 网格（grid.ts）
+-| 项 | 值 |
+-|---|---|
+-| 画布 | 1920×1080 @30fps |
+-| SAFE.left / right | 96 / 1632 |
+-| 字幕禁区 | y ≥ 900 |
+-| 栏 | 12 栏；栏宽 106；间距 24；步长 130 |
+-| 栏目行 | y 56，高 36 |
+-| 标题行 | y 100，高 100 |
+-| 内容区 | y 232–880（高 648） |
++## 共享玻璃 v6（已定参数）
++- 唯一来源：`tokens.ts: GLASS_V6`；`FROST = GLASS_V6`，`GLASS.dark/light` 是同源兼容视图。所有正片玻璃入口用 `glassMat(mode,tint?,edge?,soft?)`；mgEstate.frost 与旧 mgCards.LG 均委托它。旧 light/pearl 名称保留接口，但不再渲白卡；旧 edge 参数不覆盖细白边。
++- 主底：165°，rgba(62,64,72,**.68**) → rgba(38,40,48,**.74**)；基础透射约32%→26%。soft/ghost：.62→.68（基础透射38%→32%）。这是**底层不透明alpha**，不是“透明度68%”；叠加层后的有效透射会略低。
++- 细白边1px，alpha .22；轻顶缘1px .26；轻底线1px黑 .12；阴影 `0 8px 20px rgba(0,0,0,.20), 0 1px 3px rgba(0,0,0,.12)`。
++- 固定宽柔面光：160°，白 .12→.035（38%）→0（60%）。无移动扫光、颗粒纹理、厚斜面、双层厚框、夸张弧面或重影。
++- 轻语义tint：金/暖珊瑚 .10，青绿/蓝 .08；旧接口传入更浓rgba会钳至≤.10。保持冷灰基调、暖白主字/浅副字；不改成白底或彩色实心板。
++- `backdropFilter/WebkitBackdropFilter='none'`：保留经典参考的环境透射细节，用确定性半透明和面光做玻璃层次，避免祖先opacity/filter改变backdrop root而闪烁。不是28px雾化玻璃，也不是v5厚斜面版本。
++- `useSpringP/useLiquid` 旧API适配有限时长ease-out cubic `1-(1-t)^3`；p严格[0,1]、到期精确1，sx/sy=1；主卡16、柔和20、小标签12帧@30fps。SPRING旧令牌改成 damping26 + overshootClamping，保留给外部兼容；本模板卡片不再用物理弹簧驱动。
++- `Sheen` 兼容API返回null，`bump`返回0；关闭卡片整体前景视差、焦点推近和WordSheen。保留背景视频和有意义的数据变化；人物摆手不是卡片动画。
+ 
+-API：`cols(c,n)` · `splitRows(y,H,parts)` · `rect(c,n,row)` · `FULL`。
++## 5.0 新定版（玻璃v6 + 房产MG）· 默认版式与轮换
++状态：**已定**，2026-11-06（Asia/Shanghai）。本节替代此前“待审/旧6套强制/到位后持续呼吸”等条款。
+ 
+-## 2. 色彩 / 字体 / 动效令牌（tokens.ts）
+-- **COLOR**：ink `#121110` · warm `#F4EEE4` · gold `#D9B26F` / goldHi `#F3D79E` / goldDeep `#9C7536` · coral `#E0715C`（风险）· green `#8DB89A`（利好）
+-- **FONT**：标题 `PuHui` · 正文 `Health` · 数字 `ArialB`
+-- **TYPE**：kicker 28 · title 80 · heroTitle 100 · number 150 · cardTitle 44 · cardNum 72 · body 30 · label 26 · chip 24（正文 ≥24）
+-- **MOTION**（帧@30fps）：enter 20 · stagger 6 · chip 14 · count 30 · freeze 30 · maxShift 36
+-- 重点词用 `{…}`，由 `GoldText` 渲成金色
++默认 **26种逻辑版式**（`outroAir` 仅为 `outroHost` 别名，不重复计数）：
++- 原核心10：`titleFloat / bareNumber / splitVs / timeline / mediaRows / quoteStack / ringFeature / waitVs / triadSoft / outroHost`。
++- 数据7：`lineReveal / barGlow / rankBars / waffle / balance / yearRing / formulaCalc`。
++- 房产已定9：`floorLadder / paymentSplit / amenityOrbit / pitfallBoard / priceStep / decisionFork / districtTags / loanDial / layerReveal`。
++- 旧6套只存档：`keywordCascade / checklistFill / vsScore / tipStack / numberedReveal / kpiGrid`。材质已同步v6，但不自动推荐、不进入默认gallery。
++- `unitCompare` 仅保留实现存档；不在 LayoutName、默认推荐、预览或轮换计数中。
+ 
+-## 3. 组件 API（components.tsx）
++执行条款：
++1. 标准8–12镜一期至少7种版式，其中至少2种不同的已定房产MG；短片少于7镜时不硬凑7种，逐镜不重复，优先安排1种语义匹配的房产MG。禁止为凑数量造数据。
++2. 同一版式每期最多2次（片尾仅1次）；相邻镜不得同版式，重复时中间至少隔2镜；别名合并计数。切换数字、流程、清单、图文、对比等信息结构，不只换标题。
++3. 真实数字/比例/金额至少1镜用数据图表、bareNumber/ringFeature，或匹配的 paymentSplit/priceStep/loanDial。7种数据图表合计每期≤3镜，同一种≤1镜，不相邻连用；数字先核算，示例显式标注，不能把示例用于实际楼盘判断。
++4. 清单/避坑优先 pitfallBoard、layerReveal，配合 quoteStack/mediaRows；楼层用 floorLadder，预算用 paymentSplit/priceStep，配套/区域用 amenityOrbit/districtTags；评分、热度必须有来源和口径，没数据就不造分。
++5. 对比/决策轮换 decisionFork、splitVs、waitVs，真实总账可用 balance；禁止默认使用 unitCompare 或旧 vsScore。
++6. 背景优先清晰视频，静图背景占比≤1/3；不整屏模糊，bg.blur=0，靠冷灰玻璃和字影保证可读。
++7. 卡片按口播锚点单调入场，16/20/12帧后精确停稳；禁止过冲、落地二次弹、邻居让位、整体呼吸/焦点缩放、僵硬扫光条。高亮只改变轻色光/文字亮度；数据绘制、进度填充、背景自然运镜与小滕人物摆手可保留，不让卡片整体晃动。
+ 
+-### 3.1 基础
+-| 组件 | 用途 |
+-|---|---|
+-| `GlassCard` | 玻璃卡（少用）。tone: dark/pearl/gold/coral/ghost |
+-| `MediaFrame` | 图/视频框；`soft` 去描边更轻。描边在内侧 |
+-| `Chip` / `Badge` / `Count` / `Bar` | 标签、序号、滚数、对比条 |
+-| `Kicker` / `Headline` / `ExampleMark` / `Backdrop` | 页眉与背景 |
++唯一登记：`src/style/layouts.ts` 的 DEFAULT_LAYOUTS（10+7+9）；默认活目录 `src/gallery/shots-mg-gallery.ts` / `MgGallery`，每个默认版式一镜。房产子集 `shots-mg-re10.ts` / `MgGalleryRe10` 固定9镜、40.5秒；“re10”仅兼容旧文件名，不代表10套。
++检查：`npm run check:freeze` 验证材质、动效范围、默认/存档边界和gallery覆盖；正式出片还须 `npm run check`、stills/音画核验。新增版式必须先登记样镜并审核，不能直接加进默认清单。
+ 
+-### 3.2 轻量 MG（优先用这些打破「全是卡」）
+-| 组件 | 用途 | 典型入场 |
+-|---|---|---|
+-| `BareNumber` | 无卡底大数字 | up |
+-| `SplitType` | 双行分裂大标题 + 下划线 | 错落入场 |
+-| `UnderlineDraw` | 金色下划线描画 | wipe |
+-| `FloatLabel` | 浮动小标签（可轻微浮动） | fade |
+-| `Timeline` | 横向节点 + 连接线进度 | stagger |
+-| `IconRow` | 图标/序号 + 标题细行（非卡） | right |
+-| `QuoteBlock` | 大引号 + 引文 | blur |
+-| `SoftCallout` | 软发光提示条（比玻璃卡轻） | scale |
+-| `ProgressRing` | SVG 进度环 | draw |
+-| `ArrowConnector` | 箭头连接 | wipe |
+-| `HighlightBar` | 焦点竖条 | grow |
+-| `StatPill` | 紧凑统计胶囊（小卡） | up |
++## 口播节奏与转场
++- 镜头起点按字幕 `at:{cue/text/ms}`；不用手写sec。`F(ms)=ceil(ms*30/1000)`，总帧数=音频帧+15，无空隙。
++- anchors绑定关键词，现有适配默认提前6帧启动；media在左侧文字之后；splitVs/waitVs顺序：左文字→左图→箭头→右图。用实际口播预览微调，不破坏字幕时间码。
++- MOTION：enter16/stagger5/chip12/count32/focus12/freeze30/maxShift48（30fps）。卡片只做单调进入，到位停；滚数/画线按语义推进。
++- 正片转场保留 softPush18 → softZoom16 → driftDissolve16 → liftReveal18；旧kind名兼容。用有限单调缓动，在dur末帧精确到位；去掉softZoom移动扫光，禁止spring超调。房产子gallery继续独立10帧柔叠化。
++- 前景只在退场转场延长帧冻结；LiveFrameCtx/LiveVideo保证背景与媒体视频不停，每个Sequence premountFor30；不为“有动效”而让已到位卡片继续晃。
+ 
+-入场 `Enter`：`up | left | right | scale | fade | blur | none`。  
+-Chip 放进横向居中行时外包 `<div style={{flexShrink:0}}>`。
++## 背景、素材与亮度
++- 视频≥1920×1080、中国城市航拍、优先白天与当期城市，可商用无水印；一片一用，登记SOURCES并跑stock:verify。概念图无文字/logo/水印，≤300KB。
++- `bg.blur=0`，不糊整幅背景。brightness1.2/saturate1.06；实际压暗max(.13,dark−.26)，只留标题/字幕区渐变；白天dark .38–.45，黄昏.45–.52，夜景.52–.60。曝光或可读性差先换trim/素材或调压暗，不能回白卡。
++- 素材长度≥trim+镜长+转场余量，太短最多慢放至.75×，再短换素材。保留视频播放和背景自然缓慢运镜。
++- 不写死城市/人名；城市只在可选city字段；样例均显式标示例，正式金额/月供/税费先核算。
+ 
+-## 4. 版式（layouts.ts + archetypes.tsx）
+-`layoutRects(name, n)` 只返回矩形；`ShotView` 按 `layout` 选渲染器。
++## 字幕、片尾与工作流
++- 配音→逐字时间码→只校对文字不改时间→镜头表/anchors→check→stills→render→核对音画。详见音画同步与字幕.md。
++- Health Bold42px（38–46）、暖白+当前词沙金，底部磨砂胶囊；自然断句、行尾去标点，每行≤18字，优先单行、最多2行。当前实现以画面中心x960居中；无下划线。
++- 片尾outroHost默认左侧小滕+右侧文案；outroAir同一别名。只用当期文案，points≤3；无点赞/关注/收藏/转发类CTA。人物微呼吸摆手保留，玻璃要点条停稳。
++- 片头（EpisodeOpening/GlassLight）遵从片头原规范，未改实现；既有选楼层口诀等成片只作历史参考，不能用旧片倒推覆盖本次玻璃v6。
++- 一体build/concat/setpts混流流程不变；本轮不重制旧片、不推GitHub、不Copy Mac、不代发消息。
+ 
+-| 版式 | 视觉性格 | 元素 |
+-|---|---|---|
+-| `titleFloat` | 开场：大字 + 小插图，几乎无重卡 | SplitType · chips · soft MediaFrame · SoftCallout |
+-| `bareNumber` | 核心数字：裸数字 + 概念图 | BareNumber · Underline · chips · soft MediaFrame |
+-| `splitVs` | 左右对比 | 双 MediaFrame · Arrow · 双 BareNumber · FloatLabel |
+-| `timeline` | 流程：无卡 | Timeline 节点 · SoftCallout 结论 |
+-| `mediaRows` | 一图多行 | MediaFrame · IconRow 列表（焦点接力） |
+-| `quoteStack` | 避坑清单 | QuoteBlock · IconRow · SoftCallout(coral) |
+-| `ringFeature` | 月供等比例概念 | MediaFrame · ProgressRing · 2× StatPill |
+-| `waitVs` | 等待对比 | 双 Media · HighlightBar · BareNumber · Arrow |
+-| `triadSoft` | 总结三列 | 3× StatPill（中列高亮）· SoftCallout |
+-| `outroHost` | 片尾小滕 | 左侧小滕挥手 + 右侧片尾文案分层，禁止点赞关注类引导语 |
+-
+-新增版式：① layouts 只用 rect/splitRows ② archetypes 写渲染器 ③ 跑检查脚本。
+-
+-## 5. 镜头数据（shots.ts）
+-```ts
+-{id:'S04', layout:'timeline', sec:6.5, kicker:'…', title:'房贷审批，{四步}走完',
+- bg:{src:'media/stock/….mp4', video:true, dark:0.58},
+- data:{steps:[{t,s,chip}], note:{t}}}
+-```
+-路径约定：`media/stock/*` 航拍 · `media/gen/*` 概念图 · `media/xiaoteng.png` 角色。  
+-各版式 `data` 字段以 `src/demo/shots.ts` 为准。
+-
+-## 6. 动画时序（5.0 运镜版）
+-- **运动语言**：Q 弹入场（Remotion spring：过冲→回落）+ 镜间运镜（推/拉/漂/起）+ 镜头内视差推近。方向跟内容走（对比横移、流程轻横移、标题推近、片尾稳住），不乱跳。
+-- 入场约 24 帧弹簧；位移 ≤48px；缩放可过冲到约 1.08 再回 1；可 blur/fade。`SPRING.enter/soft/snappy/cam` 见 tokens.ts。
+-- 顺序：页眉 → 主元素 → stagger 5 帧依次弹簧出现。
+-- 焦点接力（timeline / IconRow）：约第 24 帧到 dur−60，当前项最亮。
+-- 结论条：dur−56 左右弹簧弹出。
+-- 镜头起止由字幕时间码决定（§10）；前景只在退场转场的几帧定格；镜间用 16–18 帧运镜转场（见 §9）。成片带口播音频和烧录字幕。
+-- 每镜 5–7 秒；整片约 60 秒、约 10 镜；**相邻镜版式不得相同**。
+-
+-## 7. 素材
+-见 `public/media/stock/SOURCES.md`。下载优先 Mixkit / Coverr / Pexels（Pexels 若 Cloudflare 拦 curl，可用浏览器或换 Mixkit CDN）。生成图用 `GenerateImage`，16:9，无字。
+-
+-## 8. 出片检查清单
+-1. `node --no-warnings scripts/check-layout.mjs` → 越界 / 间距≥24 / 栏线 / 素材不复用  
+-2. `npm run stills` → `out/联系表.png`  
+-3. 人眼：无截字、无角标、不全是大卡、片尾留白、字幕区与右侧按钮区空、金色 ≤8%、版式有变化  
+-4. `npx remotion render src/index.ts Style50-Demo out/….mp4 --muted --browser-executable=…/浏览器.sh`
+-
+-## 9. 终版（v3）新增硬规则
+-### 9.1 城市中立
+-- 文案、组件、样片中不得出现任何城市名；城市只能写在镜头的可选字段 `city`（如 `city: '长沙'`）。设了 city 时 kicker 自动加前缀，不设则不显示。
+-- check-layout 会用正则扫描 `city` 字段以外的城市名。
+-- 背景素材可能拍到真实城市的天际线，学员可以按自己的城市替换素材。
+-
+-### 9.2 字号下限（tokens.ts `MIN_FONT`）
+-- 正文 / 说明文字（`data-role="body"`）≥ 34px；标签、chip、kicker ≥ 26px。
+-- 当前令牌：kicker 30、title 80、heroTitle 92、number 150、quote 60、rowTitle 40、body 34、label 28、chip 28、ringValue 52。
+-
+-### 9.3 留白与填充率
+-- 带 `data-fit` 的容器（chip、pill、callout）里，文字宽度不超过容器宽度的 75%（`RULE.fillMax`）。
+-- 多行文字行高 ≥ 1.3（`RULE.lineHeight`）。
+-- 不允许溢出。所有文字必须落在 layoutRects 给出的版式区内（容差 ±6px）。装饰性字形加 `data-deco` 可以跳过检查。
+-
+-### 9.4 组间距
+-- 独立的 MG 组之间至少相隔 48px（`MG_GAP`）：横向隔一个空栏，纵向用 `splitRows` 留 48px。只有连接件（`conn*`）可以放宽到 24px。
+-- 内容区从 contentTop 248 开始，高度 632。
+-
+-### 9.5 片尾（outroHost）
+-- 默认版式 `outroHost`（`outroAir` 为同一实现的别名）。小滕卡通（`media/character/xiaoteng_outro.png`，挥手+竖拇指）默认出镜：占左侧约 1/3 宽、底边贴画面底并渐隐，脚下暖色地面光晕；从左下柔和滑入 → 轻微呼吸浮动 + 小幅摆动模拟挥手。`character:false` 关闭，文字居中。
+-- 右侧 5–11 栏按片尾文案分层：眉标 → 主标题（核心观点，可一处金色）→ 金线 → 要点玻璃条 `points`（≤3 条，编号 01/02/03）→ 收尾句 `note` → 小字署名 `account`（如「极限小滕 · 房产科普」）。
+-- 数据：`OutroData = {eyebrow?, line, points?, note?, account?, character?}`。屏幕文字只来自当期片尾文案。
+-- **禁止引导语**：模板不加、也会自动过滤含「点赞/关注/收藏/转发/三连/评论区/订阅」的要点/收尾句；不做按钮式 CTA。
+-
+-### 9.6 转场（运镜衔接，替代硬切）
+-| 序号 | 类型（旧名兼容） | 帧数 | 做法 |
+-|---|---|---|---|
+-| 1 | softPush（原 pushBlur） | 18 | 相机侧向推入，弹簧落地；旧镜反方向滑出并虚化 |
+-| 2 | softZoom（原 crossfade） | 16 | 推近落地 + 柔光扫；旧镜放大淡出 |
+-| 3 | driftDissolve（原 maskWipe） | 16 | 同向漂入叠化，空间连续 |
+-| 4 | liftReveal（原 lightSweep） | 18 | 自下上浮揭示，模糊变清晰 |
+-- 上表四种转场按顺序轮换（transitions.tsx）。旧 kind 名仍可映射到新实现。重叠 Sequence：旧镜定格延长 T 帧，总时长不变。镜头内 Backdrop 另有缓慢推近+方向漂移（CamCtx），前景同向更快一点做视差。
+-
+-### 9.7 亮度
+-- （5.0 调整，背景比 4.5 更亮）背景遮罩 = max(0.13, dark − 0.26)，滤镜为 `brightness(1.2) saturate(1.06)`；渐变只留左上标题区（径向 0.42）和底部字幕区（0.36），中部通透；文字可读性靠 `.txs` 柔和投影（0 2px 14px rgba(0,0,0,.55)），金字用 drop-shadow。4.5 原值为 max(0.22, dark−0.16) / brightness(1.1) / 上下渐变。COLOR.sub 的不透明度为 0.78。
+-- 按时段设 `bg.dark`：白天航拍 0.38–0.45（5.0 实际压暗 0.13–0.19），黄昏或阴天 0.45–0.52，夜景 0.52–0.60，静图背景 0.45–0.55 并加 blur 6–8。白天天空过曝时加 blur 2–4，或者换 trim。详见 `素材与生图规则.md` 的 C 部分。
+-
+-### 9.8 检查命令
+-- `npm run check`：静态检查，包括贴栏线、组距、素材不复用、城市名、字号令牌。
+-- `npm run stills`：静态检查加 DOM 检查（用 @remotion/renderer 打开 onBrowserLog，读取每镜定格帧的 `CHECK|id|[...]`），同时输出 `out/stills/*.png` 和 `out/联系表.png`。只有全部 ✓ 才能出片。
+-
+-### 9.9 防「顿一下」（4.5 修复）
+-- （4.5 音画同步版起，定格只发生在退场转场期间）定格**只冻结前景**（文字和 MG）。背景视频和媒体框里的视频继续播放：`LiveFrameCtx` 记录真实帧，`LiveVideo` 用 `<Freeze frame={真实帧}>` 跳出外层的定格。
+-- 静态图背景按真实帧缓慢推近（`scale 1.02 → +0.0003/帧`），所以静图镜头也不会停住。
+-- 每个 Sequence 都设 `premountFor={30}`，提前 1 秒挂载下一镜，Studio 预览时不会因为加载而卡一下。
+-- 视频素材时长必须 ≥ trim + 镜长 + 0.5s（转场时旧镜头还要多播 T 帧）。素材太短时，末尾会停在最后一帧，`npm run check` 会报错。
+-- 验收方法：对成片逐帧求亮度差（ffmpeg `signalstats` 的 YDIF），**不能出现连续 ≥2 帧差值为 0** 的情况。24/25fps 素材每 4–6 帧会有 1 帧重复，这是帧率换算造成的，属于正常现象。
+-
+-
+-## 10. 音画同步与字幕（4.5 音画同步版）
+-完整说明见 `references/音画同步与字幕.md`。
+-### 10.1 同步规则
+-- 输入：`episodes/<期名>/` 下的音频 + SRT 和/或 Caption JSON；`npm run episode` 生成 `src/demo/episode.json`。
+-- `F(ms) = ceil(ms × 30 / 1000)`。镜头 `at` 绑定到句子；本镜时长 = 下一镜起点 − 本镜起点；最后一镜 = 音频帧数 + 15 − 起点。总帧数 = 音频帧数 + 15。
+-- 转场从上一镜借帧，不改变总时长。不再有固定的提前定格。
+-- `anchors`：关键元素在说到对应词前 6 帧开始入场，说到时到位；焦点类版式（timeline / quoteStack / mediaRows）随口播逐项移动。
+-- 素材比镜头短时自动慢放（≥0.75×）。
+-### 10.2 字幕设计
+-| 项 | 值 |
+-|---|---|
+-| 区域 | 底部 180px（y 900–1080），以内容区中心 x=864 居中，离底 44px |
+-| 字体 | 阿里健康体 Bold 42px（允许 38–46），字距 1.5，行高 1.32 |
+-| 颜色 | 暖白 `#F4EEE4`，投影 `0 2px 10px rgba(0,0,0,.45)` |
+-| 底 | 磨砂胶囊 `rgba(18,17,16,.38)` + blur 10 + 1px `rgba(243,215,158,.14)` 描边，圆角 16，内边距 10/28 |
+-| 行 | 每行 ≤18 字（半角 0.55），优先单行，长句按词时间拆成先后两条；只在无逐词时间时用 2 行 |
+-| 标点 | 行尾去掉，句中换成空格，保留小数点和 % |
+-| 动效 | 淡入 5 帧 + 上浮 8px；淡出 4 帧；间隔 <600ms 直接衔接 |
+-| 高亮 | 当前词沙金 `#F3D79E` + 3px 下划线扫过；未读到的字 72% 透明度；可关 |
+-### 10.3 检查
+-音频存在、总帧数匹配、镜头无空隙且递增、每镜 ≥1.2s 且含口播、每句字幕都在成片内、锚点可解析、字幕字号和行宽合规；stills 抽 8 句检查字幕框位于字幕区。
+-
+-
+-## 玻璃材质（5.0 默认 · 苹果磨砂玻璃）
+-- 统一用 `glassMat(mode, tint?, edge?)`（components.tsx）+ `GLASS` token（tokens.ts）；不要再手写低透明 rgba。
+-- 参数：`backdrop-filter: blur(28px) saturate(170%) brightness(0.92)`；深色底 dark（默认）填充 rgba(34,36,42,.62)→rgba(18,19,24,.70)；亮底 light 填充 rgba(252,250,246,.78)→.72。
+-- 1px 内白发丝边（.20）+ 顶部 inset 高光（.22）+ 柔阴影 0 14px 36px rgba(0,0,0,.32)。着色玻璃（gold/coral/green/高亮行）= 在底色上叠 tint，不做纯色块。
+-- 已默认套用：GlassCard dark/ghost、Chip glass/coral/green、IconRow（新增 glass 属性，默认 true；glass={false} 回旧细线行）、Timeline 步骤卡、StatPill、SoftCallout、titleFloat 要点行。
+-- 文字：卡内正文用 COLOR.warm/sub；小字芯片加 GLASS.textShadow；行号不低于 .62 不透明度。
+-- 片头玻璃卡在深空底上已可读，保持原样（GlassLight 彩光不变）。
+-
+-## 玻璃材质 v5 修订（浅玻璃 · 防闪 · 液态玻璃 · 随口播节拍）
+-
+-### 浅玻璃（覆盖上一节的 blur/brightness 参数）
+-- 不再使用 `backdrop-filter`（GLASS.blur = 'none'）。原因见下「防闪」。
+-- 暗色玻璃底：`linear-gradient(165deg, rgba(62,64,72,0.56), rgba(38,40,48,0.64))`（旧：34,36,42 @.62 → 18,19,24 @.70 + brightness .92，偏深）。
+-- 叠加固定镜面高光 `GLASS.sheen`（左上 16% 白 → 透明），保留 1px 发丝边、顶部内高光、投影与文字阴影，保证可读。
+-- ghost 底：rgba(50,52,60,.40)→rgba(30,32,40,.48)。字幕胶囊、柱状图同样去掉 backdrop-filter。
+-
+-### 防闪（根因与规则）
+-- 根因 1：`backdrop-filter` 的元素只要祖先有 opacity<1 或 filter（入场 enterStyle、转场 blur/淡入、dim），Chrome 会把该祖先当作 backdrop root，玻璃只采样到组内（≈透明）；动画结束 opacity 回到 1 后又采样整幅画面（≈磨砂不透明）→ 一会儿透明一会儿不透明。
+-- 根因 2：高亮态是布尔切换，金色底、金色 chip、边框在 1 帧内跳变。
+-- 规则：玻璃一律用确定性半透明填充（不依赖 backdrop）；高亮 `hi` 是 0→1 连续弹簧量（激活弹起、被下一项接管时平滑退回），用叠加层 opacity 与 interpolateColors 过渡；Chip 支持 `hi` 交叉淡入金色。
+-
+-### 随口播节拍（mediaRows / quoteStack / timeline 默认）
+-- 行卡在锚点词说出时入场（`r0/r1/r2`、`s0/s1/s2`，提前 6 帧）；没有锚点时每行间隔 40 帧，不再一次全出。
+-- quoteStack：引文逐行（`q0/q1`）、副句按逗号分段（`sub0/sub1`）出现；第一张卡进来后引文退后变暗（焦点交接），`warn` 出现时整体回亮。
+-- 当前项高亮、前项变暗（opacity −30%、缩 1.5%）；镜头每一拍向焦点轻推（≈3–6px、+0.3% 推近）。
+-- 目标：长镜头每 1.5–2.5s 至少有一处有意义的变化。
+-
+-### 液态玻璃（Q 弹）
+-- `useLiquid(start)`：弹簧速度→沿运动方向拉伸（≤6%），过冲→落地压扁（≤3.5%）。
+-- 邻居让位 `bump()`：新卡落地后约 6 帧，相邻卡被轻推开 9px/距离，再弹回。
+-- `Sheen`：入场与焦点切换时一道斜向镜面高光扫过玻璃（22 帧，强度 .22–.28）。
+-- 高亮卡放大 2%，与邻居的间距随之收放（合并/分离感）。克制，不做卡通形变。
+-
+-### 片头起步（防前 0.5s 卡顿）
+-- 根因：片头 0–560ms（slam 之前）卡片 opacity=0，画面只有 ≈10px 的环境光漂移，逐帧差≈0 → 看起来冻住；另外拼接后视频首帧 PTS=21ms（AAC 预滚），混流 `-r 30` 在 0s 补了一帧重复帧，并造成 21ms 音画偏移。
+-- 规则：第 0 帧起卡片已在空中加速下落（预运动），整体镜头 1.06→1 推近；字体用 delayRender 等待；混流时视频加 `-vf setpts=PTS-STARTPTS`。
+-
+-- 片头起步（v6 修正）：卡片用单一连续曲线下落——第 0 帧起 y=-420→0、scale 0.74→1，Easing.bezier(.42,0,.2,1)，在 slam+8 帧落地；落地后仅一次 ≤3px 过阻尼沉降（spring damping 26），禁止再叠加二次 drop / 欠阻尼 spring 驱动 scale。
+-
+-- 图卡跟随口播（v7 默认）：media/split 版式的图卡与箭头不在镜头开头出现。先出左侧文字，再按 anchors.media（无则在标题之后）入场；splitVs/waitVs 依次为 左文字→左图→箭头(R 锚点前约 0.5s)→右图(R 锚点)。
+-
+-## 11. 5.0 定版（2026-10-31）
+-老板确认「选楼层口诀」为 5.0 标准样子，以下全部是**模板默认**（新一期不用再手动开）：
+-- **工作流**：配音 → `/workspace/时间码字幕2.0/run-box.sh` 出逐字时间码 → 校对对齐（`校对后_动效时间轴_绝对.json`、SRT/Caption JSON）→ `node scripts/build-episode.mjs <期名> --audio=配音.mp4` 出片头 + 正片 + 拼接 + 混流。
+-- **片头（EpisodeOpening，50fps）**：时长 = 第 1 句 endMs（参考期 3.8s/190 帧）；节拍由第 1 句关键词驱动（`scripts/episode-opening-config.mjs --keys=slam:…,tilt:…,x0:…,x1:…,x2:…,title:…`）。右侧卡片从第 0 帧起单一连续曲线下落（y −420→0、scale 0.74→1，bezier(.42,0,.2,1)，slam+8 帧落地，仅一次 ≤3px 过阻尼沉降）；红叉 x0–x2、金色扫光标题、彩色 GlassLight。
+-- **玻璃**：浅玻璃，无 backdrop-filter（防闪），液态玻璃 spring + 邻居让位（nudge）+ 高光 sheen。
+-- **运动**：spring 入场、镜间运镜转场（§9.6）、关键词锚点逐项揭示（§10.1）。
+-- **图卡/箭头**：media/split 版式图卡在左侧文字之后、按 `anchors.media` 入场；splitVs/waitVs 顺序 左文字→左图→箭头→右图（右锚点）。
+-- **字幕**：无下划线，按自然语气断句。
+-- **混流**：拼接后 `-vf setpts=PTS-STARTPTS` 再混配音，`-t` 定长，防首帧重复。
+-- **片尾**：outroHost 用小滕抠像，无 CTA。
+-- **参考期**：`template/episodes/选楼层口诀/`（含 README 与复现命令）。
+-
+-### 11.x MG 版式轮换（2026-11-05 · 默认硬规则）
+-默认可选版式共 24 种（含片尾）：
+-- 定版 6：quoteStack / mediaRows / timeline / titleFloat / splitVs / outroHost
+-- 少用但默认：bareNumber / ringFeature / waitVs / triadSoft
+-- 数据图表 7：lineReveal / barGlow / rankBars / waffle / balance / yearRing / formulaCalc
+-- MG 卡片新增 6（src/style/mgCards.tsx）：keywordCascade（关键词瀑布）/ checklistFill（清单+进度格）/ vsScore（VS 计分板）/ tipStack（通知式提示堆叠）/ numberedReveal（序号翻牌）/ kpiGrid（迷你 KPI 网格）
+-  - data：words[{t,s,tone}] / items[{t,tone}]+label / L,R,rows[{k,w:'L'|'R'|'='}] / tips[{icon,t,s,tone}] / cards[{t,s}] / kpis[{k,v,unit,dec,text,ratio,tone}]；可选 media（右侧配图/视频）
+-  - 锚点：r0/r1/…（说到该词时该项入场）；无锚点按节拍自动兜底
+-**每期必须遵守：**
+-1. 单个版式一期最多用 2 次（片尾除外）；相邻两镜不得同版式。
+-2. 一期正片至少 7 种不同版式，其中至少 2 种来自「MG 卡片新增 6」。
+-3. 口播出现数字/比例/金额 → 至少 1 镜用数据图表或 ringFeature / bareNumber / kpiGrid。没有真实数字不造数，用 checklistFill / numberedReveal / keywordCascade。
+-4. 清单/盘点类选题（N 笔钱、N 个坑）默认 checklistFill 贯穿计数，配合 numberedReveal / tipStack 轮换。
+-5. 对比类默认 vsScore 或 splitVs/waitVs 轮换，不要连用。
+-6. 背景优先视频（media/stock），图片背景一期不超过 1/3。
+-7. 卡片入场后必须持续有动作（呼吸浮动/焦点移动/进度填充），禁止等卡片时画面静止。
+-活目录：src/gallery/shots-mg-gallery.ts（Composition「MgGallery」）；新增版式必须在这里登记一镜。预览：outputs/mg-gallery/。
++## API与验收
++- 版式data见版式目录.md；组件参数见组件API.md；样镜在GALLERY/RE10，非正式当期事实。
++- `npm run check:freeze`：材质同源、26默认/9房产/6存档、无unitCompare、入场单调、到位几何稳定与文档一致性。
++- `npm run gallery:stills`：生成26套默认+6套存档复核图（存档不等于推荐）；`MgGalleryRe10`仍是已审9套子预览。
++- `npm run check`（静态+DOM按stills脚本流程）和正式每期音画/素材校验仍必须执行；本次模板抽帧不代替每期验收。
++- 人眼确认：可透见环境的冷灰薄玻璃、更实而非实心板、细白边/轻顶光、无颗粒/厚边/重影/白底/扫光/到位弹，文字无截断，平台安全区空。
