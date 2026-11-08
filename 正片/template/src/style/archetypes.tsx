@@ -6,26 +6,28 @@ import {bump,
   LiveFrameCtx,
 } from './components';
 import {layoutRects, titleRect, usesTitle} from './layouts.ts';
-import {splitRows, type Rect} from './grid.ts';
-import {COLOR, FONT, MOTION, SPRING, TYPE, FROST, steadySpring as spring} from './tokens';
-import type {Shot} from './types';
+import {GRID, splitRows, type Rect} from './grid.ts';
+import {COLOR, FONT, MOTION, SPRING, TYPE, FROST, glassEnter, steadySpring as spring} from './tokens';
+import type {Shot, TimelineWindow} from './types';
+import {entranceAt} from '../sync/timeline.ts';
 import {DomCheck} from './domcheck';
 import {LineChartReveal, BarGlow} from './DataCharts';
 import {RankBars, Waffle, Balance, YearRing, FormulaCalc} from './DataCharts2';
 import {KeywordCascade, ChecklistFill, VsScore, TipStack, NumberedReveal, KpiGrid} from './mgCards';
 import {FloorLadder, PaymentSplit, AmenityOrbit, PitfallBoard, PriceStep, DecisionFork, DistrictTags, LoanDial, LayerReveal} from './mgEstate';
 
-/** 口播锚点：shots.ts 里 anchors:{count:'30.6万'} → 该词说出时的帧（相对本镜）。元素提前 6 帧开始入场，正好在说到时到位 */
+/** 对应短句起点提前两帧起动，口播开始时已能看到入场。未设锚点时使用版式默认值。 */
 export const AnchorCtx = React.createContext<Record<string, number>>({});
-/** 5.0 默认：图卡跟随口播——在左侧文字之后、说到图对应关键词（anchors.media）时才入场 */
-const mediaAt = (at: (k: string, fb: number) => number, after: number) => Math.max(at('media', after), after);
-const useAt = () => { const a = React.useContext(AnchorCtx); return (k: string, fb: number) => (a[k] != null ? Math.max(0, a[k] - 6) : fb); };
+const useAt = () => {
+  const anchors = React.useContext(AnchorCtx);
+  return (key: string, fallback: number) => entranceAt(anchors[key], fallback);
+};
 
 
 /** 有锚点 s0/s1…（或 r0/r1…）时，焦点随口播逐项移动 */
 const anchoredIdx = (f: number, n: number, p: string, a: Record<string, number>) => {
   if (a[`${p}0`] == null) return null; let k = 0;
-  for (let i = 0; i < n; i++) if (a[`${p}${i}`] != null && f >= a[`${p}${i}`] - 4) k = i;
+  for (let i = 0; i < n; i++) if (a[`${p}${i}`] != null && f >= entranceAt(a[`${p}${i}`], Infinity)) k = i;
   return k;
 };
 const focusIdx = (f: number, n: number, from: number, to: number) =>
@@ -33,14 +35,16 @@ const focusIdx = (f: number, n: number, from: number, to: number) =>
 
 const TitleFloat: React.FC<{s: Shot}> = ({s}) => {
   const R = layoutRects('titleFloat'); const d = s.data;
+  const at = useAt();
   const titleBody = {...R.title, y: R.title.y + 80, h: R.title.h - 80};
+  const l1 = at('l1', 4);
   return <>
     <div style={{position: 'absolute', left: R.title.x, top: R.title.y, display: 'flex', gap: 20}}>
-      {d.chips?.map((c: any, i: number) => <Chip key={i} start={8 + i * 5} tone={c.tone}>{c.t}</Chip>)}
+      {d.chips?.map((c: any, i: number) => <Chip key={i} start={at(`chip${i}`, l1 + 4 + i * 5)} tone={c.tone}>{c.t}</Chip>)}
     </div>
-    <SplitType r={titleBody} start={4} line1={d.line1} line2={d.line2} sub={d.sub} />
-    <MediaFrame r={R.media} start={mediaAt(useAt(), 34)} {...d.media} from="right" soft />
-    <SoftCallout r={R.callout} start={32} text={d.callout} icon={d.icon ?? '▲'} />
+    <SplitType r={titleBody} start={l1} line1={d.line1} line2={d.line2} line2Start={at('l2', l1 + 7)} sub={d.sub} />
+    <MediaFrame r={R.media} start={at('media', 34)} {...d.media} from="right" soft />
+    <SoftCallout r={R.callout} start={at('callout', l1 + 28)} text={d.callout} icon={d.icon ?? '▲'} />
   </>;
 };
 
@@ -52,22 +56,22 @@ const BareNumView: React.FC<{s: Shot}> = ({s}) => {
       <BareNumber r={{x: 0, y: 0, w: N.w, h: 260}} start={c0} value={d.value} unit={d.unit} dec={d.dec} label={d.label} size={150} flow />
       <div style={{position: 'relative'}}>
         <UnderlineDraw x={0} y={0} w={360} start={c0 + 18} />
-        <div style={{paddingTop: 28, fontFamily: FONT.body, fontWeight: 700, fontSize: TYPE.body, lineHeight: 1.4, color: COLOR.sub, opacity: prog(f, c0 + 22, 14)}} data-role="body">
+        <div style={{paddingTop: 28, fontFamily: FONT.body, fontWeight: 700, fontSize: TYPE.body, lineHeight: 1.4, color: COLOR.sub, opacity: prog(f, at('formula', c0 + 22), 14)}} data-role="body">
           <GoldText text={d.formula} />
         </div>
       </div>
       <div style={{display: 'flex', gap: 24}}>{d.chips?.map((c: any, i: number) => <Chip key={i} start={c0 + 30 + i * 6} tone={c.tone}>{c.t}</Chip>)}</div>
     </div>
-    <MediaFrame r={R.media} start={mediaAt(at, c0 + 26)} {...d.media} from="right" soft />
+    <MediaFrame r={R.media} start={at('media', c0 + 26)} {...d.media} from="right" soft />
   </>;
 };
 
 const SplitVs: React.FC<{s: Shot}> = ({s}) => {
-  const R = layoutRects('splitVs'); const d = s.data; const A = R.connArrow; const at = useAt(); const l0 = at('L', 28), r0 = Math.max(at('R', 36), l0 + 8);
+  const R = layoutRects('splitVs'); const d = s.data; const A = R.connArrow; const at = useAt(); const l0 = at('L', 28), r0 = at('R', Math.max(36, l0 + 8));
   return <>
-    <MediaFrame r={R.mediaL} start={l0 + 8} {...d.L.media} from="left" soft />
+    <MediaFrame r={R.mediaL} start={at('mediaL', l0 + 8)} {...d.L.media} from="left" soft />
     <ArrowConnector x={A.x + 48} y={A.y + 18} w={A.w - 96} start={Math.max(l0 + 18, r0 - 16)} />
-    <MediaFrame r={R.mediaR} start={Math.max(l0 + 30, r0)} {...d.R.media} from="right" soft />
+    <MediaFrame r={R.mediaR} start={at('mediaR', Math.max(l0 + 30, r0))} {...d.R.media} from="right" soft />
     <BareNumber r={R.dataL} start={l0} value={d.L.value} unit={d.L.unit} dec={d.L.dec} label={d.L.label} gold={d.winner === 'L'} size={110}>
       {d.L.chip && <Chip start={l0 + 16} tone={d.L.chip.tone}>{d.L.chip.t}</Chip>}
     </BareNumber>
@@ -77,12 +81,43 @@ const SplitVs: React.FC<{s: Shot}> = ({s}) => {
   </>;
 };
 
+const TimelineWindows: React.FC<{r: Rect; cards: TimelineWindow[]; starts: number[]}> = ({r, cards, starts}) => {
+  const f = useCurrentFrame();
+  const width = (r.w - GRID.gutter * (cards.length - 1)) / cards.length;
+  const current = starts.reduce((latest, start, i) => f >= start ? i : latest, -1);
+  return <div style={{position: 'absolute', left: r.x, top: r.y, width: r.w, height: r.h}}>
+    {cards.map(({label, src}, i) => {
+      const p = glassEnter(f, starts[i]);
+      const lit = current === i;
+      return <div key={src} data-window={i} style={{
+        position: 'absolute', left: i * (width + GRID.gutter), top: 0, width, height: '100%',
+        display: 'flex', flexDirection: 'column', boxSizing: 'border-box',
+        borderRadius: 18, overflow: 'hidden', border: `1px solid ${lit ? '#e5c48d' : 'rgba(240,244,255,.25)'}`,
+        background: '#191e27', boxShadow: '0 10px 30px rgba(7,13,24,.45)',
+        opacity: p, transform: `translateY(${16 * (1 - p)}px)`,
+      }}>
+        <Img src={staticFile(src)} style={{width: '100%', height: 0, flex: '1 1 auto', objectFit: 'cover'}} />
+        <div style={{
+          display: 'grid', placeItems: 'center', minHeight: 67,
+          background: 'linear-gradient(180deg,#303642,#202631)', fontFamily: FONT.title,
+          fontSize: TYPE.rowTitle, letterSpacing: 2, lineHeight: 1.25, color: lit ? '#ffe1a6' : COLOR.warm,
+        }}>{label}</div>
+      </div>;
+    })}
+  </div>;
+};
+
 const TimelineView: React.FC<{s: Shot; dur: number}> = ({s, dur}) => {
-  const f = useCurrentFrame(); const d = s.data; const R = layoutRects('timeline', d.steps.length);
+  const f = useCurrentFrame(); const d = s.data;
+  const windows = d.windows?.length ? d.windows as TimelineWindow[] : undefined;
+  const R = layoutRects('timeline', d.steps.length, {windows: !!windows});
   const at = useAt(); const act = anchoredIdx(f, d.steps.length, 's', React.useContext(AnchorCtx)) ?? focusIdx(f, d.steps.length, 24, dur - 60);
+  const next = d.note?.next && f >= at('noteNext', dur);
   return <>
     <Timeline r={R.steps} start={8} steps={d.steps} active={act} starts={d.steps.map((_: any, i: number) => at(`s${i}`, 8 + i * 40))} />
-    <SoftCallout r={R.note} start={at('note', dur - 56)} text={d.note.t} tone={d.note.tone} icon={d.note.icon} />
+    {windows ? <TimelineWindows r={R.windows} cards={windows} starts={windows.map((_, i) => at(`w${i}`, dur))} />
+      : d.note && <SoftCallout key={next ? 'next' : 'first'} r={R.note} start={next ? at('noteNext', dur) : at('note', dur - 56)}
+        text={next ? d.note.next : d.note.t} tone={d.note.tone} icon={d.note.icon} />}
   </>;
 };
 
@@ -104,10 +139,10 @@ const MediaRows: React.FC<{s: Shot; dur: number}> = ({s}) => {
   const d = s.data; const n = d.rows.length; const R = layoutRects('mediaRows', n); const rows = rowRects(R.rows, n);
   const B = useRowBeats(n, (i) => 14 + i * 40); const at = useAt();
   return <>
-    <MediaFrame r={R.media} start={mediaAt(at, 20)} {...d.media} from="left" soft />
+    <MediaFrame r={R.media} start={at('media', 20)} {...d.media} from="left" soft />
     <AbsoluteFill style={B.cam}>
     {d.rows.map((row: any, i: number) =>
-      <IconRow key={i} r={rows[i]} start={B.starts[i]} activeAt={B.starts[i]} offAt={B.starts[i + 1]} dim={B.dim(i)} nudge={B.nudge(i)} idx={`0${i + 1}`} title={row.t} sub={row.s} tip={row.k} active={i === B.act} />)}
+      <IconRow key={i} r={rows[i]} start={B.starts[i]} activeAt={B.starts[i]} offAt={B.starts[i + 1]} dim={B.dim(i)} nudge={B.nudge(i)} idx={`0${i + 1}`} title={row.t} sub={row.s} subStart={at(`rsub${i}`, B.starts[i] - 8)} tip={row.k} active={i === B.act} />)}
     </AbsoluteFill>
   </>;
 };
@@ -126,7 +161,7 @@ const QuoteStack: React.FC<{s: Shot; dur: number}> = ({s, dur}) => {
     <QuoteBlock r={R.quote} start={lineAt[0]} text={d.quote} sub={d.sub} lineAt={lineAt} subAt={subAt} focus={focus * (1 - 0.5 * settle)} />
     <AbsoluteFill style={B.cam}>
     {d.rows.map((row: any, i: number) =>
-      <IconRow key={i} r={rows[i]} start={B.starts[i]} activeAt={B.starts[i]} offAt={B.starts[i + 1]} dim={B.dim(i) * (1 - 0.6 * settle)} nudge={B.nudge(i)} idx={`0${i + 1}`} title={row.t} sub={row.s} tip={row.k} active={i === B.act} />)}
+      <IconRow key={i} r={rows[i]} start={B.starts[i]} activeAt={B.starts[i]} offAt={B.starts[i + 1]} dim={B.dim(i) * (1 - 0.6 * settle)} nudge={B.nudge(i)} idx={`0${i + 1}`} title={row.t} sub={row.s} subStart={at(`rsub${i}`, B.starts[i] - 8)} tip={row.k} active={i === B.act} />)}
     </AbsoluteFill>
     <SoftCallout r={R.warn} start={warnAt} text={d.warn} tone="coral" />
   </>;
@@ -136,19 +171,19 @@ const RingFeature: React.FC<{s: Shot}> = ({s}) => {
   const R = layoutRects('ringFeature'); const d = s.data; const ring = R.ring; const at = useAt();
   const size = Math.min(ring.w, ring.h);
   return <>
-    <MediaFrame r={R.media} start={mediaAt(at, 20)} {...d.media} from="left" soft />
+    <MediaFrame r={R.media} start={at('media', 20)} {...d.media} from="left" soft />
     <ProgressRing cx={ring.x + size / 2} cy={ring.y + ring.h / 2} size={size} start={at('ring', 18)} ratio={d.ring.ratio} label={d.ring.label} value={d.ring.value} />
     {d.ring.note && <div data-role="body" style={{position: 'absolute', left: ring.x + size + 48, top: ring.y, width: ring.w - size - 48, height: ring.h, display: 'flex', alignItems: 'center',
       fontFamily: FONT.body, fontWeight: 700, fontSize: TYPE.body, lineHeight: 1.4, color: COLOR.sub, whiteSpace: 'pre-line'}}><GoldText text={d.ring.note} /></div>}
-    <StatPill r={R.a} start={Math.max(at('a', 28), at('ring', 18) + 10)} {...d.a} hi />
+    <StatPill r={R.a} start={at('a', Math.max(28, at('ring', 18) + 10))} {...d.a} hi />
   </>;
 };
 
 const WaitVs: React.FC<{s: Shot}> = ({s}) => {
-  const R = layoutRects('waitVs'); const d = s.data; const A = R.connArrow; const at = useAt(); const l0 = at('L', 26), r0 = Math.max(at('R', 36), l0 + 8);
+  const R = layoutRects('waitVs'); const d = s.data; const A = R.connArrow; const at = useAt(); const l0 = at('L', 26), r0 = at('R', Math.max(36, l0 + 8));
   return <>
-    <MediaFrame r={R.mediaL} start={l0 + 8} {...d.L.media} from="left" soft />
-    <MediaFrame r={R.mediaR} start={Math.max(l0 + 30, r0 + 10)} {...d.R.media} from="right" soft />
+    <MediaFrame r={R.mediaL} start={at('mediaL', l0 + 8)} {...d.L.media} from="left" soft />
+    <MediaFrame r={R.mediaR} start={at('mediaR', Math.max(l0 + 30, r0 + 10))} {...d.R.media} from="right" soft />
     <HighlightBar x={R.numL.x} y={R.numL.y + 8} h={R.numL.h - 16} start={l0 - 2} />
     <BareNumber r={{...R.numL, x: R.numL.x + 40, w: R.numL.w - 40}} start={l0} value={d.L.value} unit={d.L.unit} label={d.L.label} gold={false} size={110}>
       {d.L.chip && <Chip start={l0 + 18} tone={d.L.chip.tone}>{d.L.chip.t}</Chip>}
@@ -183,8 +218,10 @@ const OutroHost: React.FC<{s: Shot}> = ({s}) => {
   const wave = Math.sin(settle / 9) * 1.6 * Math.min(1, settle / 15);
   const points: string[] = (d.points ?? []).map(clean).filter(Boolean).slice(0, 3);
   const note = clean(d.note);
-  const pStart = 34;
-  const lineSp = spring({frame: Math.max(0, f - 14), fps, config: SPRING.enter});
+  const at = useAt();
+  const lineAt = at('line', 14);
+  const pStart = lineAt + 20;
+  const lineSp = spring({frame: Math.max(0, f - lineAt), fps, config: SPRING.enter});
   const lineO = Math.min(1, Math.max(0, lineSp));
   const eyeSp = spring({frame: Math.max(0, f - 10), fps, config: SPRING.soft});
   return <>
@@ -202,9 +239,9 @@ const OutroHost: React.FC<{s: Shot}> = ({s}) => {
       {d.eyebrow && <div style={{fontFamily: FONT.body, fontWeight: 700, fontSize: TYPE.label, color: COLOR.goldHi, letterSpacing: 8, opacity: Math.min(1, Math.max(0, eyeSp)), transform: `translateY(${(1 - eyeSp) * 12}px)`}}>{d.eyebrow}</div>}
       <div style={{fontFamily: FONT.title, fontSize: 76, color: COLOR.warm, marginTop: 28, lineHeight: 1.3, whiteSpace: 'pre-line',
         textShadow: '0 4px 24px rgba(0,0,0,0.35)', opacity: lineO, transform: `translateY(${(1 - lineSp) * 28}px) scale(${0.96 + 0.04 * Math.min(lineSp, 1.1)})`}}><GoldText text={d.line} /></div>
-      <div style={{position: 'relative', width: 240, height: 3, marginTop: 36}}><UnderlineDraw x={0} y={0} w={240} start={28} /></div>
+      <div style={{position: 'relative', width: 240, height: 3, marginTop: 36}}><UnderlineDraw x={0} y={0} w={240} start={lineAt + 14} /></div>
       {points.length > 0 && <div style={{marginTop: 36, display: 'flex', flexDirection: 'column', gap: 18, width: center ? undefined : '100%'}}>
-        {points.map((p, i) => { const q = spring({frame: Math.max(0, f - (pStart + i * 7)), fps, config: SPRING.enter}); const qo = Math.min(1, Math.max(0, q)); return <div key={i} data-role="body" style={{display: 'flex', alignItems: 'center', gap: 20,
+        {points.map((p, i) => { const q = spring({frame: Math.max(0, f - at(`p${i}`, pStart + i * 7)), fps, config: SPRING.enter}); const qo = Math.min(1, Math.max(0, q)); return <div key={i} data-role="body" style={{display: 'flex', alignItems: 'center', gap: 20,
           padding: '16px 28px', borderRadius: 20, ...glassMat('dark'),
           opacity: qo, transform: `translateX(${(1 - q) * 48}px) scale(${0.96 + 0.04 * Math.min(q, 1.08)})`}}>
           <span style={{fontFamily: FONT.title, fontSize: 34, color: COLOR.goldHi, minWidth: 44}}>{String(i + 1).padStart(2, '0')}</span>
@@ -212,9 +249,9 @@ const OutroHost: React.FC<{s: Shot}> = ({s}) => {
         </div>; })}
       </div>}
       {note && <div data-role="body" style={{marginTop: 32, fontFamily: FONT.body, fontWeight: 700, fontSize: TYPE.body, lineHeight: 1.4, color: COLOR.sub,
-        opacity: Math.min(1, Math.max(0, spring({frame: Math.max(0, f - (pStart + points.length * 7 + 6)), fps, config: SPRING.soft})))}}><GoldText text={note} /></div>}
+        opacity: Math.min(1, Math.max(0, spring({frame: Math.max(0, f - at('note', pStart + points.length * 7 + 6)), fps, config: SPRING.soft})))}}><GoldText text={note} /></div>}
       {d.account && <div style={{marginTop: 22, fontFamily: FONT.body, fontWeight: 500, fontSize: TYPE.label - 2, color: 'rgba(243,215,158,0.72)', letterSpacing: 4,
-        opacity: Math.min(1, Math.max(0, spring({frame: Math.max(0, f - (pStart + points.length * 7 + 14)), fps, config: SPRING.soft})))}}>{d.account}</div>}
+        opacity: Math.min(1, Math.max(0, spring({frame: Math.max(0, f - at('account', pStart + points.length * 7 + 14)), fps, config: SPRING.soft})))}}>{d.account}</div>}
     </div>
   </>;
 };
@@ -232,7 +269,7 @@ const mv = (name: any, C: any, key: string, listKey: string, gap = 26) => (({s, 
   const st = (i: number) => at(`r${i}`, 14 + i * g);
   return <>
     <C r={R[key]} st={st} {...d} />
-    {R.media && d.media && <MediaFrame r={R.media} start={mediaAt(at, 20)} {...d.media} from="right" soft />}
+    {R.media && d.media && <MediaFrame r={R.media} start={at('media', 20)} {...d.media} from="right" soft />}
   </>;
 }) as React.FC<{s: Shot; dur: number}>;
 const MG_VIEWS = {
@@ -306,7 +343,7 @@ export const ShotView: React.FC<{s: Shot; dur: number; exampleData?: boolean; an
     <AbsoluteFill style={{transform: `translate(${fgTX}px, ${fgTY}px) scale(${fgScale})`, transformOrigin: '50% 45%'}}>
       {kt && <Kicker text={kt} />}
       {exampleData && <ExampleMark />}
-      {usesTitle(s.layout) && s.title && <Headline text={s.title} />}
+      {usesTitle(s.layout) && s.title && <Headline text={s.title} start={entranceAt(anchors.title, 2)} />}
       {View ? <View s={s} dur={dur} /> : null}
       {fx ? <Beats s={s} /> : null}
     </AbsoluteFill>
@@ -314,7 +351,7 @@ export const ShotView: React.FC<{s: Shot; dur: number; exampleData?: boolean; an
   // 音画同步：不再提前 1 秒定格（会和口播错位），只在退场转场期间冻结前景
   const freezeAt = dur - 1;
   const check = !!(getInputProps() as any)?.check && f >= freezeAt;
-  const zones: Record<string, Rect> = {...layoutRects(s.layout, s.data?.steps?.length ?? s.data?.rows?.length ?? 3, {character: !!s.data?.character}),
+  const zones: Record<string, Rect> = {...layoutRects(s.layout, s.data?.steps?.length ?? s.data?.rows?.length ?? 3, {character: !!s.data?.character, windows: !!s.data?.windows?.length}),
     _kicker: {x: 96, y: 56, w: 1240, h: 36}, _example: {x: 1400, y: 56, w: 232, h: 36}};
   if (usesTitle(s.layout)) zones._title = titleRect();
   return <>
@@ -330,9 +367,9 @@ const Beats: React.FC<{s: Shot}> = ({s}) => {
   const f = useCurrentFrame(); const {fps} = useVideoConfig(); const a = React.useContext(AnchorCtx);
   const beats = ((s as any).beats ?? []) as Beat[];
   return <>{beats.map((b, i) => {
-    const st = a[b.k]; if (st == null || f < st - 4) return null;
-    const p = spring({frame: f - (st - 4), fps, config: SPRING.snappy});
-    const ring = Math.min(1, (f - st + 4) / 22);
+    const st = entranceAt(a[b.k], Infinity); if (f < st) return null;
+    const p = spring({frame: f - st, fps, config: SPRING.snappy});
+    const ring = Math.min(1, (f - st) / 22);
     const [bg, fg] = TONE[b.tone ?? 'glass'];
     const bob = 0;
     return <div key={i} style={{position: 'absolute', left: b.x, top: b.y + bob, transform: `translate(-50%,-50%) scale(${0.3 + 0.7 * p})`, opacity: Math.min(1, p * 1.8)}}>

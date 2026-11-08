@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, Sequence, Audio, staticFile, getInputProps} from 'remotion';
+import {AbsoluteFill, Sequence, Audio, staticFile, getInputProps, useCurrentFrame} from 'remotion';
 import {Fonts, ClipRateCtx} from '../style/components';
 import {ShotView} from '../style/archetypes';
 import {Transition, TRANSITIONS} from '../style/transitions';
@@ -25,8 +25,13 @@ const rates = (s: any, needFrames: number) => {
 /** 镜间转场：下一镜在自己第 0 帧起做 T 帧入场，上一镜同时在定格状态下延续 T 帧退场（总时长不变） */
 export const Demo: React.FC = () => {
   const ip = (getInputProps() as any) ?? {};
-  const opts: SubOpts = {show: ip.subs ?? SUBTITLE.show, highlight: ip.highlight ?? SUBTITLE.highlight};
+  const frame = useCurrentFrame();
   const items = TIMELINE.items;
+  const opts: SubOpts = {
+    show: ip.subs ?? SUBTITLE.show,
+    highlight: ip.highlight ?? SUBTITLE.highlight,
+    bare: items.some(({s, from, d}) => s.bareSubtitles && frame >= from && frame < from + d),
+  };
   return <AbsoluteFill style={{background: COLOR.ink}}>
     <Fonts />
     {items.map(({s, d, from, i, anchors}) => {

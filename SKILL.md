@@ -39,7 +39,7 @@ description: 董事长自用的一体化视频模板（本地，不上传 GitHub
 - 渲染后 `npm run verify`，输出复制为 `outputs/成片/<期名>/片头.mp4`。
 
 ### 2. 正片（片头完成后再做）
-完全按 `正片/SKILL.md`（5.0 新定版）执行，Remotion 工程在 `正片/template/`。只用正片那段文案、音频和字幕：
+完全按 `正片/SKILL.md`（5.0 新定版）执行，Remotion 工程在 `正片/template/`。只用正片那段文案、音频和字幕。正片字幕默认 **40px**；图卡、文本框和提示条在对应短句刚开口时开始出现，多项图片窗按各自关键词起音逐张出现：
 校对字幕（只改字不改时间码）→ 镜头表 → 找白天 1080p 中国城市航拍（优先当地）→ 生图 → shots.ts → `npm run check` → `npm run stills` → `npm run render`。
 输出复制为 `outputs/成片/<期名>/正片.mp4`。
 
@@ -80,7 +80,7 @@ node scripts/concat.mjs outputs/成片/<期名>/片头.mp4 outputs/成片/<期�
 4. 清单/避坑优先 pitfallBoard、layerReveal，配合 quoteStack/mediaRows；楼层用 floorLadder，预算用 paymentSplit/priceStep，配套/区域用 amenityOrbit/districtTags；评分、热度必须有来源和口径，没数据就不造分。
 5. 对比/决策轮换 decisionFork、splitVs、waitVs，真实总账可用 balance；禁止默认使用 unitCompare 或旧 vsScore。
 6. 背景优先清晰视频，静图背景占比≤1/3；不整屏模糊，bg.blur=0，靠冷灰玻璃和字影保证可读。
-7. 卡片按口播锚点单调入场，16/20/12帧后精确停稳；禁止过冲、落地二次弹、邻居让位、整体呼吸/焦点缩放、僵硬扫光条。高亮只改变轻色光/文字亮度；数据绘制、进度填充、背景自然运镜与小滕人物摆手可保留，不让卡片整体晃动。
+7. 卡片在对应短句或关键词刚开始时随口播入场，16/20/12帧后精确停稳；禁止过冲、落地二次弹、邻居让位、整体呼吸/焦点缩放、僵硬扫光条。高亮只改变轻色光/文字亮度；数据绘制、进度填充、背景自然运镜与小滕人物摆手可保留，不让卡片整体晃动。
 
 唯一登记：`src/style/layouts.ts` 的 DEFAULT_LAYOUTS（10+7+9）；默认活目录 `src/gallery/shots-mg-gallery.ts` / `MgGallery`，每个默认版式一镜。房产子集 `shots-mg-re10.ts` / `MgGalleryRe10` 固定9镜、40.5秒；“re10”仅兼容旧文件名，不代表10套。
 检查：`npm run check:freeze` 验证材质、动效范围、默认/存档边界和gallery覆盖；正式出片还须 `npm run check`、stills/音画核验。新增版式必须先登记样镜并审核，不能直接加进默认清单。

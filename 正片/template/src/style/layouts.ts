@@ -27,7 +27,7 @@ export const isDefaultLayout = (name: string) => DEFAULT_LAYOUTS.includes(canoni
  *  - 独立组之间 ≥48px：左右相邻的组之间空出一整栏（≥154px），上下用 splitRows 默认 48；
  *  - 以 conn 开头的是连接件（箭头），只需 ≥24。
  */
-export const layoutRects = (name: LayoutName, n = 3, opt: {character?: boolean} = {}): Record<string, Rect> => {
+export const layoutRects = (name: LayoutName, n = 3, opt: {character?: boolean; windows?: boolean} = {}): Record<string, Rect> => {
   switch (name) {
     case 'titleFloat': {
       const [mediaR, callR] = splitRows(ROWS.contentTop, CONTENT_H, [66, 34]);
@@ -41,8 +41,8 @@ export const layoutRects = (name: LayoutName, n = 3, opt: {character?: boolean} 
         connArrow: rect(5, 2, {y: top.y + top.h / 2 - 20, h: 40})};
     }
     case 'timeline': {
-      const [steps, note] = splitRows(ROWS.contentTop, CONTENT_H, [70, 30]);
-      return {steps: rect(0, 12, steps), note: rect(0, 12, note)};
+      const [steps, lower] = splitRows(ROWS.contentTop, CONTENT_H, opt.windows ? [35, 65] : [70, 30]);
+      return {steps: rect(0, 12, steps), [opt.windows ? 'windows' : 'note']: rect(0, 12, lower)};
     }
     case 'mediaRows':
       return {media: rect(0, 5, FULL), rows: rect(6, 6, FULL)};

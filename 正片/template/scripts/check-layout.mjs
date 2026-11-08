@@ -23,7 +23,7 @@ const EXAMPLE = {x: 1400, y: ROWS.kickerY, w: SAFE.right - 1400, h: ROWS.kickerH
 // 1) 版式矩形
 for (const s of SHOTS) {
   const n = s.data.steps?.length ?? s.data.rows?.length ?? s.data.cards?.length;
-  const R = {...layoutRects(s.layout, n, {character: !!s.data.character})};
+  const R = {...layoutRects(s.layout, n, {character: !!s.data.character, windows: !!s.data.windows?.length})};
   if (usesTitle(s.layout)) R._title = titleRect();
   for (const [k, r] of Object.entries(R)) {
     if (r.x < SAFE.left || r.x + r.w > SAFE.right || r.y < 0 || r.y + r.h > SAFE.subtitleTop) errs.push(`${s.id}.${k} 越界 ${JSON.stringify(r)}`);

@@ -8,7 +8,7 @@ import {F} from '../sync/timeline.ts';
 
 import {SUB} from './subtitle-tokens.ts';
 export {SUB};
-export type SubOpts = {show?: boolean; highlight?: boolean};
+export type SubOpts = {show?: boolean; highlight?: boolean; bare?: boolean};
 
 export const Subtitles: React.FC<{ep: Episode; opts: SubOpts}> = ({ep, opts}) => {
   const f = useCurrentFrame(); const ms = (f * 1000) / 30; const ref = React.useRef<HTMLDivElement>(null);
@@ -35,10 +35,10 @@ export const Subtitles: React.FC<{ep: Episode; opts: SubOpts}> = ({ep, opts}) =>
   const pOut = held ? 1 : interpolate(f, [z - SUB.fadeOut, z], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const hiOn = opts.highlight !== false && ep.hasWords;
   return <div ref={ref} data-sub="box" style={{position: 'absolute', left: SUB.centerX, bottom: SUB.bottom, transform: `translate(-50%, ${(1 - pIn) * SUB.rise}px)`,
-    opacity: pIn * pOut, padding: '10px 28px 12px', borderRadius: 16, background: SUB.pill, border: `1px solid ${SUB.border}`,
-    boxShadow: '0 8px 24px rgba(0,0,0,0.18)', whiteSpace: 'nowrap', textAlign: 'center'}}>
+    opacity: pIn * pOut, padding: '10px 28px 12px', borderRadius: 16, background: opts.bare ? 'transparent' : SUB.pill, border: `1px solid ${opts.bare ? 'transparent' : SUB.border}`,
+    boxShadow: opts.bare ? 'none' : '0 8px 24px rgba(0,0,0,0.18)', whiteSpace: 'nowrap', textAlign: 'center'}}>
     {c.lines.map((line, li) => <div key={li} data-sub="line" style={{fontFamily: FONT.body, fontWeight: 700, fontSize: SUB.size, lineHeight: 1.32, letterSpacing: 1.5,
-      color: SUB.color, textShadow: '0 2px 10px rgba(0,0,0,0.45)'}}>
+      color: SUB.color, textShadow: opts.bare ? '0 2px 5px #131822, 0 0 12px #131822' : '0 2px 10px rgba(0,0,0,0.45)'}}>
       {line.map((t, k) => {
         if (!hiOn || t.s == null || t.e == null) return <span key={k}>{t.t}</span>;
         const now = ms >= t.s && ms < Math.max(t.e, t.s + 120); const past = ms >= t.e;

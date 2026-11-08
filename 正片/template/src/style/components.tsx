@@ -260,7 +260,7 @@ export const Timeline: React.FC<{r: Rect; start: number; steps: {t: string; s: s
           ...glassMat('dark')}}>
         <div data-deco style={{position: 'absolute', inset: 0, borderRadius: 24, pointerEvents: 'none', opacity: hi, background: 'linear-gradient(165deg, rgba(159,123,61,0.10), rgba(0,0,0,0) 140%)', boxShadow: 'none'}} />
         <div style={{fontFamily: FONT.title, position: 'relative', fontSize: 40, lineHeight: 1.3, color: interpolateColors(hi, [0, 1], [COLOR.warm, COLOR.goldHi]), textAlign: 'center'}}>{st.t}</div>
-        <div data-role="body" style={{position: 'relative', marginTop: 14, fontFamily: FONT.body, fontSize: TYPE.body, color: COLOR.sub, textAlign: 'center', lineHeight: 1.4}}>{st.s}</div>
+        {st.s && <div data-role="body" style={{position: 'relative', marginTop: 14, fontFamily: FONT.body, fontSize: TYPE.body, color: COLOR.sub, textAlign: 'center', lineHeight: 1.4}}>{st.s}</div>}
         {st.chip && <div style={{position: 'relative', marginTop: 22}}><Chip start={(starts?.[i] ?? start + i * 6) + 10} tone="glass" hi={hi}>{st.chip}</Chip></div>}
         <div style={{position: 'absolute', inset: 0, borderRadius: 24, overflow: 'hidden', pointerEvents: 'none'}}><Sheen at={st0 + 6} />{on && starts && <Sheen at={st0 + 8} strength={0.26} />}</div>
         </div>
@@ -271,8 +271,8 @@ export const Timeline: React.FC<{r: Rect; start: number; steps: {t: string; s: s
 
 /** 图标+文字细行 */
 export const IconRow: React.FC<{r: Rect; start: number; idx: string; title: string; sub: string; tip?: string; active?: boolean; from?: Enter; glass?: boolean;
-  activeAt?: number; offAt?: number; dim?: number; nudge?: number}> =
-({r, start, idx, title, sub, tip, active, from = 'right', glass = true, activeAt, offAt, dim = 0, nudge = 0}) => {
+  activeAt?: number; offAt?: number; dim?: number; nudge?: number; subStart?: number}> =
+({r, start, idx, title, sub, tip, active, from = 'right', glass = true, activeAt, offAt, dim = 0, nudge = 0, subStart}) => {
   const f = useCurrentFrame(); const L = useLiquid(start, SPRING.enter); const p = L.p; const g = glass ? 7 : 0;
   // 焦点只改变色光/文字亮度，不再放大或移动卡片
   const aAt = activeAt ?? start;
@@ -288,7 +288,7 @@ export const IconRow: React.FC<{r: Rect; start: number; idx: string; title: stri
     <div style={{position: 'relative', fontFamily: FONT.num, fontSize: 40, color: interpolateColors(hi, [0, 1], ['rgba(244,238,228,0.62)', COLOR.goldHi]), width: 64, flexShrink: 0}}>{idx}</div>
     <div style={{position: 'relative', flex: 1, minWidth: 0}}>
       <div style={{fontFamily: FONT.title, fontSize: TYPE.rowTitle, lineHeight: 1.3, color: interpolateColors(hi, [0, 1], [COLOR.warm, COLOR.goldHi])}}>{title}</div>
-      <div data-role="body" style={{fontFamily: FONT.body, fontSize: TYPE.body, lineHeight: 1.35, color: COLOR.sub, marginTop: 6}}>{sub}</div>
+      <div data-role="body" style={{fontFamily: FONT.body, fontSize: TYPE.body, lineHeight: 1.35, color: COLOR.sub, marginTop: 6, opacity: subStart == null ? 1 : ease(prog(f, subStart, 8))}}>{sub}</div>
     </div>
     {tip && <div style={{position: 'relative', flexShrink: 0}}><Chip start={start + 8} tone="glass" hi={hi}>{tip}</Chip></div>}
     {hi > 0.01 && <div style={{position: 'absolute', left: 0, top: r.h - g * 2 - 2, width: `${100 * ease(prog(f, aAt + 4, 16))}%`, height: 2, background: COLOR.goldHi, opacity: hi}} />}
@@ -359,19 +359,19 @@ export const HighlightBar: React.FC<{x: number; y: number; h: number; start: num
 };
 
 /** 分裂大标题（一行主标题 + 一行副） */
-export const SplitType: React.FC<{r: Rect; start: number; line1: string; line2: string; sub?: string}> = ({r, start, line1, line2, sub}) => {
+export const SplitType: React.FC<{r: Rect; start: number; line1: string; line2: string; line2Start?: number; sub?: string}> = ({r, start, line1, line2, line2Start = start + 7, sub}) => {
   const f = useCurrentFrame(); const {fps} = useVideoConfig();
   const p1 = spring({frame: Math.max(0, f - start), fps, config: SPRING.enter});
-  const p2 = spring({frame: Math.max(0, f - (start + 7)), fps, config: SPRING.enter});
+  const p2 = spring({frame: Math.max(0, f - line2Start), fps, config: SPRING.enter});
   const o1 = Math.min(1, Math.max(0, p1)), o2 = Math.min(1, Math.max(0, p2));
   return <div style={{position: 'absolute', left: r.x, top: r.y, width: r.w, height: r.h, display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
     <div style={{fontFamily: FONT.title, fontSize: TYPE.heroTitle, color: COLOR.warm, lineHeight: 1.3, opacity: o1, transform: `translateY(${(1 - p1) * 28}px) scale(${0.96 + 0.04 * Math.min(p1, 1.12)})`}}>{line1}</div>
     <div style={{fontFamily: FONT.title, fontSize: TYPE.heroTitle, lineHeight: 1.3, marginTop: 0, opacity: o2, transform: `translateY(${(1 - p2) * 28}px) scale(${0.96 + 0.04 * Math.min(p2, 1.12)})`,
       background: 'linear-gradient(180deg,#FBE6BC,#D9B26F 60%,#B48843)', WebkitBackgroundClip: 'text', color: 'transparent'}}>{line2}</div>
     <div style={{position: 'relative', marginTop: 28, height: 3}}>
-      <UnderlineDraw x={0} y={0} w={Math.min(420, r.w * 0.55)} start={start + 20} />
+      <UnderlineDraw x={0} y={0} w={Math.min(420, r.w * 0.55)} start={line2Start + 13} />
     </div>
-    {sub && <div data-role="body" style={{fontFamily: FONT.body, fontSize: TYPE.body, lineHeight: 1.4, color: COLOR.sub, marginTop: 48, opacity: ease(prog(f, start + 26, 14))}}>{sub}</div>}
+    {sub && <div data-role="body" style={{fontFamily: FONT.body, fontSize: TYPE.body, lineHeight: 1.4, color: COLOR.sub, marginTop: 48, opacity: ease(prog(f, line2Start + 19, 14))}}>{sub}</div>}
   </div>;
 };
 
