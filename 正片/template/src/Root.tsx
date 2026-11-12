@@ -7,6 +7,7 @@ import {DataChartSample2, DCS2_FRAMES} from './demo/DataChartSample2';
 import {OutroSample, OUTRO_FRAMES} from './demo/OutroSample';
 import {MgGallery, GALLERY_FRAMES} from './gallery/MgGallery';
 import {MgGalleryRe10, RE10_FRAMES} from './gallery/MgGalleryRe10';
+import {MgGalleryNew, NEW_GALLERY_FRAMES} from './gallery/MgGalleryNew';
 export const Root: React.FC = () => (<>
   <Composition id="Style50-Demo" component={Demo} durationInFrames={DEMO_FRAMES} fps={30} width={1920} height={1080} />
   <Composition id="ContactSheet" component={ContactSheet as any} durationInFrames={1} fps={30} width={1328}
@@ -17,4 +18,5 @@ export const Root: React.FC = () => (<>
   <Composition id="OutroSample" component={OutroSample} durationInFrames={OUTRO_FRAMES} fps={30} width={1920} height={1080} />
   <Composition id="MgGallery" component={MgGallery} durationInFrames={GALLERY_FRAMES} fps={30} width={1920} height={1080} />
   <Composition id="MgGalleryRe10" component={MgGalleryRe10} durationInFrames={RE10_FRAMES} fps={30} width={1920} height={1080} />
+  <Composition id="MgGalleryNew" component={MgGalleryNew} durationInFrames={NEW_GALLERY_FRAMES} fps={30} width={1920} height={1080} />
 </>);

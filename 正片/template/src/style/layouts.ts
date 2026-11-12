@@ -10,7 +10,12 @@ export type LayoutName =
   | 'keywordCascade' | 'checklistFill' | 'vsScore' | 'tipStack' | 'numberedReveal' | 'kpiGrid'
   // 5.0 房产科普 MG（已定 9 种，mgEstate.tsx）
   | 'floorLadder' | 'paymentSplit' | 'amenityOrbit' | 'pitfallBoard'
-  | 'priceStep' | 'decisionFork' | 'districtTags' | 'loanDial' | 'layerReveal';
+  | 'priceStep' | 'decisionFork' | 'districtTags' | 'loanDial' | 'layerReveal'
+  // 暖雾磨砂新增 17 款（5 + 12），进入选卡池，不替换上面的 26 款
+  | 'ticketStub' | 'indexTabs' | 'amenityPins' | 'slashCompare' | 'archLight'
+  | 'paymentCup' | 'loanCurve' | 'contractNote' | 'planSplit' | 'buildingSection'
+  | 'pitfallLens' | 'parkingLines' | 'hexSteps' | 'inspectTags' | 'familyPlan'
+  | 'policyNotes' | 'qaBubbles';
 
 /** 5.0 新定版（玻璃v6 + 房产MG）：推荐/预览的唯一机器可读清单。 */
 export const CORE_LAYOUTS = ['titleFloat','bareNumber','splitVs','timeline','mediaRows','quoteStack','ringFeature','waitVs','triadSoft','outroHost'] as const;
@@ -18,6 +23,8 @@ export const DATA_LAYOUTS = ['lineReveal','barGlow','rankBars','waffle','balance
 export const ESTATE_LAYOUTS = ['floorLadder','paymentSplit','amenityOrbit','pitfallBoard','priceStep','decisionFork','districtTags','loanDial','layerReveal'] as const;
 export const ARCHIVE_LAYOUTS = ['keywordCascade','checklistFill','vsScore','tipStack','numberedReveal','kpiGrid'] as const;
 export const DEFAULT_LAYOUTS: readonly LayoutName[] = [...CORE_LAYOUTS, ...DATA_LAYOUTS, ...ESTATE_LAYOUTS];
+export const NEW_LAYOUTS = ['ticketStub','indexTabs','amenityPins','slashCompare','archLight','paymentCup','loanCurve','contractNote','planSplit','buildingSection','pitfallLens','parkingLines','hexSteps','inspectTags','familyPlan','policyNotes','qaBubbles'] as const;
+export const POOL_LAYOUTS: readonly LayoutName[] = [...DEFAULT_LAYOUTS, ...NEW_LAYOUTS];
 export const canonicalLayout = (name: string) => name === 'outroAir' ? 'outroHost' : name;
 export const isDefaultLayout = (name: string) => DEFAULT_LAYOUTS.includes(canonicalLayout(name) as LayoutName);
 
@@ -102,6 +109,29 @@ export const layoutRects = (name: LayoutName, n = 3, opt: {character?: boolean; 
     case 'districtTags': return {cloud: rect(0, 9, FULL), legend: rect(10, 2, FULL)};
     case 'loanDial': return {dial: rect(0, 6, FULL), stats: rect(7, 5, FULL)};
     case 'layerReveal': return {layers: rect(0, 7, FULL), score: rect(8, 4, FULL)};
+    case 'ticketStub': return {ticket: rect(1, 10, {y: ROWS.contentTop + 36, h: CONTENT_H - 72})};
+    case 'indexTabs': {
+      const [tabs, body] = splitRows(ROWS.contentTop, CONTENT_H, [22, 78]);
+      return {tabs: rect(0, 12, tabs), body: rect(0, 12, body)};
+    }
+    case 'amenityPins': return {map: rect(0, 12, FULL)};
+    case 'slashCompare': return {left: rect(0, 5, FULL), right: rect(7, 5, FULL), connBadge: rect(5, 2, {y: ROWS.contentTop + 236, h: 160})};
+    case 'archLight': return {arch: rect(0, 7, FULL), notes: rect(8, 4, FULL)};
+    case 'paymentCup': return {cup: rect(0, 5, FULL), stats: rect(6, 6, FULL)};
+    case 'loanCurve': {
+      const [path, cards] = splitRows(ROWS.contentTop, CONTENT_H, [34, 66], 56);
+      return {path: rect(0, 12, path), cards: rect(0, 12, cards)};
+    }
+    case 'contractNote': return {doc: rect(0, 7, FULL), notes: rect(8, 4, FULL)};
+    case 'planSplit': return {plan: rect(0, 8, FULL), stats: rect(9, 3, FULL)};
+    case 'buildingSection': return {section: rect(0, 7, FULL), tags: rect(8, 4, FULL)};
+    case 'pitfallLens': return {stage: rect(0, 12, FULL)};
+    case 'parkingLines': return {lot: rect(0, 8, FULL), notes: rect(9, 3, FULL)};
+    case 'hexSteps': return {board: rect(0, 12, FULL)};
+    case 'inspectTags': return {rail: rect(0, 12, FULL)};
+    case 'familyPlan': return {people: rect(0, 5, FULL), unit: rect(6, 6, FULL)};
+    case 'policyNotes': return {wall: rect(1, 10, FULL)};
+    case 'qaBubbles': return {q: rect(0, 5, {y: ROWS.contentTop + 8, h: 280}), a: rect(6, 6, {y: ROWS.contentTop + 336, h: 280})};
     default:
       return {};
   }

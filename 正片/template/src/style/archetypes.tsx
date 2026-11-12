@@ -5,7 +5,7 @@ import {bump,
   IconRow, Kicker, MediaFrame, ProgressRing, QuoteBlock, SoftCallout, SplitType, StatPill, Timeline, UnderlineDraw, prog, glassMat,
   LiveFrameCtx,
 } from './components';
-import {layoutRects, titleRect, usesTitle} from './layouts.ts';
+import {layoutRects, titleRect, usesTitle, NEW_LAYOUTS} from './layouts.ts';
 import {GRID, splitRows, type Rect} from './grid.ts';
 import {COLOR, FONT, MOTION, SPRING, TYPE, FROST, glassEnter, steadySpring as spring} from './tokens';
 import type {Shot, TimelineWindow} from './types';
@@ -15,6 +15,8 @@ import {LineChartReveal, BarGlow} from './DataCharts';
 import {RankBars, Waffle, Balance, YearRing, FormulaCalc} from './DataCharts2';
 import {KeywordCascade, ChecklistFill, VsScore, TipStack, NumberedReveal, KpiGrid} from './mgCards';
 import {FloorLadder, PaymentSplit, AmenityOrbit, PitfallBoard, PriceStep, DecisionFork, DistrictTags, LoanDial, LayerReveal} from './mgEstate';
+import {NewCardView} from './mgNew';
+import {estimateLuma, textTreatment} from './readability';
 
 /** 对应短句起点提前两帧起动，口播开始时已能看到入场。未设锚点时使用版式默认值。 */
 export const AnchorCtx = React.createContext<Record<string, number>>({});
@@ -237,20 +239,34 @@ const OutroHost: React.FC<{s: Shot}> = ({s}) => {
     <div style={{position: 'absolute', left: t.x, top: t.y, width: t.w, height: t.h, display: 'flex', flexDirection: 'column', justifyContent: 'center',
       alignItems: center ? 'center' : 'flex-start', textAlign: center ? 'center' : 'left'}}>
       {d.eyebrow && <div style={{fontFamily: FONT.body, fontWeight: 700, fontSize: TYPE.label, color: COLOR.goldHi, letterSpacing: 8, opacity: Math.min(1, Math.max(0, eyeSp)), transform: `translateY(${(1 - eyeSp) * 12}px)`}}>{d.eyebrow}</div>}
-      <div style={{fontFamily: FONT.title, fontSize: 76, color: COLOR.warm, marginTop: 28, lineHeight: 1.3, whiteSpace: 'pre-line',
-        textShadow: '0 4px 24px rgba(0,0,0,0.35)', opacity: lineO, transform: `translateY(${(1 - lineSp) * 28}px) scale(${0.96 + 0.04 * Math.min(lineSp, 1.1)})`}}><GoldText text={d.line} /></div>
-      <div style={{position: 'relative', width: 240, height: 3, marginTop: 36}}><UnderlineDraw x={0} y={0} w={240} start={lineAt + 14} /></div>
-      {points.length > 0 && <div style={{marginTop: 36, display: 'flex', flexDirection: 'column', gap: 18, width: center ? undefined : '100%'}}>
+      {d.interact !== 'talk' && <div style={{fontFamily: FONT.title, fontSize: 76, color: '#FFF8EC', marginTop: 28, lineHeight: 1.3, whiteSpace: 'pre-line',
+        textShadow: '0 0 12px rgba(120,72,32,0.45)', opacity: lineO, transform: `translateY(${(1 - lineSp) * 28}px) scale(${0.96 + 0.04 * Math.min(lineSp, 1)})`}}><GoldText text={d.line} /></div>}
+      {d.interact !== 'talk' && <div style={{position: 'relative', width: 240, height: 3, marginTop: 36}}><UnderlineDraw x={0} y={0} w={240} start={lineAt + 14} /></div>}
+      {d.interact === 'hold' && <div style={{marginTop: 28, width: '100%', position: 'relative'}}>
+        <div style={{position: 'absolute', left: -80, top: 20, width: 120, height: 8, background: 'linear-gradient(90deg, rgba(243,215,158,0), rgba(243,215,158,0.8))', opacity: lineO}} />
+        <div style={{...glassMat('dark'), borderRadius: 24, padding: '28px 32px'}}>
+          <div style={{fontFamily: FONT.body, fontWeight: 700, fontSize: TYPE.label, color: FROST.ink}}>今天记住三句话</div>
+          {points.map((pt, i) => { const on = f >= at(`p${i}`, pStart + i * 8); return <div key={i} data-role="body" style={{marginTop: 16, fontFamily: FONT.body, fontWeight: 700, fontSize: TYPE.body, color: FROST.ink, opacity: on ? 1 : 0.35}}>{String(i + 1).padStart(2, '0')} {pt}</div>; })}
+        </div>
+      </div>}
+      {d.interact === 'talk' && <div style={{marginTop: 28, width: '100%'}}>
+        <div style={{...glassMat('dark'), borderRadius: 28, padding: '28px 32px', position: 'relative'}}>
+          <div style={{position: 'absolute', left: -18, bottom: 28, width: 22, height: 22, background: 'rgba(250,243,231,0.9)', clipPath: 'polygon(100% 0, 0 100%, 100% 100%)'}} />
+          <div style={{fontFamily: FONT.title, fontSize: 40, color: FROST.ink, lineHeight: 1.3}}><GoldText text={d.line} /></div>
+        </div>
+        {note && <div data-role="body" style={{marginTop: 24, ...glassMat('dark'), borderRadius: 18, padding: '16px 24px', fontFamily: FONT.body, fontWeight: 700, fontSize: TYPE.body, color: FROST.ink}}>{note}</div>}
+      </div>}
+      {!d.interact && points.length > 0 && <div style={{marginTop: 36, display: 'flex', flexDirection: 'column', gap: 18, width: center ? undefined : '100%'}}>
         {points.map((p, i) => { const q = spring({frame: Math.max(0, f - at(`p${i}`, pStart + i * 7)), fps, config: SPRING.enter}); const qo = Math.min(1, Math.max(0, q)); return <div key={i} data-role="body" style={{display: 'flex', alignItems: 'center', gap: 20,
           padding: '16px 28px', borderRadius: 20, ...glassMat('dark'),
-          opacity: qo, transform: `translateX(${(1 - q) * 48}px) scale(${0.96 + 0.04 * Math.min(q, 1.08)})`}}>
-          <span style={{fontFamily: FONT.title, fontSize: 34, color: COLOR.goldHi, minWidth: 44}}>{String(i + 1).padStart(2, '0')}</span>
-          <span style={{fontFamily: FONT.body, fontWeight: 700, fontSize: TYPE.body + 2, color: COLOR.warm, lineHeight: 1.35}}><GoldText text={p} /></span>
+          opacity: qo, transform: `translateX(${(1 - q) * 48}px) scale(${0.96 + 0.04 * Math.min(q, 1)})`}}>
+          <span style={{fontFamily: FONT.title, fontSize: 34, color: FROST.ink, minWidth: 44}}>{String(i + 1).padStart(2, '0')}</span>
+          <span style={{fontFamily: FONT.body, fontWeight: 700, fontSize: TYPE.body + 2, color: FROST.ink, lineHeight: 1.35}}><GoldText text={p} /></span>
         </div>; })}
       </div>}
-      {note && <div data-role="body" style={{marginTop: 32, fontFamily: FONT.body, fontWeight: 700, fontSize: TYPE.body, lineHeight: 1.4, color: COLOR.sub,
+      {note && d.interact !== 'talk' && <div data-role="body" style={{marginTop: 32, fontFamily: FONT.body, fontWeight: 700, fontSize: TYPE.body, lineHeight: 1.4, color: '#FFF8EC',
         opacity: Math.min(1, Math.max(0, spring({frame: Math.max(0, f - at('note', pStart + points.length * 7 + 6)), fps, config: SPRING.soft})))}}><GoldText text={note} /></div>}
-      {d.account && <div style={{marginTop: 22, fontFamily: FONT.body, fontWeight: 500, fontSize: TYPE.label - 2, color: 'rgba(243,215,158,0.72)', letterSpacing: 4,
+      {d.account && <div style={{marginTop: 22, fontFamily: FONT.body, fontWeight: 500, fontSize: TYPE.label, color: 'rgba(243,215,158,0.92)', letterSpacing: 4,
         opacity: Math.min(1, Math.max(0, spring({frame: Math.max(0, f - at('account', pStart + points.length * 7 + 14)), fps, config: SPRING.soft})))}}>{d.account}</div>}
     </div>
   </>;
@@ -297,7 +313,13 @@ const ESTATE_VIEWS = {
   loanDial: ev('loanDial', LoanDial, (d) => d.stats.length + 1, 14),
   layerReveal: ev('layerReveal', LayerReveal, (d) => d.layers.length, 18),
 };
+const NEW_VIEWS = Object.fromEntries(NEW_LAYOUTS.map((name) => [name, (({dur}: {s: Shot; dur: number}) => {
+  const at = useAt();
+  const st = (i: number) => at(`r${i}`, 12 + i * Math.min(16, Math.max(8, (dur - 48) / 6)));
+  return <NewCardView layout={name} st={st} />;
+}) as React.FC<{s: Shot; dur: number}>]));
 const VIEWS: Record<string, React.FC<{s: Shot; dur: number}>> = {
+  ...NEW_VIEWS,
   ...ESTATE_VIEWS,
   ...MG_VIEWS,
   ...DATA_VIEWS,
@@ -332,6 +354,7 @@ export const ShotView: React.FC<{s: Shot; dur: number; exampleData?: boolean; an
   const f = useCurrentFrame();
   const View = VIEWS[s.layout];
   const kt = kickerText(s);
+  const treat = textTreatment(s.bg.luma ?? estimateLuma(s.bg.dark), s.bg.p90 ?? s.bg.luma ?? estimateLuma(s.bg.dark));
   const fx = (s as any).fx as number | undefined; // 可选：本期加强运镜 + 口播节拍动效
   const cam = {...camFor(s.layout), move: fx ?? 1};
   // v6：所有 MG 前景到位即停，背景自然运镜保留（含旧版式与 fx 路径）。
@@ -341,9 +364,9 @@ export const ShotView: React.FC<{s: Shot; dur: number; exampleData?: boolean; an
       <Backdrop src={s.bg.src} video={s.bg.video} blur={s.bg.blur} dark={s.bg.dark} trimStart={s.bg.trim} />
     </CamCtx.Provider>
     <AbsoluteFill style={{transform: `translate(${fgTX}px, ${fgTY}px) scale(${fgScale})`, transformOrigin: '50% 45%'}}>
-      {kt && <Kicker text={kt} />}
+      {kt && <Kicker text={kt} plate={treat === 'bar'} />}
       {exampleData && <ExampleMark />}
-      {usesTitle(s.layout) && s.title && <Headline text={s.title} start={entranceAt(anchors.title, 2)} />}
+      {usesTitle(s.layout) && s.title && <Headline text={s.title} start={entranceAt(anchors.title, 2)} plate={treat === 'bar'} />}
       {View ? <View s={s} dur={dur} /> : null}
       {fx ? <Beats s={s} /> : null}
     </AbsoluteFill>
@@ -375,8 +398,8 @@ const Beats: React.FC<{s: Shot}> = ({s}) => {
     return <div key={i} style={{position: 'absolute', left: b.x, top: b.y + bob, transform: `translate(-50%,-50%) scale(${0.3 + 0.7 * p})`, opacity: Math.min(1, p * 1.8)}}>
       <div style={{position: 'absolute', left: '50%', top: '50%', width: 140, height: 140, marginLeft: -70, marginTop: -70, borderRadius: '50%', border: `3px solid ${fg}`, opacity: (1 - ring) * 0.8, transform: `scale(${0.4 + ring * 1.6})`}} />
       <div style={{display: 'flex', alignItems: 'center', gap: 12, whiteSpace: 'nowrap', padding: '12px 28px', borderRadius: 999, ...glassMat('dark', bg),
-        fontFamily: FONT.body, fontWeight: 700, fontSize: 32, color: '#fff', textShadow: '0 2px 6px rgba(0,0,0,.4)'}}>
-        {b.icon && <span style={{display: 'inline-flex', width: 40, height: 40, borderRadius: '50%', alignItems: 'center', justifyContent: 'center', background: fg, color: '#1d1b19', fontSize: 26}}>{b.icon}</span>}
+        fontFamily: FONT.body, fontWeight: 700, fontSize: 34, color: FROST.ink}}>
+        {b.icon && <span style={{display: 'inline-flex', width: 40, height: 40, borderRadius: '50%', alignItems: 'center', justifyContent: 'center', background: fg, color: '#1d1b19', fontSize: 28}}>{b.icon}</span>}
         {b.t}
       </div>
     </div>;

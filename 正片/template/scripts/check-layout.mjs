@@ -15,8 +15,9 @@ import {SUB} from '../src/style/subtitle-tokens.ts';
 import {ensureEpisode} from './episode.mjs';
 import {width} from './lib/subs.mjs';
 import {existsSync} from 'node:fs';
+import {constraintErrors} from './check-constraints.mjs';
 process.chdir(fileURLToPath(new URL('..', import.meta.url)));
-const errs = []; const colLinesL = new Set(), colLinesR = new Set();
+const errs = [...constraintErrors]; const colLinesL = new Set(), colLinesR = new Set();
 for (let c = 0; c < GRID.cols; c++) { colLinesL.add(SAFE.left + c * GRID.step); colLinesR.add(SAFE.left + c * GRID.step + GRID.colW); }
 const KICKER = {x: SAFE.left, y: ROWS.kickerY, w: 1240, h: ROWS.kickerH};
 const EXAMPLE = {x: 1400, y: ROWS.kickerY, w: SAFE.right - 1400, h: ROWS.kickerH};

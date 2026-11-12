@@ -5,8 +5,8 @@ description: 董事长自用的一体化视频模板（本地，不上传 GitHub
 
 # 小滕分镜风格 5.0 新定版（玻璃v6 + 房产MG）
 
-> **5.0 新定版（玻璃v6 + 房产MG）**：已定，2026-11-06（Asia/Shanghai）。正片所有GLASS/FROST/glassMat与旧存档卡统一经典薄玻璃；主底alpha .68–.74、细白边/轻顶光、轻tint，无颗粒/厚斜面/到位弹/僵硬扫光。不是旧v5厚边版本。
-> 默认26种（核心10+数据7+已定房产9），旧6套与unitCompare仅存档。轮换及准确参数以 `正片/references/版式目录.md`、`风格设计规范.md` 为准。
+> **5.0 新定版（玻璃v6 + 房产MG）**：已定，2026-11-06（Asia/Shanghai）。2026-11-12 视觉升级为暖雾磨砂 v6.1：卡内 blur 26px，填充香槟/暖纸，深墨字；背景画面不虚化。默认仍是 26 种（核心 10 + 数据 7 + 房产 9），另有 17 款新 MG 进选卡池，不删原版式。旧 6 套与 unitCompare 仅存档。
+> 正片字幕保持 main 现状：暖白 `#F4EEE4`，当前词沙金 `#F3D79E`，字号 40，距底 44px，跟随口播起点。不要改字幕定版。轮换、匹配和排版以 `正片/SKILL.md`、`正片/references/版式目录.md`、`文案匹配机制.md`、`排版底层约束.md` 为准。
 > 配音→逐字时间码→校对对齐→镜头表/anchors→检查→stills→render→一体拼接/混流。原片头、独立4.5与旧定版成片不变。本地定版，不自动上传/推送/外发。
 
 本模板是自包含的：`片头/` 和 `正片/` 都是完整拷贝，不依赖、也不修改任何 GitHub 仓库或其他本地目录。
@@ -59,7 +59,8 @@ node scripts/concat.mjs outputs/成片/<期名>/片头.mp4 outputs/成片/<期�
 - 不写死城市名和人名，按每期文案安排。
 - 依赖复用：两套工程沿用各自 setup 的复用逻辑，不在每期目录重复安装。
 - 本模板只存在于本地，不推送 GitHub。
-- 5.0 背景比 4.5 更亮，不要特别暗：正片背景 brightness 1.2、压暗层 max(0.13, dark−0.26)，渐变只留标题区和字幕区；可读性靠文字柔和投影，不靠整屏压黑。
+- 5.0 背景比 4.5 更亮，不要特别暗：正片背景 brightness 1.2、压暗层 max(0.13, dark−0.26)，渐变只留标题区和字幕区。背景 blur=0。亮底上的标题用暖褐描边和暖色光晕；极亮镜头可加右端渐隐的薄磨砂条，不加黑条。
+- 卡片是暖雾磨砂，不是灰底或深色底。一帧最多两种色调：香槟、暖纸、墨蓝、柔茶绿、淡陶土。标题和示例文案不要写「投资」。
 - 正片可用 7 种数据版式（lineReveal / barGlow / rankBars / waffle / balance / yearRing / formulaCalc），用法和次数限制见 `正片/SKILL.md`，数字必须核算。
 - 片尾默认 `outroHost`：左侧小滕挥手卡通（`正片/template/public/media/character/xiaoteng_outro.png`）+ 右侧按当期片尾文案分层排版（主标题→要点→收尾句→小字署名），沿用正片视觉；**禁止**点赞/关注/收藏/转发类引导语和按钮式 CTA。小样：`OutroSample` 合成。
 
@@ -79,8 +80,9 @@ node scripts/concat.mjs outputs/成片/<期名>/片头.mp4 outputs/成片/<期�
 3. 真实数字/比例/金额至少1镜用数据图表、bareNumber/ringFeature，或匹配的 paymentSplit/priceStep/loanDial。7种数据图表合计每期≤3镜，同一种≤1镜，不相邻连用；数字先核算，示例显式标注，不能把示例用于实际楼盘判断。
 4. 清单/避坑优先 pitfallBoard、layerReveal，配合 quoteStack/mediaRows；楼层用 floorLadder，预算用 paymentSplit/priceStep，配套/区域用 amenityOrbit/districtTags；评分、热度必须有来源和口径，没数据就不造分。
 5. 对比/决策轮换 decisionFork、splitVs、waitVs，真实总账可用 balance；禁止默认使用 unitCompare 或旧 vsScore。
-6. 背景优先清晰视频，静图背景占比≤1/3；不整屏模糊，bg.blur=0，靠冷灰玻璃和字影保证可读。
+6. 背景优先清晰视频，静图背景占比≤1/3；不整屏模糊，bg.blur=0。卡片用暖雾磨砂，字用深墨；亮底标题用暖描边。
 7. 卡片在对应短句或关键词刚开始时随口播入场，16/20/12帧后精确停稳；禁止过冲、落地二次弹、邻居让位、整体呼吸/焦点缩放、僵硬扫光条。高亮只改变轻色光/文字亮度；数据绘制、进度填充、背景自然运镜与小滕人物摆手可保留，不让卡片整体晃动。
 
-唯一登记：`src/style/layouts.ts` 的 DEFAULT_LAYOUTS（10+7+9）；默认活目录 `src/gallery/shots-mg-gallery.ts` / `MgGallery`，每个默认版式一镜。房产子集 `shots-mg-re10.ts` / `MgGalleryRe10` 固定9镜、40.5秒；“re10”仅兼容旧文件名，不代表10套。
-检查：`npm run check:freeze` 验证材质、动效范围、默认/存档边界和gallery覆盖；正式出片还须 `npm run check`、stills/音画核验。新增版式必须先登记样镜并审核，不能直接加进默认清单。
+默认 26 种仍登记在 `DEFAULT_LAYOUTS`；新 17 款登记在 `NEW_LAYOUTS`，样片是 `MgGalleryNew`，不要写进默认 26 镜画廊。房产子集 `MgGalleryRe10` 仍是 9 镜。
+文案选版用 `matchEpisode()`，规则见 `正片/template/match_rules.json`，用法见 `正片/SKILL.md`。检查：`npm run check:freeze` 看材质和 26+9 边界，`npm run check:constraints` 看新卡几何、户型、字体实测和匹配，正式出片再跑 `npm run check`。
+片尾互动用 `outroHost` 的 `interact: 'hold'` 或 `'talk'`。不要加点赞或关注。标题不要写「投资」。

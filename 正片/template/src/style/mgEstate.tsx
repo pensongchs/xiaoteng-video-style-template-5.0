@@ -302,7 +302,7 @@ export const LoanDial: React.FC<{R: Record<string, Rect>; dial: {k: string; v: n
         <div style={{position: 'relative', width: 116, height: 116, flexShrink: 0}}>
           <svg data-deco width={116} height={116} style={{transform: 'rotate(-90deg)'}}><circle cx={58} cy={58} r={R0} fill="none" stroke={FROST.track} strokeWidth={10} />
             <circle cx={58} cy={58} r={R0} fill="none" stroke={s.hi ? '#E6C285' : 'rgba(244,238,228,0.62)'} strokeWidth={10} strokeLinecap="round" strokeDasharray={`${C0 * s.ratio * rp} ${C0}`} /></svg>
-          <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', ...N, fontSize: 26, color: FROST.sub}}>{s.rl ?? `${Math.round(s.ratio * 100 * rp)}%`}</div>
+          <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', ...N, fontSize: 28, color: FROST.sub}}>{s.rl ?? `${Math.round(s.ratio * 100 * rp)}%`}</div>
         </div>
         <div style={{display: 'flex', flexDirection: 'column', gap: 4}}>
           <div style={{...B, fontSize: 34, color: FROST.sub}}>{s.k}</div>

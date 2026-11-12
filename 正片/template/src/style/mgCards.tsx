@@ -11,7 +11,7 @@ const LG = (_a = 0.16, tint?: string): React.CSSProperties => ({
   boxSizing: 'border-box', overflow: 'hidden', position: 'absolute',
 });
 const TINT: Record<string, string> = {gold: FROST.tint.gold, coral: FROST.tint.coral, green: FROST.tint.green, glass: FROST.tint.none};
-const ACC: Record<string, string> = {gold: COLOR.goldHi, coral: '#FFB4A3', green: '#BFE8CB', glass: '#FFFFFF'};
+const ACC: Record<string, string> = {gold: FROST.ink, coral: FROST.coral, green: FROST.green, glass: FROST.ink};
 const useSp = (st: number, cfg = SPRING.enter) => { const f = useCurrentFrame(); const {fps} = useVideoConfig(); return spring({frame: Math.max(0, f - st), fps, config: cfg}); };
 /** 旧签名兼容：新定版到位后不整体呼吸/漂浮。 */
 const breathe = (_f: number, _i: number, _amp = 3) => 'translateY(0px)';
@@ -28,8 +28,8 @@ export const KeywordCascade: React.FC<{r: Rect; words: {t: string; s?: string; t
     return <div key={i} className={txs} style={{...LG(0.15, TINT[w.tone ?? (last ? 'gold' : 'glass')]), left: x, top: y, width: 760, height: h, padding: '0 40px', display: 'flex', alignItems: 'center', gap: 28,
       opacity: o, transform: `translateY(${(1 - p) * -70}px) rotate(${(1 - p) * -4}deg) ${breathe(f, i)}`}}>
       <div style={{...T, fontSize: 30, color: ACC[w.tone ?? 'gold'], width: 56}}>{String(i + 1).padStart(2, '0')}</div>
-      <div style={{...T, fontSize: 56, color: last ? COLOR.goldHi : '#fff'}}>{w.t}</div>
-      {w.s && <div style={{...B, fontSize: 34, color: COLOR.sub, marginLeft: 'auto'}}>{w.s}</div>}
+      <div style={{...T, fontSize: 56, color: FROST.ink}}>{w.t}</div>
+      {w.s && <div style={{...B, fontSize: 34, color: FROST.sub, marginLeft: 'auto'}}>{w.s}</div>}
       <Sheen at={st(i) + 6} />
     </div>; })}</>;
 };

@@ -12,6 +12,7 @@
     "stock": "node scripts/download-stock.mjs",
     "stock:verify": "node --no-warnings scripts/verify-stock.mjs",
     "check": "node --no-warnings scripts/check-layout.mjs",
+    "check:constraints": "node --experimental-strip-types --no-warnings scripts/check-constraints.mjs",
     "stills": "node --no-warnings scripts/stills.mjs",
     "render": "node scripts/render.mjs",
     "studio": "node scripts/render.mjs --studio",
@@ -19,17 +20,18 @@
     "gallery:stills": "node scripts/freeze-stills.mjs"
   },
   "dependencies": {
-    "remotion": "4.0.484",
+    "@remotion/bundler": "4.0.484",
     "@remotion/cli": "4.0.484",
     "@remotion/renderer": "4.0.484",
-    "@remotion/bundler": "4.0.484",
+    "opentype.js": "^1.3.4",
     "react": "19.2.7",
-    "react-dom": "19.2.7"
+    "react-dom": "19.2.7",
+    "remotion": "4.0.484"
   },
   "devDependencies": {
-    "typescript": "6.0.3",
     "@types/react": "19.2.17",
-    "@types/react-dom": "19.2.3"
+    "@types/react-dom": "19.2.3",
+    "typescript": "6.0.3"
   },
   "version": "5.0.0"
 }
