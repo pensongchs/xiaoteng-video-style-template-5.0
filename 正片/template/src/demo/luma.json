@@ -1,0 +1,74 @@
+{
+  "media/gen/yl_lowdensity.jpg": {
+    "luma": null,
+    "p90": null
+  },
+  "media/gen/yl_dark.jpg": {
+    "luma": null,
+    "p90": null
+  },
+  "media/gen/west_sun.jpg": {
+    "luma": null,
+    "p90": null
+  },
+  "media/gen/yl_roof.jpg": {
+    "luma": null,
+    "p90": null
+  },
+  "media/gen/clean_complex.jpg": {
+    "luma": null,
+    "p90": null
+  },
+  "media/gen/yl_terrace.jpg": {
+    "luma": null,
+    "p90": null
+  },
+  "media/gen/water_stain.jpg": {
+    "luma": null,
+    "p90": null
+  },
+  "media/gen/yl_inspect.jpg": {
+    "luma": null,
+    "p90": null
+  },
+  "media/gen/main_road.jpg": {
+    "luma": null,
+    "p90": null
+  },
+  "media/gen/outro_windows.jpg": {
+    "luma": null,
+    "p90": null
+  },
+  "media/stock/mixkit_guangzhou_lights.mp4": {
+    "luma": 0.059,
+    "p90": 0.164
+  },
+  "media/gen/hidden_costs.jpg": {
+    "luma": null,
+    "p90": null
+  },
+  "media/gen/renovation.jpg": {
+    "luma": null,
+    "p90": null
+  },
+  "media/stock/mixkit_city_night_aerial_river.mp4": {
+    "luma": 0.004,
+    "p90": 0.005
+  },
+  "media/stock/mixkit_skyscraper_panorama.mp4": {
+    "luma": 0.008,
+    "p90": 0.013
+  },
+  "media/gen/dust_site.jpg": {
+    "luma": null,
+    "p90": null
+  },
+  "media/gen/waterfront_dusk.jpg": {
+    "luma": null,
+    "p90": null
+  },
+  "media/gen/interior_warm.jpg": {
+    "luma": null,
+    "p90": null
+  }
+}

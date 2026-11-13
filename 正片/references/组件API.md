@@ -44,17 +44,12 @@
 ## 令牌（tokens.ts）
 - 颜色：墨黑 `#121110`、暖白 `#F4EEE4`、金 `#D9B26F` / 高光 `#F3D79E`、珊瑚 `#E0715C`（风险）、绿 `#8DB89A`（利好）。
 - 字号：kicker 30、title 80、heroTitle 92、number 150、quote 60、rowTitle 40、body 34、label 28、chip 28、ringValue 52。
-- 动效（帧）：enter16/soft20/chip12、stagger5、count32、focus12、freeze 30。
+- 动效（帧）：enter16 / shaped18 / soft20 / chip12、stagger5、count32、focus12、freeze 30。标签下限 28，房间名 30。
 - 转场（transitions.tsx）：softPush18 → softZoom16 → driftDissolve16 → liftReveal18（无扫光/过冲），按顺序轮换。
 
-## 共享玻璃 v6（已定参数）
-- 唯一来源：`tokens.ts: GLASS_V6`；`FROST = GLASS_V6`，`GLASS.dark/light` 是同源兼容视图。所有正片玻璃入口用 `glassMat(mode,tint?,edge?,soft?)`；mgEstate.frost 与旧 mgCards.LG 均委托它。旧 light/pearl 名称保留接口，但不再渲白卡；旧 edge 参数不覆盖细白边。
-- 主底：165°，rgba(62,64,72,**.68**) → rgba(38,40,48,**.74**)；基础透射约32%→26%。soft/ghost：.62→.68（基础透射38%→32%）。这是**底层不透明alpha**，不是“透明度68%”；叠加层后的有效透射会略低。
-- 细白边1px，alpha .22；轻顶缘1px .26；轻底线1px黑 .12；阴影 `0 8px 20px rgba(0,0,0,.20), 0 1px 3px rgba(0,0,0,.12)`。
-- 固定宽柔面光：160°，白 .12→.035（38%）→0（60%）。无移动扫光、颗粒纹理、厚斜面、双层厚框、夸张弧面或重影。
-- 轻语义tint：金/暖珊瑚 .10，青绿/蓝 .08；旧接口传入更浓rgba会钳至≤.10。保持冷灰基调、暖白主字/浅副字；不改成白底或彩色实心板。
-- `backdropFilter/WebkitBackdropFilter='none'`：保留经典参考的环境透射细节，用确定性半透明和面光做玻璃层次，避免祖先opacity/filter改变backdrop root而闪烁。不是28px雾化玻璃，也不是v5厚斜面版本。
-- `useSpringP/useLiquid` 旧API适配有限时长ease-out cubic `1-(1-t)^3`；p严格[0,1]、到期精确1，sx/sy=1；主卡16、柔和20、小标签12帧@30fps。SPRING旧令牌改成 damping26 + overshootClamping，保留给外部兼容；本模板卡片不再用物理弹簧驱动。
-- `Sheen` 兼容API返回null，`bump`返回0；关闭卡片整体前景视差、焦点推近和WordSheen。保留背景视频和有意义的数据变化；人物摆手不是卡片动画。
+## 暖雾磨砂（GLASS_V6）
+- 唯一来源仍是 `tokens.ts: GLASS_V6`。`glassMat()` 负责卡面：卡内 `blur(26px) saturate(1.3) brightness(1.12)`，香槟填充，深墨字。背景组件 `Backdrop` 不使用这段模糊。
+- 五种色调用 `fogFill(tone)`：champ / paper / navy / tea / clay。一帧最多两种。
+- 入场 `glassEnter(frame, start, 'shaped')` 给异形卡，18 帧 quint，到位后为 1。`Sheen` 返回 null，`bump` 返回 0。
 
 默认/存档清单和轮换以版式目录.md与layouts.ts为准；不把兼容API当作旧视觉开关。

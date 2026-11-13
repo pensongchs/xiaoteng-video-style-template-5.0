@@ -15,8 +15,11 @@ import {SUB} from '../src/style/subtitle-tokens.ts';
 import {ensureEpisode} from './episode.mjs';
 import {width} from './lib/subs.mjs';
 import {existsSync} from 'node:fs';
+import {constraintErrors} from './check-constraints.mjs';
+import {measuredLuma} from '../src/style/measured-luma.ts';
+import {textTreatment} from '../src/style/readability.ts';
 process.chdir(fileURLToPath(new URL('..', import.meta.url)));
-const errs = []; const colLinesL = new Set(), colLinesR = new Set();
+const errs = [...constraintErrors]; const colLinesL = new Set(), colLinesR = new Set();
 for (let c = 0; c < GRID.cols; c++) { colLinesL.add(SAFE.left + c * GRID.step); colLinesR.add(SAFE.left + c * GRID.step + GRID.colW); }
 const KICKER = {x: SAFE.left, y: ROWS.kickerY, w: 1240, h: ROWS.kickerH};
 const EXAMPLE = {x: 1400, y: ROWS.kickerY, w: SAFE.right - 1400, h: ROWS.kickerH};
@@ -43,6 +46,14 @@ for (const s of SHOTS) {
 const seen = new Map(); const walk = (o, id) => { if (!o || typeof o !== 'object') return;
   for (const [k, v] of Object.entries(o)) { if ((k === 'src' || k === 'character') && typeof v === 'string') { if (seen.has(v)) errs.push(`素材复用 ${v}: ${seen.get(v)} 与 ${id}`); else seen.set(v, id); } else walk(v, id); } };
 for (const s of SHOTS) walk(s, s.id);
+// 2a) 背景亮度：文件在本地时必须有 ffmpeg 实测的 luma，渲染走同一份
+for (const s of SHOTS) {
+  const src = s.bg?.src;
+  if (!src || !existsSync('public/' + src)) continue;
+  const row = measuredLuma(src);
+  if (!row) errs.push(`${s.id}: 背景 ${src} 还没有实测亮度，先 npm run luma`);
+  else if (textTreatment(row.luma, row.p90) == null) errs.push(`${s.id}: 亮度处理无效`);
+}
 // 2b) 背景不糊（blur 必须为 0）
 for (const s of SHOTS) {
   const b = s.bg?.blur ?? 0;

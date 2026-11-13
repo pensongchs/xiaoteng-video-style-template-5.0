@@ -1,0 +1,487 @@
+{
+  "_说明": "文案→画面匹配规则（草案，可直接被 episode 生成脚本读取）。layouts 中 orig:* 为 5.0 已定 26 款，new1:* 为第一批 5 款，new2:* 为第二批 12 款。",
+  "priority": [
+    "data",
+    "compare",
+    "time",
+    "steps",
+    "location",
+    "floorplan",
+    "pitfall",
+    "cost",
+    "rule",
+    "qa",
+    "conclusion",
+    "hook"
+  ],
+  "intents": {
+    "hook": {
+      "kw": [
+        "你知道吗",
+        "千万",
+        "到底",
+        "为什么",
+        "很多人"
+      ],
+      "pos": "first",
+      "layouts": {
+        "orig:titleFloat": 1.0,
+        "orig:bareNumber": 0.8
+      },
+      "tone": [
+        "champ"
+      ],
+      "broll": [
+        "航拍城市",
+        "小区外景"
+      ]
+    },
+    "data": {
+      "kw": [
+        "%",
+        "万",
+        "元",
+        "倍",
+        "利率",
+        "LPR",
+        "平方",
+        "㎡"
+      ],
+      "needs_number": true,
+      "layouts": {
+        "orig:bareNumber": 0.9,
+        "orig:ringFeature": 0.8,
+        "orig:lineReveal": 0.8,
+        "orig:barGlow": 0.8,
+        "orig:rankBars": 0.7,
+        "orig:waffle": 0.7,
+        "orig:yearRing": 0.6,
+        "orig:formulaCalc": 0.8,
+        "orig:loanDial": 0.8,
+        "orig:triadSoft": 0.6,
+        "new2:cup": 0.8
+      },
+      "tone": [
+        "navy",
+        "champ"
+      ],
+      "broll": [
+        "城市航拍",
+        "写字楼"
+      ]
+    },
+    "compare": {
+      "kw": [
+        "还是",
+        "对比",
+        "vs",
+        "VS",
+        "哪个好",
+        "区别",
+        "差在"
+      ],
+      "struct": "A/B 两组",
+      "layouts": {
+        "new1:split": 1.0,
+        "orig:splitVs": 0.9,
+        "orig:waitVs": 0.8,
+        "orig:decisionFork": 0.8,
+        "orig:balance": 0.7
+      },
+      "tone": [
+        "navy",
+        "clay"
+      ],
+      "broll": [
+        "工地/新房",
+        "成熟小区"
+      ],
+      "outro_pose": "思考选择"
+    },
+    "time": {
+      "kw": [
+        "交房",
+        "放款",
+        "审批",
+        "多久",
+        "几年",
+        "期限",
+        "天",
+        "月"
+      ],
+      "struct": "带时间的节点",
+      "layouts": {
+        "new2:curve": 1.0,
+        "orig:timeline": 0.9,
+        "orig:yearRing": 0.7,
+        "orig:waitVs": 0.6
+      },
+      "tone": [
+        "paper",
+        "navy"
+      ],
+      "broll": [
+        "办事大厅/银行",
+        "日历/钥匙"
+      ]
+    },
+    "steps": {
+      "kw": [
+        "第一步",
+        "首先",
+        "然后",
+        "接着",
+        "最后",
+        "流程",
+        "步骤"
+      ],
+      "struct": "3–5 个有序项",
+      "layouts": {
+        "new1:tabs": 0.9,
+        "new2:hex": 0.9,
+        "orig:timeline": 0.9,
+        "new2:curve": 0.7
+      },
+      "tone": [
+        "paper",
+        "tea"
+      ],
+      "broll": [
+        "办事/签约",
+        "看房走动"
+      ]
+    },
+    "location": {
+      "kw": [
+        "地铁",
+        "学校",
+        "公园",
+        "商场",
+        "医院",
+        "通勤",
+        "配套",
+        "车位",
+        "步行",
+        "公里",
+        "分钟"
+      ],
+      "layouts": {
+        "new1:pins": 1.0,
+        "orig:amenityOrbit": 0.9,
+        "orig:districtTags": 0.8,
+        "new2:parking": 0.8
+      },
+      "tone": [
+        "tea",
+        "navy"
+      ],
+      "broll": [
+        "航拍道路",
+        "小区外景",
+        "地铁口"
+      ],
+      "outro_pose": "房屋价值"
+    },
+    "floorplan": {
+      "kw": [
+        "户型",
+        "得房率",
+        "公摊",
+        "动线",
+        "朝向",
+        "采光",
+        "楼层",
+        "几室",
+        "南北通透",
+        "楼间距"
+      ],
+      "layouts": {
+        "new2:plan": 1.0,
+        "new1:arch": 0.9,
+        "new2:section": 0.9,
+        "orig:floorLadder": 0.9,
+        "new2:family": 0.8,
+        "orig:layerReveal": 0.7
+      },
+      "tone": [
+        "champ",
+        "tea"
+      ],
+      "broll": [
+        "室内采光",
+        "阳台",
+        "楼栋外立面"
+      ],
+      "outro_pose": "舒适居住"
+    },
+    "pitfall": {
+      "kw": [
+        "坑",
+        "注意",
+        "别",
+        "小心",
+        "漏水",
+        "渗水",
+        "空鼓",
+        "隔音",
+        "噪音",
+        "西晒",
+        "踩雷"
+      ],
+      "layouts": {
+        "orig:pitfallBoard": 1.0,
+        "new2:lens": 0.9,
+        "new2:tag": 0.8,
+        "orig:layerReveal": 0.7,
+        "orig:quoteStack": 0.6
+      },
+      "tone": [
+        "clay",
+        "paper"
+      ],
+      "broll": [
+        "墙面/水渍特写",
+        "屋顶",
+        "验房实拍"
+      ],
+      "outro_pose": "预算提醒"
+    },
+    "cost": {
+      "kw": [
+        "首付",
+        "税",
+        "费",
+        "预算",
+        "月供",
+        "中介",
+        "维修基金",
+        "装修",
+        "花多少"
+      ],
+      "layouts": {
+        "new1:ticket": 1.0,
+        "orig:paymentSplit": 1.0,
+        "orig:priceStep": 0.8,
+        "new2:cup": 0.8,
+        "orig:formulaCalc": 0.7,
+        "orig:barGlow": 0.6
+      },
+      "tone": [
+        "champ",
+        "clay"
+      ],
+      "broll": [
+        "书桌计算器",
+        "钥匙/房模"
+      ],
+      "outro_pose": "预算提醒"
+    },
+    "rule": {
+      "kw": [
+        "合同",
+        "条款",
+        "政策",
+        "认定",
+        "限购",
+        "公积金",
+        "规定",
+        "资格"
+      ],
+      "layouts": {
+        "new2:contract": 1.0,
+        "new2:notes": 0.9,
+        "new2:hex": 0.6,
+        "orig:quoteStack": 0.7,
+        "orig:mediaRows": 0.6
+      },
+      "tone": [
+        "paper",
+        "navy"
+      ],
+      "broll": [
+        "签约桌面",
+        "政务大厅"
+      ]
+    },
+    "qa": {
+      "kw": [
+        "吗？",
+        "吗?",
+        "能不能",
+        "会不会",
+        "有人问",
+        "评论区"
+      ],
+      "layouts": {
+        "new2:qa": 1.0,
+        "orig:decisionFork": 0.8,
+        "orig:quoteStack": 0.6
+      },
+      "tone": [
+        "navy",
+        "champ"
+      ],
+      "broll": [
+        "街景",
+        "人物看房"
+      ]
+    },
+    "conclusion": {
+      "kw": [
+        "总之",
+        "记住",
+        "所以",
+        "一句话",
+        "总结"
+      ],
+      "pos": "last",
+      "layouts": {
+        "orig:triadSoft": 0.8,
+        "orig:quoteStack": 0.7,
+        "orig:outroHost": 1.0
+      },
+      "tone": [
+        "champ"
+      ],
+      "broll": [
+        "黄昏/暖光外景",
+        "明亮客厅"
+      ]
+    }
+  },
+  "fallback_layouts": [
+    "orig:quoteStack",
+    "orig:mediaRows",
+    "orig:titleFloat"
+  ],
+  "outro_poses": {
+    "default": "片尾挥手",
+    "思考选择": "小滕_思考选择",
+    "房屋价值": "小滕_房屋价值",
+    "舒适居住": "小滕_舒适居住",
+    "预算提醒": "小滕_预算提醒"
+  },
+  "anti_repeat": {
+    "media_same_episode": 0,
+    "media_cooldown_episodes": 3,
+    "hero_media_cooldown_episodes": 5,
+    "layout_max_per_episode": {
+      "orig": 2,
+      "new": 1,
+      "outro": 1
+    },
+    "adjacent_same_layout": false,
+    "same_layout_min_gap_shots": 2,
+    "new_cards_per_episode": [
+      2,
+      4
+    ],
+    "orig_estate9_min_per_episode": 2,
+    "min_layout_kinds_8to12_shots": 7,
+    "recent_episode_penalty": {
+      "window": 3,
+      "per_hit": 0.25
+    },
+    "same_topic_signature_force_alternate": true,
+    "tone_same_primary_max_consecutive": 2,
+    "tones_per_frame_max": 2,
+    "outro_pose_cooldown_episodes": 2,
+    "tie_break": "seed = hash(期号+标题)；分差 ≤0.10 的候选按 seed 轮转"
+  },
+  "render_constraints": {
+    "_说明": "排版硬约束的机器可读版，详见 排版底层约束.md §3b / §4 / §8b",
+    "min_font": {
+      "body_and_caption": 34,
+      "label_chip_index_unit_area": 28,
+      "room_name": 30
+    },
+    "connector": {
+      "must_not_intersect_card_shape": true,
+      "sample_step_px": 2,
+      "end_gap_to_card_edge_px": [
+        0,
+        6
+      ],
+      "min_gap_between_modules_for_line_px": 32,
+      "path_band_to_card_band_gap_px": 40,
+      "fallback": [
+        "截短到卡边",
+        "改走缝隙",
+        "下排卡片+竖直引线",
+        "去掉连线"
+      ]
+    },
+    "floorplan": {
+      "wall_mm": {
+        "exterior": 240,
+        "interior": 120
+      },
+      "double_line_walls": true,
+      "door_arc": true,
+      "window_triple_line": true,
+      "required_spaces": [
+        "入户门",
+        "玄关",
+        "客厅",
+        "餐厅",
+        "厨房",
+        "卫生间",
+        "卧室",
+        "阳台(常见,南向)"
+      ],
+      "min_room_m": {
+        "主卧": [
+          3.3,
+          3.6
+        ],
+        "次卧": [
+          2.7,
+          3.0
+        ],
+        "卫生间": [
+          1.6,
+          2.0
+        ],
+        "客厅开间": 3.6
+      },
+      "area_sum_tolerance": 0.05,
+      "dimension_line": true,
+      "north_arrow": true,
+      "flowline_through_openings_only": true,
+      "source": "当期真实户型矢量描图，或标准户型库（两室/三室/四室各2），标「示例」"
+    },
+    "slot_limits": {
+      "new2:hex": {
+        "items": 4,
+        "caption_chars_per_line": 6,
+        "caption_lines": 2
+      },
+      "new2:curve": {
+        "items": [
+          3,
+          5
+        ],
+        "caption_chars": 5,
+        "layout": "上带路径+下排卡片"
+      },
+      "new2:tag": {
+        "items": [
+          3,
+          5
+        ],
+        "caption_chars": 6
+      },
+      "new2:contract": {
+        "clauses": [
+          2,
+          3
+        ],
+        "caption_chars": 8
+      },
+      "new1:split": {
+        "rows": 3,
+        "caption_chars_per_line": 10
+      }
+    }
+  }
+}

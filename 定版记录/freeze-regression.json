@@ -2,7 +2,7 @@
   "version": "5.0.0-glass-v6-estate",
   "status": "approved",
   "timezone": "Asia/Shanghai",
-  "testedAt": "2026-11-06 16:24:14",
+  "testedAt": "2026-11-13 08:46:40",
   "defaultCount": 26,
   "defaultLayouts": [
     "titleFloat",
@@ -61,6 +61,7 @@
   ],
   "entryFrames": {
     "enter": 16,
+    "shaped": 18,
     "soft": 20,
     "chip": 12
   },
@@ -318,6 +319,142 @@
     {
       "layout": "kpiGrid",
       "glassElements": 5,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "ticketStub",
+      "glassElements": 2,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "indexTabs",
+      "glassElements": 4,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "amenityPins",
+      "glassElements": 4,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "slashCompare",
+      "glassElements": 3,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "archLight",
+      "glassElements": 4,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "paymentCup",
+      "glassElements": 3,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "loanCurve",
+      "glassElements": 5,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "contractNote",
+      "glassElements": 4,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "planSplit",
+      "glassElements": 1,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "buildingSection",
+      "glassElements": 3,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "pitfallLens",
+      "glassElements": 4,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "parkingLines",
+      "glassElements": 3,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "hexSteps",
+      "glassElements": 4,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "inspectTags",
+      "glassElements": 4,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "familyPlan",
+      "glassElements": 2,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "policyNotes",
+      "glassElements": 3,
+      "stableFrames": [
+        185,
+        208
+      ]
+    },
+    {
+      "layout": "qaBubbles",
+      "glassElements": 2,
       "stableFrames": [
         185,
         208

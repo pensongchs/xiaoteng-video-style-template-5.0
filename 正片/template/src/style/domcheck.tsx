@@ -24,9 +24,11 @@ export const DomCheck: React.FC<{id: string; zones: Record<string, Rect>}> = ({i
       while ((n = w.nextNode())) {
         const txt = n.textContent?.trim(); if (!txt) continue; const el = n.parentElement!; if (el.closest('style,script,[data-deco],[data-sub]')) continue;
         const cs = getComputedStyle(el); const fs = parseFloat(cs.fontSize);
-        const body = !!el.closest('[data-role="body"]');
+        const role = el.closest('[data-role]')?.getAttribute('data-role');
         if (fs < MIN_FONT.any - 0.5) errs.push(`字号过小 ${fs}px「${txt.slice(0, 12)}」`);
-        else if (body && fs < MIN_FONT.body - 0.5) errs.push(`正文字号 ${fs}px < ${MIN_FONT.body}「${txt.slice(0, 12)}」`);
+        else if (role === 'body' && fs < MIN_FONT.body - 0.5) errs.push(`正文字号 ${fs}px < ${MIN_FONT.body}「${txt.slice(0, 12)}」`);
+        else if (role === 'room' && fs < MIN_FONT.room - 0.5) errs.push(`房间名 ${fs}px < ${MIN_FONT.room}「${txt.slice(0, 12)}」`);
+        else if (role === 'label' && fs < MIN_FONT.label - 0.5) errs.push(`标签 ${fs}px < ${MIN_FONT.label}「${txt.slice(0, 12)}」`);
         const r = document.createRange(); r.selectNodeContents(n); const u = union(Array.from(r.getClientRects()) as DOMRect[]);
         if (u && !Object.values(zones).some((z) => u.l >= z.x - 6 && u.r <= z.x + z.w + 6 && u.t >= z.y - 6 && u.b <= z.y + z.h + 6))
           errs.push(`文字出版式区「${txt.slice(0, 12)}」@${Math.round(u.l)},${Math.round(u.t)}–${Math.round(u.r)},${Math.round(u.b)}`);

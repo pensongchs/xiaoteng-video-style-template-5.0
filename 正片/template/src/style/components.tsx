@@ -3,15 +3,16 @@ import {AbsoluteFill, Easing, Freeze, interpolateColors, Img, OffthreadVideo, in
 import type {Rect} from './grid.ts';
 import {COLOR, FONT, FROST, GLASS, glassEnter, steadySpring as spring, MIN_FONT, MOTION, RADIUS, SPRING, TYPE} from './tokens';
 
-/** 5.0 新定版：唯一玻璃入口。旧 light/edge 接口兼容，不恢复白底或彩色厚边。 */
+/** 暖雾磨砂入口。模糊只在这层，不作用到背景视频。旧 light/edge 接口仍可用。 */
 const softTint = (tint?: string) => tint?.replace(/rgba\(([^,]+),([^,]+),([^,]+),\s*([\d.]+)\)/g,
   (_, r, g, b, a) => `rgba(${r},${g},${b},${Math.min(0.10, Number(a))})`);
 export const glassMat = (_mode: 'dark' | 'light' = 'dark', tint?: string, _edge?: string, soft = false): React.CSSProperties => ({
   color: FROST.ink, textShadow: FROST.textShadow,
-  background: `${FROST.surfaceHighlight}, linear-gradient(165deg, ${softTint(tint) ?? FROST.tint.none}, rgba(0,0,0,0) 120%), ${soft ? FROST.fillSoft : FROST.fill}`,
+  background: `${FROST.grain}, ${FROST.surfaceHighlight}, linear-gradient(165deg, ${softTint(tint) ?? FROST.tint.none}, rgba(0,0,0,0) 72%), ${soft ? FROST.fillSoft : FROST.fill}`,
+  backgroundSize: '64px 64px, auto, auto, auto',
   backdropFilter: FROST.blur, WebkitBackdropFilter: FROST.blur,
-  border: `1px solid ${FROST.hair}`,
-  boxShadow: `inset 0 1px 0 ${FROST.top}, inset 0 -1px 0 ${FROST.bottom}, ${FROST.shadow}`,
+  border: `1.6px solid ${FROST.hair}`,
+  boxShadow: `inset 0 1.5px 0 ${FROST.top}, inset 0 -12px 18px ${FROST.bottom}, 0 0 0 1px ${FROST.rim}, 0 0 0 1px ${FROST.mist}, ${FROST.shadow}`,
 });
 /** 兼容旧 useLiquid，现为单调入场；不拉伸、不压扁。 */
 export const useLiquid = (start: number, config: typeof SPRING.enter = SPRING.enter) => {
@@ -28,8 +29,9 @@ export const Fonts: React.FC = () => (
     @font-face{font-family:'PuHui';src:url('${staticFile('fonts/AlibabaPuHuiTi-Black.woff2')}') format('woff2');font-weight:900}
     @font-face{font-family:'Health';src:url('${staticFile('fonts/AlibabaHealthFont2.0CN-85B.ttf')}') format('truetype');font-weight:700}
     @font-face{font-family:'Health';src:url('${staticFile('fonts/AlibabaHealthFont2.0CN-45R.ttf')}') format('truetype');font-weight:400}
-    .txs,.txs *{text-shadow:0 2px 14px rgba(0,0,0,0.55),0 1px 3px rgba(0,0,0,0.35)}
-    .txs .gt{text-shadow:none;filter:drop-shadow(0 2px 8px rgba(0,0,0,0.5))}
+    .txs,.txs *{text-shadow:0 0 12px rgba(120,72,32,0.45),0 1px 2px rgba(70,42,18,0.35)}
+    .tx2,.tx2 *{-webkit-text-stroke:4px rgba(110,68,32,0.42);paint-order:stroke fill;text-shadow:0 0 12px rgba(120,72,32,0.55),0 0 28px rgba(120,72,32,0.35)}
+    .txs .gt,.tx2 .gt{text-shadow:none;-webkit-text-stroke:0;filter:drop-shadow(0 2px 4px rgba(60,36,12,0.55))}
     @font-face{font-family:'ArialB';src:local('Arial Bold'),local('Arial-BoldMT'),url('${staticFile('fonts/Style40-Arial-Bold.ttf')}') format('truetype');font-weight:700}
   `}</style>
 );
@@ -115,15 +117,15 @@ export const Chip: React.FC<{children: React.ReactNode; start: number; tone?: Ch
   const p = useSpringP(start, SPRING.snappy);
   const o = Math.min(1, Math.max(0, p));
   const st: Record<ChipTone, React.CSSProperties> = {
-    gold: {...glassMat('dark', FROST.tint.gold), color: FROST.gold},
-    glass: {...glassMat('dark'), color: COLOR.warm, textShadow: GLASS.textShadow},
-    coral: {...glassMat('dark', 'rgba(224,113,92,0.42)', 'rgba(240,150,130,0.6)'), color: '#FFE6DF', textShadow: GLASS.textShadow},
-    green: {...glassMat('dark', 'rgba(141,184,154,0.40)', 'rgba(170,210,182,0.6)'), color: '#E4F5EA', textShadow: GLASS.textShadow},
+    gold: {...glassMat('dark', FROST.tint.gold), color: FROST.ink},
+    glass: {...glassMat('dark'), color: FROST.ink, textShadow: 'none'},
+    coral: {...glassMat('dark', 'rgba(224,113,92,0.42)', 'rgba(240,150,130,0.6)'), color: FROST.ink, textShadow: 'none'},
+    green: {...glassMat('dark', 'rgba(141,184,154,0.40)', 'rgba(170,210,182,0.6)'), color: FROST.ink, textShadow: 'none'},
   };
   return <div data-fit="chip" style={{display: 'inline-flex', alignItems: 'center', alignSelf: 'flex-start', flexShrink: 0, whiteSpace: 'nowrap', padding: `${Math.round(size * 0.42)}px ${Math.round(size * 1.3)}px`, borderRadius: 999,
     fontFamily: FONT.body, fontWeight: 700, fontSize: size, opacity: o, transform: `translateY(${(1 - p) * 10}px) scale(${0.97 + 0.03 * Math.min(p, 1)})`,
     boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 8px 18px rgba(0,0,0,0.3)', ...st[tone],
-    ...(hi != null ? {position: 'relative', overflow: 'hidden', color: interpolateColors(hi, [0, 1], [COLOR.warm, FROST.gold]), textShadow: GLASS.textShadow} : {})}}>
+    ...(hi != null ? {position: 'relative', overflow: 'hidden', color: interpolateColors(hi, [0, 1], [FROST.ink, FROST.ink]), textShadow: 'none'} : {})}}>
     {hi != null && hi > 0.001 && <div style={{position: 'absolute', inset: 0, borderRadius: 999, opacity: hi, background: FROST.tint.gold}} />}
     {hi != null ? <span style={{position: 'relative'}}>{children}</span> : children}</div>;
 };
@@ -135,21 +137,27 @@ export const Badge: React.FC<{children: React.ReactNode; size?: number; active?:
     boxShadow: active ? '0 0 22px rgba(217,178,111,0.55)' : 'none'}}>{children}</div>
 );
 
-export const Kicker: React.FC<{text: string}> = ({text}) => {
+export const Kicker: React.FC<{text: string; plate?: boolean}> = ({text, plate}) => {
   const p = useSpringP(0, SPRING.soft); const o = Math.min(1, Math.max(0, p));
-  return <div className="txs" style={{position: 'absolute', left: 96, top: 56, height: 36, display: 'flex', alignItems: 'center', gap: 14, opacity: o, transform: `translateX(${(1 - p) * -16}px)`}}>
+  return <div className="tx2" style={{position: 'absolute', left: 96, top: 56, height: 36, display: 'flex', alignItems: 'center', gap: 14, opacity: o, transform: `translateX(${(1 - p) * -16}px)`}}>
+    {plate && <div style={{position: 'absolute', left: -12, right: 80, top: -4, bottom: -4, borderRadius: 10, zIndex: -1,
+      background: 'linear-gradient(90deg, rgba(255,248,236,0.46), rgba(255,248,236,0.12) 72%, rgba(255,248,236,0))', backdropFilter: 'blur(8px)'}} />}
     <div style={{width: 28 * o, height: 2, background: COLOR.goldHi}} />
-    <span style={{fontFamily: FONT.body, fontWeight: 700, fontSize: TYPE.kicker, color: COLOR.warm, letterSpacing: 2}}>{text}</span>
+    <span style={{fontFamily: FONT.body, fontWeight: 700, fontSize: TYPE.kicker, color: '#FFF8EC', letterSpacing: 2}}>{text}</span>
   </div>;
 };
 
 export const GoldText: React.FC<{text: string}> = ({text}) => <>{text.split(/(\{[^}]+\})/).map((s, i) =>
   s.startsWith('{') ? <span key={i} className="gt" style={{background: 'linear-gradient(180deg,#FBE6BC,#D9B26F 60%,#B48843)', WebkitBackgroundClip: 'text', color: 'transparent'}}>{s.slice(1, -1)}</span> : <span key={i}>{s}</span>)}</>;
 
-export const Headline: React.FC<{text: string; start?: number}> = ({text, start = 2}) => {
+export const Headline: React.FC<{text: string; start?: number; plate?: boolean}> = ({text, start = 2, plate}) => {
   const p = useSpringP(start, SPRING.enter); const o = Math.min(1, Math.max(0, p));
-  return <div className="txs" style={{position: 'absolute', left: 96, top: 100, width: 1536, height: 100, display: 'flex', alignItems: 'center', opacity: o, transform: `translateY(${(1 - p) * 22}px) scale(${0.97 + 0.03 * Math.min(p, 1.1)})`}}>
-    <div style={{fontFamily: FONT.title, fontSize: TYPE.title, color: COLOR.warm, lineHeight: 1.15, whiteSpace: 'pre-line'}}><GoldText text={text} /></div>
+  return <div className="tx2" style={{position: 'absolute', left: 96, top: 100, width: 1536, height: 100, display: 'flex', alignItems: 'center', opacity: o, transform: `translateY(${(1 - p) * 22}px) scale(${0.97 + 0.03 * Math.min(p, 1)})`}}>
+    <div style={{position: 'absolute', left: -16, right: '8%', top: 8, bottom: 8, borderRadius: 16, zIndex: -1, pointerEvents: 'none',
+      background: 'radial-gradient(ellipse at 12% 50%, rgba(120,72,32,0.16), rgba(120,72,32,0) 68%)'}} />
+    {plate && <div style={{position: 'absolute', left: -8, right: '6%', top: 6, bottom: 6, borderRadius: 14, zIndex: -1,
+      background: 'linear-gradient(90deg, rgba(255,248,236,0.50), rgba(255,248,236,0.16) 70%, rgba(255,248,236,0))', backdropFilter: 'blur(10px)'}} />}
+    <div style={{fontFamily: FONT.title, fontSize: TYPE.title, color: '#FFF8EC', lineHeight: 1.15, whiteSpace: 'pre-line'}}><GoldText text={text} /></div>
   </div>;
 };
 

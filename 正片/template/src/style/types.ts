@@ -15,7 +15,7 @@ export type Shot = {
   city?: string;
   /** 本镜主动画名。相邻镜不得相同，一期至少 6 种（check-layout 会查） */
   motion?: string;
-  bg: Media & {blur?: number; dark?: number};
+  bg: Media & {blur?: number; dark?: number; luma?: number; p90?: number};
   /** 本镜字幕保留文字和投影，去掉胶囊底。 */
   bareSubtitles?: boolean;
   data: any;

@@ -29,15 +29,17 @@ function load(file) {
 const token = load('src/style/tokens.ts'), comp = load('src/style/components.tsx');
 const layouts = load('src/style/layouts.ts');
 const {GALLERY, ARCHIVE_GALLERY} = load('src/gallery/shots-mg-gallery.ts');
+const {NEW_GALLERY} = load('src/gallery/shots-mg-new.ts');
 const {RE10} = load('src/gallery/shots-mg-re10.ts');
 const {ShotView} = load('src/style/archetypes.tsx');
 const {frost} = load('src/style/mgEstate.tsx');
 assert.equal(token.FROST, token.GLASS_V6);
 assert.equal(token.GLASS.dark.fill, token.FROST.fill);
 assert.equal(token.GLASS.light.fill, token.FROST.fill);
-assert.equal(token.FROST.fill, 'linear-gradient(165deg, rgba(62,64,72,0.68), rgba(38,40,48,0.74))');
-assert.equal(token.FROST.blur, 'none');
-assert.equal(token.FROST.hair, 'rgba(255,255,255,0.22)');
+assert.equal(token.FROST.fill, 'linear-gradient(165deg, rgba(250,243,231,0.74), rgba(236,224,204,0.64))');
+assert.equal(token.FROST.blur, 'blur(26px) saturate(1.3) brightness(1.12)');
+assert.equal(token.FROST.hair, 'rgba(255,248,240,0.78)');
+assert.equal(token.FROST.ink, '#2A1E12');
 for (const tone of ['none','gold','coral','green','blue']) for (const soft of [false,true]) {
   const a = comp.glassMat('dark', token.FROST.tint[tone], undefined, soft), b = frost(tone, soft);
   for (const k of ['background','border','boxShadow','textShadow','backdropFilter','WebkitBackdropFilter','color']) assert.equal(a[k],b[k],tone+' '+k);
@@ -55,6 +57,8 @@ for (const kind of ['enter','soft','chip']) {
   }
   assert.equal(token.glassEnter(token.GLASS_ENTER_FRAMES[kind],0,kind),1);
 }
+{ let prev=-1; for (let f=-30;f<=80;f+=0.25) { const p=token.glassEnter(f,0,'shaped'); assert(p>=prev&&p>=0&&p<=1); prev=p; }
+  assert.equal(token.glassEnter(18,0,'shaped'),1); }
 assert.equal(layouts.DEFAULT_LAYOUTS.length,26);
 assert.equal(new Set(layouts.DEFAULT_LAYOUTS).size,26);
 assert.deepEqual([...new Set(GALLERY.map(s=>s.layout))].sort(), [...layouts.DEFAULT_LAYOUTS].sort());
@@ -71,8 +75,11 @@ function walk(node, out, p='0', parents=[]) {
   if (Array.isArray(node)) return node.forEach((n,i)=>walk(n,out,p+'.'+i,parents));
   if (typeof node.type === 'function') return walk(node.type(node.props),out,p+'.fn',parents);
   const st = node.props?.style || {}, chain=[...parents,take(st)];
-  if (st.backdropFilter === 'none') {
-    assert(st.background?.includes(token.FROST.fill) || st.background?.includes(token.FROST.fillSoft), 'Noncanonical card '+p);
+  const fog = typeof st.backdropFilter === 'string' && st.backdropFilter.includes('blur(26px)');
+  if (fog) {
+    const fills = [token.FROST.fill, token.FROST.fillSoft, ...Object.values(token.FOG).flatMap((x) => [x.fill0, x.fill1])];
+    assert(fills.some((f) => st.background?.includes(f)), 'Noncanonical card '+p);
+    assert(!st.background?.includes('rgba(62,64,72'), 'Cold gray card returned '+p);
     out.push({path:p, ancestors:chain});
   }
   const ctx = node.type && typeof node.type === 'object' && '_currentValue' in node.type ? node.type : null;
@@ -83,7 +90,9 @@ function walk(node, out, p='0', parents=[]) {
 }
 function sample(s,f) { frame=f; const out=[]; walk(ShotView({s,dur:210}),out); return out; }
 const stable=[];
-for (const s of [...GALLERY,...ARCHIVE_GALLERY]) {
+assert.equal(NEW_GALLERY.length, 17);
+assert.deepEqual(NEW_GALLERY.map(s=>s.layout), [...layouts.NEW_LAYOUTS]);
+for (const s of [...GALLERY,...ARCHIVE_GALLERY,...NEW_GALLERY]) {
   const ref=JSON.stringify(sample(s,185));
   for(let f=186;f<209;f++) assert.equal(JSON.stringify(sample(s,f)),ref,s.layout+' card/ancestor moved after settling at '+f);
   stable.push({layout:s.layout, glassElements:JSON.parse(ref).length, stableFrames:[185,208]});
@@ -97,4 +106,4 @@ for(const f of ['SKILL.md','正片/SKILL.md','正片/references/版式目录.md'
 }
 const report={version:'5.0.0-glass-v6-estate',status:'approved',timezone:'Asia/Shanghai',testedAt:new Date().toLocaleString('sv-SE',{timeZone:'Asia/Shanghai'}),defaultCount:26,defaultLayouts:layouts.DEFAULT_LAYOUTS,estateLayouts:layouts.ESTATE_LAYOUTS,archiveLayouts:layouts.ARCHIVE_LAYOUTS,estateCount:9,archiveCount:6,unitCompareDefault:false,material:'GLASS_V6 = FROST; GLASS.dark/light and glassMat/frost/LG same source',baseAlpha:[0.68,0.74],entryFrames:token.GLASS_ENTER_FRAMES,overshoot:false,scanbar:false,settledGeometry:stable,scope:'TS/React-tree parameter regression; actual rendered stills checked separately, not a DOM pixel measurement'};
 const dest=path.join(project,'定版记录');fs.mkdirSync(dest,{recursive:true});fs.writeFileSync(path.join(dest,'freeze-regression.json'),JSON.stringify(report,null,2)+'\n');
-console.log(`PASS: same-source glass; monotonic 16/20/12f; 26 default + 6 archive settled-card checks; 9 estate; unitCompare excluded; synchronized docs`);
+console.log(`PASS: warm-fog glass; monotonic 16/18/20/12f; 26 default + 6 archive + 17 new settled; 9 estate kept; unitCompare excluded`);
