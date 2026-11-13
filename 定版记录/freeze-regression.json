@@ -2,7 +2,7 @@
   "version": "5.0.0-glass-v6-estate",
   "status": "approved",
   "timezone": "Asia/Shanghai",
-  "testedAt": "2026-11-13 01:12:43",
+  "testedAt": "2026-11-13 08:46:40",
   "defaultCount": 26,
   "defaultLayouts": [
     "titleFloat",
@@ -366,7 +366,7 @@
     },
     {
       "layout": "paymentCup",
-      "glassElements": 2,
+      "glassElements": 3,
       "stableFrames": [
         185,
         208

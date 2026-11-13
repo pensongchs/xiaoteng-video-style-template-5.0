@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import {SAFE} from '../src/style/grid.ts';
 import {DEFAULT_LAYOUTS, ESTATE_LAYOUTS, NEW_LAYOUTS, POOL_LAYOUTS, layoutRects} from '../src/style/layouts.ts';
 import {sceneOf, NEW_SCENE_NAMES} from '../src/style/scenes.ts';
-import {connectorFaults, distToShape, samplesOf} from '../src/style/geom.ts';
+import {connectorFaults, gapBetween, overlapArea, samplesOf} from '../src/style/geom.ts';
 import {validateLibrary, planById, layoutPlan} from '../src/style/floorplans.ts';
 import {contrastRatio, inkContrast, parseRgb, textTreatment} from '../src/style/readability.ts';
 import {FOG, glassEnter, GLASS_ENTER_FRAMES} from '../src/style/tokens.ts';
@@ -31,14 +31,13 @@ lib.forEach((e) => errs.push(e));
 const planRect = layoutRects('planSplit').plan;
 const plan = planById('三室-甲');
 const laid = layoutPlan(plan, planRect);
-laid.labels.forEach((lb) => {
-  const nw = widthOf(lb.name, 30);
-  if (nw > lb.nameBox.w + 80) errs.push(`房间名「${lb.name}」实测 ${nw.toFixed(0)}px 过宽`);
-  const near = samplesOf(laid.flow, 2).some((p) => {
-    const cx = lb.nameBox.x + lb.nameBox.w / 2, cy = lb.nameBox.y + lb.nameBox.h / 2;
-    return Math.hypot(p[0] - cx, p[1] - cy) < 12;
-  });
-  if (near) errs.push(`房间名「${lb.name}」离动线 < 12px`);
+plan.rooms.forEach((r) => {
+  const room = {x: laid.X(r.x), y: laid.Y(r.y), w: r.w * laid.scale, h: r.h * laid.scale};
+  const nw = widthOf(r.name, 30);
+  const nameBox = {x: laid.X(r.x + r.w / 2) - nw / 2, y: laid.Y(r.y + r.h / 2) - 32, w: nw, h: 30};
+  if (nameBox.x < room.x + 2 || nameBox.x + nameBox.w > room.x + room.w - 2 || nameBox.y < room.y + 2) errs.push(`户型「${r.name}」字压到墙或房间外`);
+  const near = samplesOf(laid.flow, 2).some((p) => Math.hypot(p[0] - (nameBox.x + nameBox.w / 2), p[1] - (nameBox.y + 15)) < 12);
+  if (near) errs.push(`房间名「${r.name}」离动线 < 12px`);
 });
 
 for (const name of NEW_SCENE_NAMES) {
@@ -63,13 +62,19 @@ for (const name of NEW_SCENE_NAMES) {
       .filter((f) => ln.kind === 'diagram' ? /进入|内部/.test(f) : true);
     faults.forEach((f) => errs.push(`${name}/${ln.id} ${f}`));
   }
-  if (name === 'loanCurve') {
-    const path = sc.lines.find((l) => l.id === 'path');
-    const cards = sc.cards.map((c) => c.poly);
-    const ys = path.pts.map((p) => p[1]);
-    const cardTop = Math.min(...sc.cards.flatMap((c) => c.poly.map((p) => p[1])));
-    if (cardTop - Math.max(...ys) < 40) errs.push('弯道路径与卡片间距 < 40px');
-    samplesOf(path.pts, 2).forEach((p) => cards.forEach((poly) => { if (distToShape(p, poly) < path.width / 2) errs.push('弯道路径穿卡'); }));
+  if (name === 'loanCurve' || name === 'hexSteps') {
+    const flows = sc.lines.filter((l) => l.id === 'path' || l.id.startsWith('flow') || l.id.startsWith('stem'));
+    if (flows.some((l) => l.pts.length < 6)) errs.push(`${name} 流程线不够顺`);
+  }
+  for (const c of sc.cards) {
+    const texts = c.texts.map((t) => t.box);
+    for (let i = 0; i < texts.length; i++) for (let j = i + 1; j < texts.length; j++) {
+      if (overlapArea(texts[i], texts[j]) > 0) errs.push(`${name}/${c.id} 文字互相重叠`);
+    }
+    for (const m of c.marks ?? []) for (const t of c.texts) {
+      const gap = gapBetween(t.box, m);
+      if (gap < 24) errs.push(`${name}/${c.id} 文字「${t.text}」与图形间距 ${gap.toFixed(0)}px < 24`);
+    }
   }
   if (name === 'hexSteps') {
     const caps = sc.cards.flatMap((c) => c.texts.filter((t) => t.role === 'body').slice(1));

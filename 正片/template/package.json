@@ -13,6 +13,8 @@
     "stock:verify": "node --no-warnings scripts/verify-stock.mjs",
     "check": "node --no-warnings scripts/check-layout.mjs",
     "check:constraints": "node --experimental-strip-types --no-warnings scripts/check-constraints.mjs",
+    "luma": "node --experimental-strip-types --no-warnings scripts/sample-luma.mjs",
+    "stills:key": "node --experimental-strip-types --no-warnings scripts/key-stills.mjs",
     "stills": "node --no-warnings scripts/stills.mjs",
     "render": "node scripts/render.mjs",
     "studio": "node scripts/render.mjs --studio",

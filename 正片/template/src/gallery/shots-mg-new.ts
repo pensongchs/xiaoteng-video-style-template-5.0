@@ -2,7 +2,7 @@
 import type {Shot} from '../style/types.ts';
 import {NEW_LAYOUTS} from '../style/layouts.ts';
 
-const bg = {src: 'media/stock/mixkit_42334_day.mp4', video: true, dark: 0.42, luma: 0.58};
+const bg = {src: 'media/gen/clean_complex.jpg', dark: 0.42};
 const titles: Record<string, [string, string]> = {
   ticketStub: ['购房杂费', '杂费要{提前留}'],
   indexTabs: ['看房顺序', '看房按{这三步}'],
@@ -18,7 +18,7 @@ const titles: Record<string, [string, string]> = {
   parkingLines: ['车位划线', '车位先问{归属}'],
   hexSteps: ['公积金贷款', '公积金{四步走}'],
   inspectTags: ['验房吊牌', '收房先看{这四处}'],
-  familyPlan: ['家庭户型', '三口人住{三室}'],
+  familyPlan: ['户型怎么选', '一家几口住{几室}'],
   policyNotes: ['政策便签', '资格以{当地为准}'],
   qaBubbles: ['问答', '顶楼{能不能买}'],
 };

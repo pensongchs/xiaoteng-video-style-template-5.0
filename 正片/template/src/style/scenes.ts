@@ -1,11 +1,11 @@
 /** 17 款新卡的停稳几何。组件和检查读同一份坐标。 */
 import {layoutRects, type LayoutName} from './layouts.ts';
-import {rectPoly, type Box, type Pt} from './geom.ts';
+import {cubic, rectPoly, type Box, type Pt} from './geom.ts';
 import type {FogTone} from './tokens.ts';
 
 export type TextRun = {text: string; size: number; role: 'title' | 'body' | 'label' | 'room' | 'num'; box: Box};
-export type CardGeom = {id: string; poly: Pt[]; tone: FogTone; texts: TextRun[]};
-export type LineGeom = {id: string; pts: Pt[]; width: number; anchor: 'both' | 'start' | 'end' | 'none'; kind: 'connector' | 'diagram'};
+export type CardGeom = {id: string; poly: Pt[]; tone: FogTone; texts: TextRun[]; marks?: Box[]};
+export type LineGeom = {id: string; pts: Pt[]; width: number; anchor: 'both' | 'start' | 'end' | 'none'; kind: 'connector' | 'diagram'; color?: string; dot?: boolean};
 export type Scene = {cards: CardGeom[]; lines: LineGeom[]; planId?: string};
 
 const box = (x: number, y: number, w: number, h: number): Box => ({x, y, w, h});
@@ -89,7 +89,7 @@ const scenes: Record<string, () => Scene> = {
         T('南北通透', 34, 'body', box(inner.x, inner.y, inner.w, 48)),
         T('动静分区', 34, 'body', box(inner.x, inner.y + 64, inner.w, 48)),
         T('方正实用', 34, 'body', box(inner.x, inner.y + 128, inner.w, 48)),
-        T('3/3', 28, 'label', box(inner.x + inner.w - 120, inner.y, 88, 40)),
+        T('3/3', 28, 'label', box(inner.x + inner.w - 120, inner.y + 200, 88, 36)),
       ]),
     ], lines: []};
   },
@@ -137,35 +137,65 @@ const scenes: Record<string, () => Scene> = {
   },
   paymentCup: () => {
     const R = layoutRects('paymentCup');
-    const cup = inset(R.cup, 12);
-    const stats = inset(R.stats, 12);
-    const s = inset(stats, 28);
+    const c = R.cup;
+    const topW = c.w * 0.78, botW = c.w * 0.5;
+    const topY = c.y + 28, botY = c.y + c.h - 28;
+    const cx = c.x + c.w / 2;
+    const poly: Pt[] = [[cx - topW / 2, topY], [cx + topW / 2, topY], [cx + botW / 2, botY], [cx - botW / 2, botY]];
+    const rows = along(inset(R.stats, 4), 3, 28, true);
+    const items = [{k: '月供', v: '32%'}, {k: '日常开销', v: '43%'}, {k: '存下来', v: '25%'}];
+    const tickY = topY + (botY - topY) * 0.67;
+    const tick = box(cx - 70, tickY - 3, 120, 8);
     return {cards: [
-      card('cup', cup, 'navy', [T('月供', 28, 'label', box(cup.x + 32, cup.y + 36, cup.w - 64, 36)), T('30%', 96, 'num', box(cup.x + 32, cup.y + 180, cup.w - 64, 110))]),
-      card('stats', stats, 'champ', [
-        T('收入三分一', 34, 'body', box(s.x, s.y, s.w, 48)),
-        T('月供 4500', 34, 'body', box(s.x, s.y + 64, s.w, 48)),
-        T('示例口径', 28, 'label', box(s.x, s.y + 130, s.w, 36)),
-      ]),
+      {id: 'cup', poly, tone: 'tea', marks: [tick], texts: [T('1/3 参考', 28, 'label', box(tick.x + tick.w + 24, tickY - 16, 150, 34))]},
+      ...rows.map((b, i) => {
+        const inn = inset(b, 28);
+        return card('row' + i, b, i === 1 ? 'tea' : 'champ', [
+          T(items[i].k, 34, 'body', box(inn.x, inn.y + 28, inn.w * 0.46, 48)),
+          T(items[i].v, 72, 'num', box(inn.x + inn.w * 0.5, inn.y + 8, inn.w * 0.46, 88)),
+        ]);
+      }),
     ], lines: []};
   },
   loanCurve: () => {
-    const R = layoutRects('loanCurve');
-    const cards = along(box(R.cards.x, R.cards.y, R.cards.w, R.cards.h), 5, 36);
-    const pathY = R.path.y + R.path.h * 0.55;
-    const nodes = cards.map((b) => [b.x + b.w / 2, pathY] as Pt);
-    const lines: LineGeom[] = [
-      {id: 'path', kind: 'diagram', width: 8, anchor: 'none', pts: nodes},
-      ...cards.map((b, i) => ({id: 'stem' + i, kind: 'connector' as const, width: 4, anchor: 'end' as const, pts: [nodes[i], [b.x + b.w / 2, b.y - 3]] as Pt[]})),
-    ];
-    return {cards: cards.map((b, i) => {
-      const inn = inset(b, 24);
-      return card('c' + i, b, i === 2 ? 'navy' : 'paper', [
-        T(String(i + 1).padStart(2, '0'), 28, 'label', box(inn.x, inn.y, 64, 36)),
-        T(CURVE_STEPS[i].k, 34, 'body', box(inn.x, inn.y + 44, inn.w, 44)),
-        T(CURVE_STEPS[i].s, 34, 'body', box(inn.x, inn.y + 96, inn.w, 44)),
+    // 弯道作主线，卡片交替落在路的上湾 / 下湾，短弧引线接到近边。
+    const below = [true, false, true, false, true];
+    const nodes: Pt[] = [[230, 640], [530, 470], [830, 620], [1130, 490], [1430, 610]];
+    const cw = 250, ch = 148;
+    const cardsB = nodes.map((n, i) => below[i]
+      ? box(n[0] - cw / 2, n[1] + 28, cw, ch)
+      : box(n[0] - cw / 2, n[1] - 28 - ch, cw, ch));
+    const roadPts: Pt[] = [];
+    let roadD = `M ${nodes[0][0]} ${nodes[0][1]}`;
+    for (let i = 0; i < nodes.length - 1; i++) {
+      const a = nodes[i], b = nodes[i + 1];
+      const c1: Pt = [a[0] + (b[0] - a[0]) * 0.45, a[1]];
+      const c2: Pt = [b[0] - (b[0] - a[0]) * 0.45, b[1]];
+      roadD += ` C ${c1[0]} ${c1[1]}, ${c2[0]} ${c2[1]}, ${b[0]} ${b[1]}`;
+      const seg = cubic(a, c1, c2, b, 5);
+      roadPts.push(...(i ? seg.slice(1) : seg));
+    }
+    const leaders: LineGeom[] = cardsB.map((b, i) => {
+      const n = nodes[i];
+      const edgeY = below[i] ? b.y - 4 : b.y + b.h + 4;
+      const end: Pt = [n[0], edgeY];
+      const bow = below[i] ? 18 : -18;
+      const c1: Pt = [n[0] + bow, n[1] + (end[1] - n[1]) * 0.35];
+      const c2: Pt = [n[0] + bow * 0.4, end[1] - Math.sign(end[1] - n[1]) * 10];
+      return {id: 'stem' + i, kind: 'connector' as const, width: 4, anchor: 'end' as const, color: '#C4A15A', dot: false,
+        pts: cubic(n, c1, c2, end, 4), d: `M ${n[0]} ${n[1]} C ${c1[0]} ${c1[1]}, ${c2[0]} ${c2[1]}, ${end[0]} ${end[1]}`};
+    });
+    return {cards: cardsB.map((b, i) => {
+      const inn = inset(b, 20);
+      return card('c' + i, b, i % 2 ? 'tea' : 'paper', [
+        T(String(i + 1).padStart(2, '0'), 28, 'label', box(inn.x, inn.y, 56, 32)),
+        T(CURVE_STEPS[i].k, 34, 'body', box(inn.x + 60, inn.y, inn.w - 60, 36)),
+        T(CURVE_STEPS[i].s, 34, 'body', box(inn.x, inn.y + 48, inn.w, 40)),
       ]);
-    }), lines};
+    }), lines: [
+      {id: 'path', kind: 'diagram', width: 16, anchor: 'none', color: '#E6C48A', dot: false, pts: roadPts, d: roadD},
+      ...leaders,
+    ]};
   },
   contractNote: () => {
     const R = layoutRects('contractNote');
@@ -192,14 +222,23 @@ const scenes: Record<string, () => Scene> = {
   },
   buildingSection: () => {
     const R = layoutRects('buildingSection');
-    const tags = along(inset(R.tags, 4), 3, 28, true);
-    const names = ['顶楼看防水', '中间层安静', '一楼看排水'];
-    const tower = box(R.section.x + 80, R.section.y + 40, 420, R.section.h - 80);
-    return {cards: tags.map((b, i) => card('f' + i, b, 'paper', [T(names[i], 34, 'body', inset(b, 22))])),
-      lines: tags.map((b, i) => {
-        const y = tower.y + 80 + i * ((tower.h - 120) / 2);
-        return {id: 'f' + i, kind: 'connector' as const, width: 4, anchor: 'end' as const, pts: [[tower.x + tower.w + 16, y], [b.x - 3, b.y + b.h / 2]] as Pt[]};
-      })};
+    const tags = along(inset(R.tags, 4), 3, 36, true);
+    const names = [
+      {k: '顶部几层', s: '晒得多要隔热'},
+      {k: '中间几层', s: '光线和安静均衡'},
+      {k: '底部几层', s: '离车流近看遮挡'},
+    ];
+    const tower = box(R.section.x + 36, R.section.y + 16, 720, R.section.h - 32);
+    return {cards: tags.map((b, i) => {
+      const inn = inset(b, 24);
+      return card('f' + i, b, i === 2 ? 'tea' : 'paper', [
+        T(names[i].k, 34, 'body', box(inn.x, inn.y + 8, inn.w, 44)),
+        T(names[i].s, 34, 'body', box(inn.x, inn.y + 56, inn.w, 44)),
+      ]);
+    }), lines: tags.map((b, i) => ({
+      id: 'f' + i, kind: 'connector' as const, width: 4, anchor: 'end' as const,
+      pts: [[tower.x + tower.w + 4, b.y + b.h / 2], [b.x - 3, b.y + b.h / 2]] as Pt[],
+    }))};
   },
   pitfallLens: () => {
     const stage = layoutRects('pitfallLens').stage;
@@ -228,24 +267,33 @@ const scenes: Record<string, () => Scene> = {
     return {cards: notes.map((b, i) => card('n' + i, b, 'tea', [T(words[i], 34, 'body', inset(b, 16))])), lines: bays};
   },
   hexSteps: () => {
-    const board = layoutRects('hexSteps').board;
-    const row = box(board.x, board.y + 56, board.w, board.h - 112);
-    const cells = along(row, 4, 40);
-    const lines: LineGeom[] = [];
-    const cards = cells.map((b, i) => {
-      const poly = hexPoly(b);
-      const safe = box(b.x + b.w * 0.22, b.y + b.h * 0.3, b.w * 0.56, b.h * 0.4);
-      if (i < cells.length - 1) {
-        const n = cells[i + 1];
-        lines.push({id: 'h' + i, kind: 'connector', width: 4, anchor: 'both', pts: [[b.x + b.w + 3, b.y + b.h / 2], [n.x - 3, n.y + n.h / 2]]});
-      }
-      return {id: 'hex' + i, poly, tone: (i === 3 ? 'clay' : 'paper') as FogTone, texts: [
-        T(HEX_STEPS[i].k, 34, 'body', box(safe.x, safe.y, safe.w, 44)),
-        T(HEX_STEPS[i].a, 34, 'body', box(safe.x, safe.y + 50, safe.w, 44)),
-        T(HEX_STEPS[i].b, 34, 'body', box(safe.x, safe.y + 98, safe.w, 44)),
+    // 01/03 略高、02/04 略低。一条圆角流程线贴着空隙把四枚连起来。
+    const W = 332, H = 280, pitch = 368, x0 = 120, yHi = 368, yLo = 488;
+    const cells = [0, 1, 2, 3].map((i) => box(x0 + i * pitch, i % 2 ? yLo : yHi, W, H));
+    const polys = cells.map(hexPoly);
+    const bridges: LineGeom[] = [];
+    for (let i = 0; i < 3; i++) {
+      const left = Math.max(...polys[i].map((p) => p[0]));
+      const right = Math.min(...polys[i + 1].map((p) => p[0]));
+      const yA = polys[i].reduce((s, p) => s + p[1], 0) / polys[i].length;
+      const yB = polys[i + 1].reduce((s, p) => s + p[1], 0) / polys[i + 1].length;
+      const from: Pt = [left + 4, yA];
+      const to: Pt = [right - 4, yB];
+      const c1: Pt = [from[0] + (to[0] - from[0]) * 0.35, from[1] + (to[1] - from[1]) * 0.2];
+      const c2: Pt = [from[0] + (to[0] - from[0]) * 0.65, from[1] + (to[1] - from[1]) * 0.8];
+      bridges.push({id: 'flow' + i, kind: 'connector', width: 4, anchor: 'both', color: '#C4A15A', dot: false,
+        pts: cubic(from, c1, c2, to, 1.5),
+        d: `M ${from[0]} ${from[1]} C ${c1[0]} ${c1[1]}, ${c2[0]} ${c2[1]}, ${to[0]} ${to[1]}`});
+    }
+    return {cards: cells.map((b, i) => {
+      const safe = box(b.x + b.w * 0.2, b.y + b.h * 0.26, b.w * 0.6, b.h * 0.5);
+      return {id: 'hex' + i, poly: polys[i], tone: (i % 2 ? 'tea' : 'paper') as FogTone, texts: [
+        T(String(i + 1).padStart(2, '0'), 28, 'label', box(safe.x, safe.y, safe.w, 32)),
+        T(HEX_STEPS[i].k, 34, 'body', box(safe.x, safe.y + 34, safe.w, 36)),
+        T(HEX_STEPS[i].a, 34, 'body', box(safe.x, safe.y + 74, safe.w, 36)),
+        T(HEX_STEPS[i].b, 34, 'body', box(safe.x, safe.y + 114, safe.w, 36)),
       ]};
-    });
-    return {cards, lines};
+    }), lines: bridges};
   },
   inspectTags: () => {
     const rail = layoutRects('inspectTags').rail;
@@ -259,13 +307,24 @@ const scenes: Record<string, () => Scene> = {
   },
   familyPlan: () => {
     const R = layoutRects('familyPlan');
-    const people = inset(R.people, 10);
-    const unit = inset(R.unit, 10);
+    const people = inset(R.people, 8);
+    const unit = inset(R.unit, 8);
     const p = inset(people, 28), u = inset(unit, 28);
+    const figY = p.y + 88, figH = 210, gap = 22;
+    const figW = (p.w - gap * 3) / 4;
+    const marks = [0, 1, 2, 3].map((i) => box(p.x + i * (figW + gap), figY, figW, figH));
+    const capY = figY + figH + 28;
     return {cards: [
-      card('people', people, 'tea', [T('三口之家', 40, 'title', box(p.x, p.y, p.w, 56)), T('两位成人', 34, 'body', box(p.x, p.y + 80, p.w, 48)), T('一个孩子', 34, 'body', box(p.x, p.y + 140, p.w, 48))]),
-      card('unit', unit, 'champ', [T('三室两厅', 40, 'title', box(u.x, u.y, u.w, 56)), T('主卧给老人', 34, 'body', box(u.x, u.y + 80, u.w, 48)), T('示例户型', 28, 'label', box(u.x, u.y + 150, u.w, 40))]),
-    ], lines: [{id: 'link', kind: 'connector', width: 4, anchor: 'both', pts: [[people.x + people.w + 3, people.y + people.h / 2], [unit.x - 3, unit.y + unit.h / 2]]}]};
+      {id: 'people', poly: rectPoly(people), tone: 'champ', marks, texts: [
+        T('家里常住', 34, 'body', box(p.x, p.y, p.w, 44)),
+        T('2大1小 +1位老人', 34, 'body', box(p.x, capY, p.w, 44)),
+      ]},
+      card('unit', unit, 'tea', [
+        T('三室更合适', 40, 'title', box(u.x, u.y + 24, u.w, 52)),
+        T('主卧给老人', 34, 'body', box(u.x, u.y + 100, u.w, 44)),
+        T('孩子单独一间', 34, 'body', box(u.x, u.y + 160, u.w, 44)),
+      ]),
+    ], lines: []};
   },
   policyNotes: () => {
     const wall = layoutRects('policyNotes').wall;

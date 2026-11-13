@@ -84,5 +84,5 @@ node scripts/concat.mjs outputs/成片/<期名>/片头.mp4 outputs/成片/<期�
 7. 卡片在对应短句或关键词刚开始时随口播入场，16/20/12帧后精确停稳；禁止过冲、落地二次弹、邻居让位、整体呼吸/焦点缩放、僵硬扫光条。高亮只改变轻色光/文字亮度；数据绘制、进度填充、背景自然运镜与小滕人物摆手可保留，不让卡片整体晃动。
 
 默认 26 种仍登记在 `DEFAULT_LAYOUTS`；新 17 款登记在 `NEW_LAYOUTS`，样片是 `MgGalleryNew`，不要写进默认 26 镜画廊。房产子集 `MgGalleryRe10` 仍是 9 镜。
-文案选版用 `matchEpisode()`，规则见 `正片/template/match_rules.json`，用法见 `正片/SKILL.md`。检查：`npm run check:freeze` 看材质和 26+9 边界，`npm run check:constraints` 看新卡几何、户型、字体实测和匹配，正式出片再跑 `npm run check`。
+文案选版用 `matchEpisode()`，规则见 `正片/template/match_rules.json`，用法见 `正片/SKILL.md`。检查：`npm run check:freeze` 看材质和 26+9 边界，`npm run check:constraints` 看新卡几何、穿模、字不压图、户型、字体实测和匹配，正式出片再跑 `npm run check`。背景亮度用 `npm run luma` 按素材抽帧写入 `src/demo/luma.json`，渲染会读这份实测值。
 片尾互动用 `outroHost` 的 `interact: 'hold'` 或 `'talk'`。不要加点赞或关注。标题不要写「投资」。

@@ -17,6 +17,7 @@ import {KeywordCascade, ChecklistFill, VsScore, TipStack, NumberedReveal, KpiGri
 import {FloorLadder, PaymentSplit, AmenityOrbit, PitfallBoard, PriceStep, DecisionFork, DistrictTags, LoanDial, LayerReveal} from './mgEstate';
 import {NewCardView} from './mgNew';
 import {estimateLuma, textTreatment} from './readability';
+import {bgWithLuma} from './measured-luma';
 
 /** 对应短句起点提前两帧起动，口播开始时已能看到入场。未设锚点时使用版式默认值。 */
 export const AnchorCtx = React.createContext<Record<string, number>>({});
@@ -243,8 +244,24 @@ const OutroHost: React.FC<{s: Shot}> = ({s}) => {
         textShadow: '0 0 12px rgba(120,72,32,0.45)', opacity: lineO, transform: `translateY(${(1 - lineSp) * 28}px) scale(${0.96 + 0.04 * Math.min(lineSp, 1)})`}}><GoldText text={d.line} /></div>}
       {d.interact !== 'talk' && <div style={{position: 'relative', width: 240, height: 3, marginTop: 36}}><UnderlineDraw x={0} y={0} w={240} start={lineAt + 14} /></div>}
       {d.interact === 'hold' && <div style={{marginTop: 28, width: '100%', position: 'relative'}}>
-        <div style={{position: 'absolute', left: -80, top: 20, width: 120, height: 8, background: 'linear-gradient(90deg, rgba(243,215,158,0), rgba(243,215,158,0.8))', opacity: lineO}} />
-        <div style={{...glassMat('dark'), borderRadius: 24, padding: '28px 32px'}}>
+        <svg style={{position: 'absolute', left: -520, top: -80, width: 640, height: 420, overflow: 'visible', pointerEvents: 'none', opacity: lineO}}>
+          <defs>
+            <linearGradient id="holdBeam" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="rgba(255,244,214,0.15)" />
+              <stop offset="45%" stopColor="rgba(255,214,120,0.95)" />
+              <stop offset="100%" stopColor="rgba(255,236,190,0.35)" />
+            </linearGradient>
+            <filter id="holdGlow"><feGaussianBlur stdDeviation="10" /></filter>
+          </defs>
+          <polygon points="40,300 120,250 560,70 520,190" fill="url(#holdBeam)" filter="url(#holdGlow)" />
+          <polygon points="70,280 130,255 540,110 510,165" fill="rgba(255,248,220,0.72)" />
+          <g transform="translate(8,248)">
+            <path d="M46 18 L12 48 H80 Z" fill="#FFF8EC" stroke="#E6C48A" strokeWidth="2" />
+            <rect x="26" y="48" width="40" height="30" rx="2" fill="#FFF8EC" stroke="#E6C48A" strokeWidth="2" />
+            <rect x="40" y="60" width="12" height="18" fill="#E6C48A" />
+          </g>
+        </svg>
+        <div style={{...glassMat('dark'), borderRadius: 24, padding: '28px 32px', boxShadow: '0 0 48px rgba(255,214,140,0.55), 0 18px 40px rgba(90,60,30,0.18)'}}>
           <div style={{fontFamily: FONT.body, fontWeight: 700, fontSize: TYPE.label, color: FROST.ink}}>今天记住三句话</div>
           {points.map((pt, i) => { const on = f >= at(`p${i}`, pStart + i * 8); return <div key={i} data-role="body" style={{marginTop: 16, fontFamily: FONT.body, fontWeight: 700, fontSize: TYPE.body, color: FROST.ink, opacity: on ? 1 : 0.35}}>{String(i + 1).padStart(2, '0')} {pt}</div>; })}
         </div>
@@ -354,14 +371,15 @@ export const ShotView: React.FC<{s: Shot; dur: number; exampleData?: boolean; an
   const f = useCurrentFrame();
   const View = VIEWS[s.layout];
   const kt = kickerText(s);
-  const treat = textTreatment(s.bg.luma ?? estimateLuma(s.bg.dark), s.bg.p90 ?? s.bg.luma ?? estimateLuma(s.bg.dark));
+  const bg = bgWithLuma(s.bg);
+  const treat = textTreatment(bg.luma ?? estimateLuma(bg.dark), bg.p90 ?? bg.luma ?? estimateLuma(bg.dark));
   const fx = (s as any).fx as number | undefined; // 可选：本期加强运镜 + 口播节拍动效
   const cam = {...camFor(s.layout), move: fx ?? 1};
   // v6：所有 MG 前景到位即停，背景自然运镜保留（含旧版式与 fx 路径）。
   const fgTX = 0, fgTY = 0, fgScale = 1;
   const body = <AbsoluteFill>
     <CamCtx.Provider value={cam}>
-      <Backdrop src={s.bg.src} video={s.bg.video} blur={s.bg.blur} dark={s.bg.dark} trimStart={s.bg.trim} />
+      <Backdrop src={bg.src} video={bg.video} blur={bg.blur} dark={bg.dark} trimStart={bg.trim} />
     </CamCtx.Provider>
     <AbsoluteFill style={{transform: `translate(${fgTX}px, ${fgTY}px) scale(${fgScale})`, transformOrigin: '50% 45%'}}>
       {kt && <Kicker text={kt} plate={treat === 'bar'} />}

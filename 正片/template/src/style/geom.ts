@@ -29,6 +29,21 @@ export const distToShape = (p: Pt, poly: Pt[]): number => {
   return d;
 };
 
+/** 三次贝塞尔采样，供「一条顺线」和穿模检查共用。 */
+export const cubic = (p0: Pt, p1: Pt, p2: Pt, p3: Pt, step = 6): Pt[] => {
+  const rough = Math.hypot(p1[0] - p0[0], p1[1] - p0[1]) + Math.hypot(p2[0] - p1[0], p2[1] - p1[1]) + Math.hypot(p3[0] - p2[0], p3[1] - p2[1]);
+  const n = Math.max(8, Math.ceil(rough / step));
+  const out: Pt[] = [];
+  for (let i = 0; i <= n; i++) {
+    const t = i / n, u = 1 - t;
+    out.push([
+      u * u * u * p0[0] + 3 * u * u * t * p1[0] + 3 * u * t * t * p2[0] + t * t * t * p3[0],
+      u * u * u * p0[1] + 3 * u * u * t * p1[1] + 3 * u * t * t * p2[1] + t * t * t * p3[1],
+    ]);
+  }
+  return out;
+};
+
 export const samplesOf = (pts: Pt[], step = 2): Pt[] => {
   const out: Pt[] = [];
   for (let i = 0; i < pts.length - 1; i++) {
