@@ -1,11 +1,13 @@
 // 暖雾磨砂新增 17 款。停稳坐标来自 scenes.ts；入场用 18 帧 quint，到位后不再移动。
+// 整组放在同一个透视平面上，连线和卡边一起侧转，避免线头和卡片错开。
 import React from 'react';
 import {useCurrentFrame} from 'remotion';
 import {glassMat} from './components';
-import {FONT, FOG, FROST, fogFill, glassEnter, type FogTone} from './tokens';
+import {DEPTH, FONT, FOG, FROST, fogFill, glassEnter, type FogTone} from './tokens';
 import {layoutRects} from './layouts.ts';
-import {sceneOf, type CardGeom} from './scenes.ts';
+import {sceneOf, type CardGeom, type TextRun} from './scenes.ts';
 import {layoutPlan, planById, type Plan} from './floorplans.ts';
+import type {Pt} from './geom.ts';
 import type {Rect} from './grid.ts';
 
 export type Starts = (i: number) => number;
@@ -14,25 +16,69 @@ const fogStyle = (tone: FogTone): React.CSSProperties => ({
   color: FOG[tone].ink,
   background: `${FROST.grain}, ${FROST.surfaceHighlight}, ${fogFill(tone)}`,
 });
+const FIG = ['#6E8EAE', '#C4A15A', '#7EAA98', '#C48B7A'];
+const axisRect = (poly: Pt[]) => {
+  if (poly.length !== 4) return false;
+  const xs = [...new Set(poly.map((p) => p[0]))], ys = [...new Set(poly.map((p) => p[1]))];
+  return xs.length === 2 && ys.length === 2;
+};
+const softRadius = (w: number, h: number) => Math.round(Math.min(42, Math.max(28, Math.min(w, h) * 0.22)));
+const liftOf = (id: string, i: number) => id === 'house' ? 26 : id === 'people' ? 12 : id === 'vs' ? 40 : 10 + (i % 4) * 6;
+const isStep = (t: TextRun) => t.role === 'label' && /^\d{2}$/.test(t.text);
 
-const CardFace: React.FC<{card: CardGeom; p: number}> = ({card, p}) => {
+const Figure: React.FC<{x: number; y: number; w: number; h: number; color: string}> = ({x, y, w, h, color}) => {
+  const child = h < 170;
+  const head = Math.min(w * (child ? 0.78 : 0.56), h * (child ? 0.4 : 0.28));
+  const bodyW = w * (child ? 0.7 : 0.62);
+  const bodyTop = head + Math.max(6, h * 0.045);
+  return <div style={{position: 'absolute', left: x, top: y, width: w, height: h}}>
+    <div style={{position: 'absolute', left: '50%', top: 0, width: head, height: head, marginLeft: -head / 2, borderRadius: '50%', background: color,
+      boxShadow: 'inset 0 -5px 8px rgba(42,30,18,0.14)'}} />
+    <div style={{position: 'absolute', left: '50%', top: bodyTop, bottom: 0, width: bodyW, marginLeft: -bodyW / 2, borderRadius: bodyW * 0.48, background: color,
+      boxShadow: 'inset 0 -12px 14px rgba(42,30,18,0.1)'}} />
+  </div>;
+};
+
+const CardFace: React.FC<{card: CardGeom; p: number; i: number; yaw: number}> = ({card, p, i, yaw}) => {
   const xs = card.poly.map((pt) => pt[0]), ys = card.poly.map((pt) => pt[1]);
   const left = Math.min(...xs), top = Math.min(...ys);
   const width = Math.max(...xs) - left, height = Math.max(...ys) - top;
+  const rect = axisRect(card.poly);
   const clip = `polygon(${card.poly.map((pt) => `${((pt[0] - left) / width) * 100}% ${((pt[1] - top) / height) * 100}%`).join(',')})`;
-  return <div style={{position: 'absolute', left, top, width, height, clipPath: clip, ...fogStyle(card.tone), opacity: Math.min(1, p), transform: `translateY(${(1 - p) * 28}px)`}}>
-    {card.id === 'people' && card.marks?.map((m, i) => {
-      const colors = ['#8AA4BE', '#C4A15A', '#A3C4B0', '#C4A090'];
-      return <div key={'fig' + i} style={{position: 'absolute', left: m.x - left, top: m.y - top, width: m.w, height: m.h}}>
-        <div style={{position: 'absolute', left: '50%', top: 8, width: Math.min(54, m.w * 0.5), height: Math.min(54, m.w * 0.5), marginLeft: -Math.min(27, m.w * 0.25), borderRadius: '50%', background: colors[i % 4]}} />
-        <div style={{position: 'absolute', left: '18%', right: '18%', top: 68, bottom: 8, borderRadius: 28, background: colors[i % 4]}} />
-      </div>;
+  const local = card.poly.map((pt) => `${pt[0] - left},${pt[1] - top}`).join(' ');
+  const face: React.CSSProperties = rect
+    ? {borderRadius: softRadius(width, height), overflow: 'hidden'}
+    : {clipPath: clip, border: 'none', boxShadow: `inset 0 1.5px 0 ${FROST.top}, inset 0 -14px 20px ${FROST.bottom}`,
+      filter: 'drop-shadow(0 16px 12px rgba(55,34,14,0.42)) drop-shadow(0 0 22px rgba(196,154,90,0.38))'};
+  const ink = FOG[card.tone].ink;
+  return <div style={{position: 'absolute', left, top, width, height, overflow: 'visible', opacity: Math.min(1, p), zIndex: 2 + i,
+    transform: `translateY(${(1 - p) * 26}px) translateZ(${liftOf(card.id, i)}px) rotateY(${yaw}deg)`, transformOrigin: '50% 58%', transformStyle: 'preserve-3d'}}>
+    <div style={{position: 'absolute', left: width * 0.1, top: height - 8, width: width * 0.8, height: 34, borderRadius: '50%', pointerEvents: 'none',
+      background: 'radial-gradient(ellipse at center, rgba(32,18,6,0.55), rgba(32,18,6,0) 70%)', filter: 'blur(6px)'}} />
+    <div style={{position: 'absolute', inset: 0, ...fogStyle(card.tone), ...face}}>
+      {card.id === 'people' && card.marks?.map((m, k) => <Figure key={k} x={m.x - left} y={m.y - top} w={m.w} h={m.h} color={FIG[k % 4]} />)}
+    </div>
+    {!rect && <svg style={{position: 'absolute', inset: 0, width, height, overflow: 'visible', pointerEvents: 'none'}}>
+      <polygon points={local} fill="none" stroke="rgba(150,176,186,0.45)" strokeWidth={3} />
+      <polygon points={local} fill="none" stroke="rgba(255,252,246,0.9)" strokeWidth={1.5} />
+    </svg>}
+    {card.texts.map((t, k) => {
+      const step = isStep(t);
+      const room = t.role === 'room';
+      return <div key={k} data-role={t.role === 'body' ? 'body' : t.role === 'room' ? 'room' : 'label'} data-fit="card" style={{
+        position: 'absolute', left: t.box.x - left, top: t.box.y - top, width: t.box.w, height: t.box.h,
+        display: 'flex', alignItems: 'center', justifyContent: t.align === 'center' || step || room ? 'center' : 'flex-start',
+        boxSizing: 'border-box', whiteSpace: 'nowrap', lineHeight: 1.15,
+        fontFamily: t.role === 'num' ? FONT.num : FONT.body, fontWeight: 700, fontSize: t.size,
+        letterSpacing: t.role === 'num' ? -1 : step ? 0.5 : 0,
+        color: step ? '#2A1E12' : ink,
+        transform: step ? 'translateZ(34px)' : undefined,
+        borderRadius: step ? 999 : room ? 18 : 0,
+        background: step ? 'linear-gradient(180deg, #F8E7C4, #E0C08A)' : room ? 'rgba(255,252,246,0.46)' : 'transparent',
+        border: room ? '1px solid rgba(42,30,18,0.14)' : 'none',
+        boxShadow: step ? '0 10px 16px rgba(60,36,14,0.32), inset 0 1.5px 0 rgba(255,252,246,0.9)' : room ? 'inset 0 1px 0 rgba(255,252,246,0.7)' : 'none',
+      }}>{t.text}</div>;
     })}
-    {card.texts.map((t, i) => <div key={i} data-role={t.role === 'body' ? 'body' : t.role === 'room' ? 'room' : 'label'} data-fit="card" style={{
-      position: 'absolute', left: t.box.x - left, top: t.box.y - top, width: t.box.w, height: t.box.h,
-      fontFamily: t.role === 'num' ? FONT.num : t.role === 'title' ? FONT.title : FONT.body,
-      fontWeight: 700, fontSize: t.size, lineHeight: 1.3, color: FOG[card.tone].ink,
-    }}>{t.text}</div>)}
   </div>;
 };
 
@@ -41,13 +87,35 @@ const Lines: React.FC<{sceneName: string; p: number}> = ({sceneName, p}) => {
   return <svg style={{position: 'absolute', left: 0, top: 0, width: 1920, height: 1080, overflow: 'visible', pointerEvents: 'none'}}>
     {scene.lines.map((ln) => {
       const d = ln.pts.map((pt, i) => `${i ? 'L' : 'M'}${pt[0]},${pt[1]}`).join(' ');
+      const path = ln.d ?? d;
       const end = ln.pts[ln.pts.length - 1];
-      return <g key={ln.id}>
-        <path d={ln.d ?? d} fill="none" stroke={ln.color ?? '#C4A15A'} strokeWidth={ln.width} strokeLinecap="round" strokeLinejoin="round" pathLength={ln.d ? undefined : 1} strokeDasharray={ln.d ? undefined : '1 1'} strokeDashoffset={ln.d ? undefined : 1 - p} />
-        {ln.dot && <circle cx={end[0]} cy={end[1]} r={5} fill={ln.color ?? '#C4A15A'} opacity={p} />}
+      const road = ln.width >= 12;
+      const drawn = ln.d ? 1 : p;
+      return <g key={ln.id} opacity={ln.d ? 1 : undefined}>
+        <path d={path} fill="none" stroke={road ? '#C4A15A' : (ln.color ?? '#C4A15A')} strokeWidth={ln.width} strokeLinecap="round" strokeLinejoin="round"
+          pathLength={ln.d ? undefined : 1} strokeDasharray={ln.d ? undefined : '1 1'} strokeDashoffset={ln.d ? undefined : 1 - drawn} />
+        {road && <path d={path} fill="none" stroke="#F8E8C8" strokeWidth={ln.width * 0.42} strokeLinecap="round" pathLength={ln.d ? undefined : 1} strokeDasharray={ln.d ? undefined : '1 1'} strokeDashoffset={ln.d ? undefined : 1 - drawn} />}
+        {ln.id === 'toHouse' && <polygon points={`${end[0]},${end[1]} ${end[0] - 16},${end[1] - 7} ${end[0] - 16},${end[1] + 7}`} fill="#C4A15A" opacity={p} />}
+        {ln.dot && <circle cx={end[0]} cy={end[1]} r={4} fill={ln.color ?? '#C4A15A'} opacity={p} />}
       </g>;
     })}
   </svg>;
+};
+
+const depthFor = (layout: string) => layout === 'planSplit'
+  ? {y: 4, x: 2, yaw: 8, origin: '50% 58%'}
+  : {y: DEPTH.rotateY, x: DEPTH.rotateX, yaw: DEPTH.cardYaw, origin: DEPTH.origin};
+const Stage: React.FC<{layout: string; children: React.ReactNode}> = ({layout, children}) => {
+  const d = depthFor(layout);
+  return (
+  <div style={{position: 'absolute', inset: 0, perspective: DEPTH.perspective, perspectiveOrigin: '48% 44%'}}>
+    <div style={{position: 'absolute', inset: 0, transformStyle: 'preserve-3d', transformOrigin: d.origin, transform: `rotateY(${d.y}deg) rotateX(${d.x}deg)`}}>
+      <div style={{position: 'absolute', left: 80, top: 260, width: 1500, height: 640, pointerEvents: 'none',
+        background: 'radial-gradient(ellipse at 50% 46%, rgba(232,196,140,0.2), rgba(232,196,140,0) 70%)', mixBlendMode: 'soft-light'}} />
+      {children}
+    </div>
+  </div>
+  );
 };
 
 const FloorFig: React.FC<{plan: Plan; rect: Rect; p: number}> = ({plan, rect, p}) => {
@@ -179,6 +247,8 @@ const SectionFig: React.FC<{p: number}> = ({p}) => {
         <line x1={x + uw - 54} x2={x + uw - 8} y1={y + 4 + (gap - 8) / 2} y2={y + 4 + (gap - 8) / 2} stroke="#2A1E12" strokeWidth={0.8} />
       </g>;
     })}
+    <rect x={tower.x - 10} y={tower.y + slab + 3 * (gap + slab) - 6} width={tower.w + 20}
+      height={5 * (gap + slab) + 8} rx={18} fill="none" stroke="#E6C48A" strokeWidth={3.5} />
   </svg>;
 };
 
@@ -186,17 +256,18 @@ export const NewCardView: React.FC<{layout: string; st: Starts}> = ({layout, st}
   const f = useCurrentFrame();
   const scene = sceneOf(layout);
   const p0 = glassEnter(f, st(0), 'shaped');
-  return <>
+  const depth = depthFor(layout);
+  return <Stage layout={layout}>
     {layout === 'buildingSection' && <SectionFig p={p0} />}
     {layout === 'paymentCup' && <CupFig p={p0} />}
     <Lines sceneName={layout} p={p0} />
     {scene.planId && <FloorFig plan={planById(scene.planId)} rect={layoutRects('planSplit').plan} p={p0} />}
     {scene.cards.filter((c) => c.id !== 'cup').map((c) => {
       const i = scene.cards.indexOf(c);
-      return <CardFace key={c.id} card={c} p={glassEnter(f, st(i), 'shaped')} />;
+      return <CardFace key={c.id} card={c} p={glassEnter(f, st(i), 'shaped')} i={i} yaw={depth.yaw} />;
     })}
     {layout === 'archLight' && <Sun p={p0} />}
-  </>;
+  </Stage>;
 };
 
 const Sun: React.FC<{p: number}> = ({p}) => {

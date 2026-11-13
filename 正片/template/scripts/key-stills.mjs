@@ -1,9 +1,9 @@
-// 新卡关键镜的中帧定格，写到仓库预览目录 previews/v6.1/
+// 新卡关键镜的中帧定格，写到仓库预览目录 previews/v6.2/
 import {mkdirSync} from 'node:fs';
 import {join} from 'node:path';
 import {spawnSync} from 'node:child_process';
 
-const outDir = join(process.cwd(), '../../previews/v6.1');
+const outDir = join(process.cwd(), '../../previews/v6.2');
 mkdirSync(outDir, {recursive: true});
 
 const {bundle} = await import('@remotion/bundler');

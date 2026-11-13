@@ -15,7 +15,7 @@ const useEnter = (st: number, kind: EnterKind = 'enter') => enter(useCurrentFram
 const enterScale = (p: number, k = 0.03) => 1 - k + k * p;
 
 /** 经典薄玻璃：原冷灰半透明色相，略增不透明度；只保留细白边、1px轻顶高光与轻柔阴影。 */
-export const frost = (tone: Tone = 'none', soft = false, radius = 26): React.CSSProperties => ({
+export const frost = (tone: Tone = 'none', soft = false, radius = 36): React.CSSProperties => ({
   position: 'absolute', boxSizing: 'border-box', overflow: 'hidden', borderRadius: radius, color: FROST.ink, textShadow: FROST.textShadow,
   ...glassMat('dark', FROST.tint[tone], undefined, soft),
 });
