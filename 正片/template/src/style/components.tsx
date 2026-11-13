@@ -9,10 +9,10 @@ const softTint = (tint?: string) => tint?.replace(/rgba\(([^,]+),([^,]+),([^,]+)
 export const glassMat = (_mode: 'dark' | 'light' = 'dark', tint?: string, _edge?: string, soft = false): React.CSSProperties => ({
   color: FROST.ink, textShadow: FROST.textShadow,
   background: `${FROST.grain}, ${FROST.surfaceHighlight}, linear-gradient(165deg, ${softTint(tint) ?? FROST.tint.none}, rgba(0,0,0,0) 72%), ${soft ? FROST.fillSoft : FROST.fill}`,
-  backgroundSize: '64px 64px, auto, auto, auto',
+  backgroundSize: '80px 80px, auto, auto, auto',
   backdropFilter: FROST.blur, WebkitBackdropFilter: FROST.blur,
-  border: `1.6px solid ${FROST.hair}`,
-  boxShadow: `inset 0 1.5px 0 ${FROST.top}, inset 0 -12px 18px ${FROST.bottom}, 0 0 0 1px ${FROST.rim}, 0 0 0 1px ${FROST.mist}, ${FROST.shadow}`,
+  border: `1.6px solid ${FROST.rim}`,
+  boxShadow: `inset 0 1.5px 0 ${FROST.top}, inset 0 -14px 20px ${FROST.bottom}, 0 0 0 1px ${FROST.mist}, ${FROST.shadow}`,
 });
 /** 兼容旧 useLiquid，现为单调入场；不拉伸、不压扁。 */
 export const useLiquid = (start: number, config: typeof SPRING.enter = SPRING.enter) => {
@@ -32,7 +32,7 @@ export const Fonts: React.FC = () => (
     .txs,.txs *{text-shadow:0 0 12px rgba(120,72,32,0.45),0 1px 2px rgba(70,42,18,0.35)}
     .tx2,.tx2 *{-webkit-text-stroke:4px rgba(110,68,32,0.42);paint-order:stroke fill;text-shadow:0 0 12px rgba(120,72,32,0.55),0 0 28px rgba(120,72,32,0.35)}
     .txs .gt,.tx2 .gt{text-shadow:none;-webkit-text-stroke:0;filter:drop-shadow(0 2px 4px rgba(60,36,12,0.55))}
-    @font-face{font-family:'ArialB';src:local('Arial Bold'),local('Arial-BoldMT'),url('${staticFile('fonts/Style40-Arial-Bold.ttf')}') format('truetype');font-weight:700}
+    @font-face{font-family:'ArialB';src:local('Arial Bold'),local('Arial-BoldMT'),local('Liberation Sans Bold'),local('Noto Sans Bold'),url('${staticFile('fonts/Style40-Arial-Bold.ttf')}') format('truetype');font-weight:700}
   `}</style>
 );
 

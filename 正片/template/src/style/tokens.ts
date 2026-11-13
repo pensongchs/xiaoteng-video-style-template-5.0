@@ -21,7 +21,9 @@ export const RULE = {
   bodyLines: 2,
   chipChars: 6,
 };
-export const RADIUS = {card: 26, frame: 24, chip: 999, badge: 0.3};
+export const RADIUS = {card: 36, frame: 32, chip: 999, badge: 0.3};
+/** 中景卡片的透视。整组共用一个平面，避免连线和卡边错开。 */
+export const DEPTH = {perspective: 1240, rotateY: 12, rotateX: 3.5, cardYaw: 8, origin: '36% 60%'};
 /** 5.0 新定版：遗留 spring 配置只作兼容，所有正片卡片使用下方有限单调入场。 */
 export const SPRING = {
   enter: {damping: 26, stiffness: 150, mass: 0.78, overshootClamping: true},
@@ -45,7 +47,7 @@ export const steadySpring = ({frame, fps = 30, config = SPRING.enter}: {frame: n
 
 /** 5.0 暖雾磨砂（v6.1，2026-11-12）：卡片唯一材质。模糊只发生在卡内，背景 blur 仍为 0。
  *  填充是香槟/暖纸一类浅暖半透，不是灰底也不是深色底。字用同色系深墨。 */
-export const FOG_GRAIN = "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.45'/></svg>\")";
+export const FOG_GRAIN = "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.22'/></svg>\")";
 export const FOG = {
   champ: {name: '香槟', fill0: 'rgba(250,243,231,0.74)', fill1: 'rgba(236,224,204,0.64)', ink: '#2A1E12'},
   paper: {name: '暖纸', fill0: 'rgba(246,238,220,0.74)', fill1: 'rgba(232,220,196,0.64)', ink: '#2A1E12'},
@@ -63,14 +65,14 @@ export const GLASS_V6 = {
   blur: 'blur(26px) saturate(1.3) brightness(1.12)',
   fill: fogFill('champ'),
   fillSoft: 'linear-gradient(165deg, rgba(250,243,231,0.66), rgba(236,224,204,0.56))',
-  surfaceHighlight: 'linear-gradient(180deg, rgba(255,252,246,0.62) 0%, rgba(255,252,246,0) 22%)',
+  surfaceHighlight: 'linear-gradient(180deg, rgba(255,252,246,0.82) 0%, rgba(255,252,246,0.22) 11%, rgba(255,252,246,0) 30%)',
   grain: FOG_GRAIN,
   hair: 'rgba(255,248,240,0.78)',
-  rim: 'rgba(150,176,186,0.22)',
-  mist: 'rgba(168,160,190,0.16)',
-  top: 'rgba(255,252,246,0.92)',
-  bottom: 'rgba(255,244,220,0.40)',
-  shadow: '0 26px 52px -14px rgba(90,60,30,0.38), 0 0 36px rgba(196,154,90,0.32)',
+  rim: 'rgba(150,176,186,0.42)',
+  mist: 'rgba(168,160,190,0.20)',
+  top: 'rgba(255,252,246,0.95)',
+  bottom: 'rgba(255,244,220,0.46)',
+  shadow: '0 8px 14px -4px rgba(48,30,12,0.46), 0 20px 36px -14px rgba(70,44,18,0.36), 0 0 36px rgba(196,154,90,0.32)',
   textShadow: 'none',
   ink: FOG.champ.ink, sub: FOG.champ.ink, faint: 'rgba(42,30,18,0.62)',
   gold: '#2A1E12', goldFill: 'linear-gradient(90deg, #E6C48A, #C4A15A)', coral: '#8A4034', green: '#1E5A40', blue: '#1A3E68',

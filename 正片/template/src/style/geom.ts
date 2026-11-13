@@ -4,6 +4,36 @@ export type Box = {x: number; y: number; w: number; h: number};
 
 export const rectPoly = (b: Box): Pt[] => [[b.x, b.y], [b.x + b.w, b.y], [b.x + b.w, b.y + b.h], [b.x, b.y + b.h]];
 
+const vsub = (a: Pt, b: Pt): Pt => [a[0] - b[0], a[1] - b[1]];
+const vadd = (a: Pt, b: Pt): Pt => [a[0] + b[0], a[1] + b[1]];
+const vmul = (a: Pt, s: number): Pt => [a[0] * s, a[1] * s];
+const vlen = (a: Pt) => Math.hypot(a[0], a[1]);
+const vnorm = (a: Pt): Pt => { const l = vlen(a) || 1; return [a[0] / l, a[1] / l]; };
+
+/** 凸多边形圆角采样。碰撞和画面共用，角被削圆，边的中点不动。 */
+export const roundPoly = (pts: Pt[], radius: number, samples = 5): Pt[] => {
+  const n = pts.length;
+  const out: Pt[] = [];
+  for (let i = 0; i < n; i++) {
+    const prev = pts[(i - 1 + n) % n];
+    const curr = pts[i];
+    const next = pts[(i + 1) % n];
+    const inDir = vnorm(vsub(curr, prev));
+    const outDir = vnorm(vsub(next, curr));
+    const trim = Math.min(radius, vlen(vsub(curr, prev)) / 2.15, vlen(vsub(next, curr)) / 2.15);
+    const p1 = vsub(curr, vmul(inDir, trim));
+    const p2 = vadd(curr, vmul(outDir, trim));
+    for (let s = 0; s <= samples; s++) {
+      const t = s / samples, u = 1 - t;
+      out.push([
+        u * u * p1[0] + 2 * u * t * curr[0] + t * t * p2[0],
+        u * u * p1[1] + 2 * u * t * curr[1] + t * t * p2[1],
+      ]);
+    }
+  }
+  return out;
+};
+
 export const pointInPoly = (p: Pt, poly: Pt[]): boolean => {
   let inside = false;
   for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {

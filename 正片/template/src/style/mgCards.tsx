@@ -7,7 +7,7 @@ import {COLOR, FONT, SPRING, TYPE, FROST, steadySpring as spring} from './tokens
 import type {Rect} from './grid.ts';
 
 const LG = (_a = 0.16, tint?: string): React.CSSProperties => ({
-  ...glassMat('dark', tint), borderRadius: 26,
+  ...glassMat('dark', tint), borderRadius: 36,
   boxSizing: 'border-box', overflow: 'hidden', position: 'absolute',
 });
 const TINT: Record<string, string> = {gold: FROST.tint.gold, coral: FROST.tint.coral, green: FROST.tint.green, glass: FROST.tint.none};
