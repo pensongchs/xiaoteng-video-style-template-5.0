@@ -13,5 +13,5 @@ episodes/<期名>/
 ## 怎么用（5.0 定版 2026-10-31）
 
 1. 配音 → `/workspace/时间码字幕2.0/run-box.sh` 出逐字时间码 → 校对对齐。
-2. 把音频、SRT/Caption JSON、`shots.ts`、`片头/校对后_动效时间轴_绝对.json`、`片头/keys.txt`（可选 `片头/EpisodeOpening.tsx`）放进 `正片/template/episodes/<期名>/`，结构照参考期 `选楼层口诀`。
+2. 把音频、SRT/Caption JSON、`shots.ts`、`片头/校对后_动效时间轴_绝对.json`、`片头/keys.txt`（可选 `片头/EpisodeOpening.tsx`）放进 `正片/template/episodes/<期名>/`，结构照参考期 `选楼层口诀`。`shots.ts` 里的 `layout` 只能是 `正片/template/src/style/layouts.ts` 已登记的官方版式，并由官方 `ShotView` 渲染。片头仍走 `片头/`，不要把 opening 写进正片版式。
 3. `node scripts/build-episode.mjs <期名> --audio=<整期配音.mp4>` → `episodes_work/<期名>/<期名>_成品.mp4`，并复制到 `outputs/成片/<期名>/`。
