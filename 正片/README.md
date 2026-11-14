@@ -1,10 +1,10 @@
 # 5.0 新定版（玻璃v6 + 房产MG）· 正片
 
-用 Remotion 做 1920×1080 知识科普分镜视频的模板和 Skill。整体是深色电影感背景、暖金点缀、轻量 MG，自带排版检查和防顿帧处理，可在 Windows 和 macOS 上使用。
+用 Remotion 做 1920×1080 知识科普正片的模板和 Skill。正式画面是暖雾磨砂官方 MG：版式来自 `layouts.ts` 的 `LayoutName`，渲染走 `ShotView` / `sceneOf`。样片只看仓库 `previews/v6.2/`。自带排版检查和防顿帧处理，可在 Windows 和 macOS 上使用。
 
 **音画同步**：给它口播音频和带时间码的字幕（SRT / Remotion Caption JSON），镜头会在对应的句子开始时切换，文字、图卡和要点随对应口播开头入场，成片自带声音和精致的烧录字幕（磨砂浅底、40px、当前词沙金高亮）。
 
-> 已定：2026-11-06（Asia/Shanghai），共享薄玻璃v6、房产9套。当前规范见风格设计规范/版式目录；默认26种，旧6套/户型对比非默认。以下references/preview图为历史核心版式资料，不是新材质验收。新预览见 `../outputs/mg-gallery-re10/` 和 `../outputs/freeze-v6/`。
+> 已定：2026-11-06（Asia/Shanghai），暖雾磨砂与房产 MG 以 2026-11-13 工艺为准。当前规范见风格设计规范、版式目录和文案匹配机制。正式版式是默认 26 种加新 17 款；旧 6 套不默认推荐。验收样片是仓库 `../previews/v6.2/`。下面的 `references/preview` 图是历史资料（旧大标题轻量 MG），保留原文件，不能当成这套风格的样子。
 
 ![历史联系表](references/preview/联系表.jpg)
 

@@ -1,8 +1,11 @@
-// 排版硬约束：字体实测 + 几何函数。不截图。
+// 排版硬约束：字体实测 + 几何函数 + 正式镜头表版式登记。不截图。
 import opentype from 'opentype.js';
-import {readFileSync} from 'node:fs';
+import {readFileSync, readdirSync} from 'node:fs';
+import {basename, join, relative} from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {SAFE} from '../src/style/grid.ts';
-import {DEFAULT_LAYOUTS, ESTATE_LAYOUTS, NEW_LAYOUTS, POOL_LAYOUTS, layoutRects} from '../src/style/layouts.ts';
+import {ARCHIVE_LAYOUTS, DEFAULT_LAYOUTS, ESTATE_LAYOUTS, NEW_LAYOUTS, POOL_LAYOUTS, layoutRects} from '../src/style/layouts.ts';
+import {SHOTS} from '../src/demo/shots.ts';
 import {sceneOf, NEW_SCENE_NAMES} from '../src/style/scenes.ts';
 import {connectorFaults, gapBetween, overlapArea, samplesOf} from '../src/style/geom.ts';
 import {validateLibrary, planById, layoutPlan} from '../src/style/floorplans.ts';
@@ -124,8 +127,114 @@ const cooled = matchEpisode(demo, {episode: '6', title: '月供和户型', histo
 if (cooled.some((p) => p.media && picks.some((q) => q.media === p.media) && !p.mediaRelaxed)) errs.push('3 期冷却没有拦住刚用过的素材');
 if (readFileSync(new URL('../src/style/subtitle-tokens.ts', import.meta.url), 'utf8').includes('size: 42')) errs.push('字幕被改回 42');
 
+const TEMPLATE_ROOT = fileURLToPath(new URL('..', import.meta.url));
+const REPO_ROOT = fileURLToPath(new URL('../../..', import.meta.url));
+const REGISTERED_LAYOUTS = new Set([...POOL_LAYOUTS, ...ARCHIVE_LAYOUTS, 'outroAir']);
+
+const stripComments = (src) => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^\\])\/\/.*$/gm, '$1');
+const lineNo = (src, index) => src.slice(0, index).split('\n').length;
+const layoutFault = (where, name) => `${where}: 版式「${name}」未在 layouts.ts 的 LayoutName 登记。正片只能用已登记官方版式（默认 26 种 + 新 17 款；存档 6 套不默认推荐；outroAir 只是 outroHost 的别名）。不要自造 phrase、broll、chapterTitle、wordCompare、commuteCalc 或 opening。塞不下就换 matchEpisode() 的下一个官方候选或拆镜，并继续走 ShotView / sceneOf。`;
+
+/** 从 shots 源码里取出 layout: '…' / "layout": "…"。 */
+export const layoutFaultsInCode = (source, label) => {
+  const faults = [];
+  const code = stripComments(source);
+  const seen = new Set();
+  const push = (name, index, raw) => {
+    const n = String(name).trim();
+    const at = `${n}@${lineNo(raw, index)}`;
+    if (!n || REGISTERED_LAYOUTS.has(n) || seen.has(at)) return;
+    seen.add(at);
+    faults.push(layoutFault(`${label}:${lineNo(raw, index)}`, n));
+  };
+  for (const m of code.matchAll(/layout\s*:\s*(['"`])([^'"`]+)\1/g)) push(m[2], m.index, code);
+  for (const m of code.matchAll(/"layout"\s*:\s*"([^"]+)"/g)) push(m[1], m.index, code);
+  return faults;
+};
+
+const splitRow = (line) => line.split('|').slice(1, -1).map((c) => c.trim());
+
+/** 镜头表：代码字段，外加「版式」列和 layout/版式: 名字。 */
+export const layoutFaultsInShotTable = (source, label) => {
+  const faults = layoutFaultsInCode(source, label);
+  const seen = new Set(faults);
+  const add = (name, index) => {
+    const n = String(name).replace(/`/g, '').trim();
+    if (!n || REGISTERED_LAYOUTS.has(n)) return;
+    const msg = layoutFault(`${label}:${lineNo(source, index)}`, n);
+    if (!seen.has(msg)) { seen.add(msg); faults.push(msg); }
+  };
+  const lines = source.split(/\r?\n/);
+  const lineStart = (n) => lines.slice(0, n).reduce((sum, line) => sum + line.length + 1, 0);
+  const headerAt = lines.findIndex((line) => /^\s*\|/.test(line) && /版式|layout/i.test(line));
+  if (headerAt >= 0) {
+    const col = splitRow(lines[headerAt]).findIndex((c) => /版式|^layout$/i.test(c.replace(/`/g, '').trim()));
+    if (col >= 0) {
+      for (let i = headerAt + 1; i < lines.length; i++) {
+        const line = lines[i];
+        if (!/^\s*\|/.test(line)) break;
+        const name = (splitRow(line)[col] || '').replace(/`/g, '').trim();
+        if (name && !/^[:|-]+$/.test(name)) add(name, lineStart(i) + Math.max(0, line.indexOf(name)));
+      }
+    }
+  }
+  for (const m of source.matchAll(/(?:^|[\s|])(?:layout|版式)\s*[:：]\s*['"`]?([^\s'"`|，。,;；]+)/gm)) {
+    add(m[1], m.index + m[0].indexOf(m[1]));
+  }
+  return faults;
+};
+
+const isShotFile = (name) => /^shots\.(ts|tsx|mjs|json)$/.test(name);
+const isCueSheet = (name) => name.includes('镜头表') && /\.(md|json|ts|tsx|txt|mjs)$/.test(name);
+const collectShotTables = (dir, out) => {
+  let entries;
+  try { entries = readdirSync(dir, {withFileTypes: true}); } catch { return; }
+  for (const e of entries) {
+    if (e.name === 'node_modules' || e.name === 'out' || e.name === 'public' || e.name === '.git') continue;
+    const p = join(dir, e.name);
+    if (e.isDirectory()) collectShotTables(p, out);
+    else if (isShotFile(e.name) || isCueSheet(e.name)) out.push(p);
+  }
+};
+
+const shotTableFaults = () => {
+  const files = [];
+  collectShotTables(TEMPLATE_ROOT, files);
+  collectShotTables(join(REPO_ROOT, 'episodes'), files);
+  const faults = [];
+  const seen = new Set();
+  for (const file of files) {
+    if (seen.has(file)) continue;
+    seen.add(file);
+    const label = relative(REPO_ROOT, file);
+    const source = readFileSync(file, 'utf8');
+    const batch = isCueSheet(basename(file)) && !isShotFile(basename(file))
+      ? layoutFaultsInShotTable(source, label)
+      : layoutFaultsInCode(source, label);
+    faults.push(...batch);
+  }
+  for (const s of SHOTS) {
+    const name = String(s?.layout);
+    if (REGISTERED_LAYOUTS.has(name)) continue;
+    if (faults.some((f) => f.includes('src/demo/shots.ts') && f.includes(`「${name}」`))) continue;
+    faults.push(layoutFault(`正片/template/src/demo/shots.ts ${s?.id || '?'}`, name));
+  }
+  return faults;
+};
+
+const probeBad = layoutFaultsInCode("export const SHOTS = [{id:'S01', layout: 'phrase'}];", 'probe');
+const probeGood = layoutFaultsInCode("layout: 'hexSteps', layout: 'outroAir', layout: 'keywordCascade'", 'probe');
+const probeSheet = layoutFaultsInShotTable('| 镜 | 版式 |\n|---|---|\n| S01 | commuteCalc |\n', 'probe');
+if (probeBad.length !== 1 || probeGood.length !== 0 || probeSheet.length !== 1) errs.push('版式登记检查自身失效');
+shotTableFaults().forEach((f) => errs.push(f));
+
+const demoSrc = readFileSync(new URL('../src/demo/Demo.tsx', import.meta.url), 'utf8');
+if (!demoSrc.includes("from '../style/archetypes'") || !demoSrc.includes('<ShotView')) {
+  errs.push('src/demo/Demo.tsx 必须用官方 ShotView（style/archetypes）渲染正片，不能换成并行简版渲染器');
+}
+
 export const constraintErrors = errs;
 if (process.argv[1] && process.argv[1].endsWith('check-constraints.mjs')) {
   if (errs.length) { console.log('✗ 约束\n' + errs.join('\n')); process.exit(1); }
-  console.log(`✓ 约束通过：26+9 仍在，新卡 ${NEW_LAYOUTS.length}，户型库，连线，字体实测，对比度，匹配`);
+  console.log(`✓ 约束通过：26+9 仍在，新卡 ${NEW_LAYOUTS.length}，户型库，连线，字体实测，对比度，匹配，镜头表版式已登记`);
 }

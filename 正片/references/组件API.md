@@ -14,16 +14,17 @@
 | `Headline` | 标题行，`{…}` 部分为金色 | `text start` |
 | `GoldText` | 把行内 `{…}` 渲染成金色 | `text` |
 | `ExampleMark` | 右上角「* 数据为示例」 | — |
-| `GlassCard` | 磨砂玻璃卡（尽量少用，避免满屏都是卡片） | `r start tone from dim radius pad` |
+| `GlassCard` | 官方暖雾磨砂卡。正片画面用 `ShotView` 和已登记版式，不要自造深色扁面板来代替 | `r start tone from dim radius pad` |
 | `MediaFrame` | 媒体框（图片或视频），描边在框内侧，可带角标和图注 | `r start src video label tag trimStart from fit soft` |
 | `Chip` | 胶囊标签，有 `gold / glass / coral / green` 四种色调，自动留 25% 余白 | `start tone size` |
 | `Count` | 数字滚动 | `to start dec sep` |
 | `Bar` | 比例条 | `ratio start hi` |
 
-## 轻量 MG（优先用这些，避免满屏都是卡片）
+## 官方版式内部组件（不要拿它们另拼一期画面）
+这些组件只给 `ShotView` 里的已登记版式使用。`titleFloat` / `bareNumber` 只在 `matchEpisode()` 选中时出现，不能用来换掉已经匹配到的设计型 MG。
 | 组件 | 视觉 | 关键参数 |
 |---|---|---|
-| `BareNumber` | 不加卡片的超大数字和单位，可以在 children 里放胶囊 | `r start value unit dec sep label gold size flow` |
+| `BareNumber` | `bareNumber` 版式里的大数字和单位，可以在 children 里放胶囊 | `r start value unit dec sep label gold size flow` |
 | `FloatLabel` | 悬浮的小标签 | `r start text tone` |
 | `Timeline` | 横向时间轴，焦点高亮 | `r start steps active` |
 | `IconRow` | 编号条目（编号 + 标题 + 说明 + 右侧胶囊），当前行会高亮 | `r start idx title sub tip active` |
